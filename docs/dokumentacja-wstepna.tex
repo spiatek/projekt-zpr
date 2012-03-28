@@ -9,7 +9,7 @@
 \frenchspacing
 \sloppy
 \usepackage{geometry}
-\title{Zaawansowane Programowanie w C++ Dokumentacja wstępna projektu}
+\title{Zaawansowane Programowanie w C++\\Dokumentacja wstępna projektu}
 \author{Mateusz Matuszewski, Szymon Piątek}
 \bibliographystyle{plain}
 \usepackage{geometry}
@@ -17,46 +17,47 @@
 \begin{document}
 \maketitle
 \section{Temat projektu}
-Stworzyć bibliotekę ułatwiającą rysowanie, porównywanie i obliczenia (np. auc) związane z krzywymi ROC, PRC. W plikach wejściowych w każdym wierszu mamy współrzędne punktu krzywej. Kolejne punkty można łączyć odcinkami. Program powinien umożliwiać wczytanie z pliku i wyświetlenie na jednym wykresie 2D kilku krzywych (każdą innym kolorem). Powinna istnieć możliwość powiększenia wybranego fragmentu krzywej. Dla wybranej krzywej program powinien podać pole powierzchni pod nią wyrażone w \% (na każdej osi maksymalna wartość to 1, zatem maksymalne pole pod krzywą wynosi 1 i to jest 100\%).
+Stworzyć bibliotekę ułatwiającą rysowanie, porównywanie i~obliczenia (np. auc) związane z~krzywymi ROC, PRC. W~plikach wejściowych w~każdym wierszu mamy współrzędne punktu krzywej. Kolejne punkty można łączyć odcinkami. Program powinien umożliwiać wczytanie z~pliku i~wyświetlenie na jednym wykresie 2D kilku krzywych (każdą innym kolorem). Powinna istnieć możliwość powiększenia wybranego fragmentu krzywej. Dla wybranej krzywej program powinien podać pole powierzchni pod nią wyrażone w~\% (na każdej osi maksymalna wartość to~1, zatem maksymalne pole pod krzywą wynosi~1 i~to jest 100\%).
 \section{Rozwinięcie tematu}
-Celem tego projektu jest stworzenie aplikacji umożliwiającej porównanie krzywych ROC i PR, które są wykorzystywane do oceny jakości binarnego klasyfikatora, zaś pole pod wykresem (AUC - \textit{ang. Area Under Curve}) może zostać wykorzystane jako heurystyka przy poszukiwaniu optymalnych parametrów.
+Celem tego projektu jest stworzenie aplikacji umożliwiającej porównanie krzywych ROC i~PR, które są wykorzystywane do oceny jakości binarnego klasyfikatora, zaś pole pod wykresem (AUC - \textit{ang. Area Under Curve}) może zostać wykorzystane jako heurystyka przy poszukiwaniu optymalnych parametrów.
 
 Zdefiniujmy próbki "dodatnie" (\textit{positive}) jako poszukiwaną przez nas klasę, zaś "ujemne" (\textit{negative}) jako nieinteresującą nas drugą klasę.
 
 Krzywe ROC (\textit{ang. Receiever Operator Characteristic}) przedstawiają zmianę stosunku próbek poprawnie sklasyfikowanych jako "dodatnie" do próbek błędnie uznanych za "dodatnie" względem zmiennego parametru - poziomu odcięcia (\textit{ang. threshold}).
 
-Drugim rodzajem krzywych, które będzie prezentować nasz program to krzywe PR (\textit{ang. Precision-Recall}) które lepiej sprawdzają się przy prezentacji wyników dla mocno niezrównoważonych zbiorów danych. Dokładność (\textit{ang. precision}) liczona jest jako stosunek poprawnie zakwalifikowanych przypadków "dodatnich" do ilości przypadków poprawnie i niepoprawnie uznanych za "dodatnie". Współczynnik \textit{recall} liczony jest jako stosunek przypadków poprawnie zakwalifikowanych jako "dodatnie" do wszystkich istotnych dla nas danych ("pozytywnych"; czyli suma poprawnych "pozytywnych" i niepoprawnych "negatywnych"). Warte zauważenia jest, że jeśli krzywa dominuje w przestrzeni ROC tylko wtedy gdy dominuje też w przestrzeni PR.
+Drugim rodzajem krzywych, które będzie prezentować nasz program to krzywe PR (\textit{ang. Precision-Recall}) które lepiej sprawdzają się przy prezentacji wyników dla mocno niezrównoważonych zbiorów danych. Dokładność (\textit{ang. precision}) liczona jest jako stosunek poprawnie zakwalifikowanych przypadków "dodatnich" do ilości przypadków poprawnie i~niepoprawnie uznanych za "dodatnie". Współczynnik \textit{recall} liczony jest jako stosunek przypadków poprawnie zakwalifikowanych jako "dodatnie" do wszystkich istotnych dla nas danych ("pozytywnych"; czyli suma poprawnych "pozytywnych" i~niepoprawnych "negatywnych"). Warte zauważenia jest, że jeśli krzywa dominuje w~przestrzeni ROC tylko wtedy gdy dominuje też w~przestrzeni PR.
 
-Istotną różnicą między tymi przestrzeniami jest sposób interpolacji danych. O ile dla krzywych ROC wystarczy zastosować interpolację liniową, to dla PR jest to bardziej skomplikowane. Wynika to z tego, że dla zmiennego parametru \textit{recall} dokładność niekoniecznie zmienia się liniowo. Zgodnie z \cite{roc}, interpolację można przeprowadzić korzystając ze wzoru:\\
+Istotną różnicą między tymi przestrzeniami jest sposób interpolacji danych. O~ile dla krzywych ROC wystarczy zastosować interpolację liniową, to dla PR jest to bardziej skomplikowane. Wynika to z~tego, że dla zmiennego parametru \textit{recall} dokładność niekoniecznie zmienia się liniowo. Zgodnie z~\cite{roc}, interpolację można przeprowadzić korzystając ze wzoru:\\
 \begin{center}
 $(\frac{TP_{A}+x}{Total Pos}, \frac{TP_{A}+x}{TP_{A}+x+FP_{A} + \frac{FP_{B}-FP_{A}}{TP_{B}-TP_{A}} \cdot x})$.
 \end{center}
-\section{Szczegóły organizacyjno–implementacyjne}
+gdzie: $A$, $B$ - punkty w przestrzeni PR, $TP_{N}$ - true positives, $FP_{N}$ - false positives, $x$~-~liczba całkowita z przedziału $\langle 1, TP_{B}-TP{A}\rangle$
+\section{Organizacja pracy}
 Program zostanie napisany w języku C++, przy wykorzystaniu biblioteki Qt do tworzenia interfejsu graficznego oraz biblioteki Qwt do rysowania wykresów.
-Program tworzony będzie przy użyciu systemu kontroli wersji git oraz systemu Bugzilla do zarządzania projektem i raportowania błędów.
+Program tworzony będzie przy użyciu systemu kontroli wersji git oraz systemu Bugzilla do zarządzania projektem i~raportowania błędów.
 \section{Opis działania stworzonego programu (przypadki użycia)}
 \subsection{Podstawowe funkcje}
 \begin{itemize}
-\item \textbf{Uruchomienie programu.} Pojawia się puste okno z menu, paskiem narzędzi i paskiem stanu.
-\item \textbf{Wczytanie pliku wejściowego.} Użytkownik wybiera opcję w menu lub na pasku narzędzi oraz plik o odpowiednim rozszerzeniu. Jeśli jest to możliwe, wyświetlany jest odpowiedni wykres i odświeżana jest lista krzywych. Liczone jest pole powierzchni pod krzywą. W przeciwnym wypadku wyświetlany jest komunikat o błędzie.
-\item \textbf{Wyświetlenie wykresu.} Sprawdzany jest rodzaj krzywej i w zależności od tego, czy wykres danego typu figuruje w oknie, wyświetlany jest nowy wykres wraz ze sczytaną z pliku krzywą, bądź krzywa jest wyświetlana na istniejącym wykresie. Ponieważ program obsługuje dwa rodzaje krzywych (ROC i PRC), możliwe jest wyświetlenie maksymalnie dwóch wykresów. Nazwa i kolor krzywej generowane są automatycznie.
-\item \textbf{Odświeżenie listy krzywych.} Do listy krzywych dodawany jest nowy element zawierający informację o sczytanej krzywej. Lista krzywych wyświetlana jest obok wykresu. We wierszu znajdują się kolejno: checkbox określający, czy krzywa jest wyświetlana na wykresie; nazwa krzywej (nadana automatycznie lub zmodyfikowana przez użytkownika) - naciśnięcie na nazwę skutkuje wyświetleniem okna z jej właściwościami; przycisk, którego naciśnięcie skutkuje wyświetleniem palety barw; przycisk, którego naciśnięcie skutkuje usunięciem krzywej.
-\item \textbf{Wyświetlenie okna właściwości wykresu.} Użytkownik wybiera opcję w menu, na pasku narzędzi, lub klika dwukrotnie na obszar wykresu. Wyświetlane jest okno, w którym można ustawić podstawowe opcje wykresu (m.in. tytuł wykresu, tytuły każdej z osi, sposób wyświetlania linii siatki).
-\item \textbf{Zaznaczenie fragmentu wykresu.} Użytkownik wybiera opcję w menu lub na pasku narzędzi umożliwiającą zaznaczenie kursorem fragmentu wykresu, po czym zaznacza wybrany fragment wykresu.
-\item \textbf{Powiększenie fragmentu wykresu.} Użytkownik najeżdża kursorem na zaznaczony obszar i klika go w celu powiększenia.
-\item \textbf{Wyświetlenie współrzędnych po najechaniu na krzywą.} Użytkownik najeżdża kursorem na punkt krzywej na wykresie. W pasku stanu wyświetlana jest informacja o współrzędnych punktu.
-\item \textbf{Wyświetlenie okna właściwości krzywej.} Użytkownik wybiera krzywą z listy i klika na jej nazwę, lub dwukrotnie klika na krzywą na wykresie. Wyświetlane jest okno z informacjami o krzywej. Niektóre z nich są modyfikowalne (nazwa, kolor), inne nie (pole powierzchni pod krzywą). Dostępna jest też opcja usunięcia krzywej.
-\item \textbf{Usunięcie krzywej.} Użytkownik wybiera opcję usunięcia krzywej na liście krzywych lub w oknie właściwości krzywej. Krzywa usuwana jest zarówno z wykresu, jak i z listy krzywych.
-\item \textbf{Zmiana nazwy krzywej / wykresu / osi.} Użytkownik modyfikuje nazwę w oknie właściwości, po czym naciska przycisk “Zapisz”.
-\item \textbf{Zmiana koloru krzywej / tła wykresu.} Użytkownik wybiera kolor z palety barw w oknie właściwości (lub w przypadku krzywych - na liście krzywych), po czym naciska przycisk “Zapisz”.
-\item \textbf{Zapis wykresu do pliku.} Użytkownik wybiera z menu lub paska narzędzi opcję zapisu wykresu do pliku, wybiera wykres do zapisania, wpisuję nazwę pliku, ustawia jego lokalizację oraz format.
-\item \textbf{Zamknięcie programu.} Użytkownik wybiera opcję zamknięcia programu z menu lub poprzez zamknięcie okna.
+\item \textbf{Uruchomienie programu.} Pojawia się puste okno z menu, paskiem narzędzi i~paskiem stanu.
+\item \textbf{Wczytanie pliku wejściowego.} Użytkownik wybiera opcję w~menu lub na pasku narzędzi oraz plik o~odpowiednim rozszerzeniu. Jeśli jest to możliwe, wyświetlany jest odpowiedni wykres i~odświeżana jest lista krzywych. Liczone jest pole powierzchni pod krzywą. W~przeciwnym wypadku wyświetlany jest komunikat o~błędzie.
+\item \textbf{Wyświetlenie wykresu.} Sprawdzany jest rodzaj krzywej i~w~zależności od tego, czy wykres danego typu figuruje w~oknie, wyświetlany jest nowy wykres wraz ze sczytaną z~pliku krzywą, bądź krzywa jest wyświetlana na istniejącym wykresie. Ponieważ program obsługuje dwa rodzaje krzywych (ROC i~PRC), możliwe jest wyświetlenie maksymalnie dwóch wykresów. Nazwa i~kolor krzywej generowane są automatycznie.
+\item \textbf{Odświeżenie listy krzywych.} Do listy krzywych dodawany jest nowy element zawierający informację o~sczytanej krzywej. Lista krzywych wyświetlana jest obok wykresu. We wierszu znajdują się kolejno: checkbox określający, czy krzywa jest wyświetlana na wykresie; nazwa krzywej (nadana automatycznie lub zmodyfikowana przez użytkownika) - naciśnięcie na nazwę skutkuje wyświetleniem okna z~jej właściwościami; przycisk, którego naciśnięcie skutkuje wyświetleniem palety barw; przycisk, którego naciśnięcie skutkuje usunięciem krzywej.
+\item \textbf{Wyświetlenie okna właściwości wykresu.} Użytkownik wybiera opcję w~menu, na pasku narzędzi, lub klika dwukrotnie na obszar wykresu. Wyświetlane jest okno, w~którym można ustawić podstawowe opcje wykresu (m.in. tytuł wykresu, tytuły każdej z~osi, sposób wyświetlania linii siatki).
+\item \textbf{Zaznaczenie fragmentu wykresu.} Użytkownik wybiera opcję w~menu lub na pasku narzędzi umożliwiającą zaznaczenie kursorem fragmentu wykresu, po czym zaznacza wybrany fragment wykresu.
+\item \textbf{Powiększenie fragmentu wykresu.} Użytkownik najeżdża kursorem na zaznaczony obszar i~klika go w~celu powiększenia.
+\item \textbf{Wyświetlenie współrzędnych po najechaniu na krzywą.} Użytkownik najeżdża kursorem na punkt krzywej na wykresie. W~pasku stanu wyświetlana jest informacja o~współrzędnych punktu.
+\item \textbf{Wyświetlenie okna właściwości krzywej.} Użytkownik wybiera krzywą z~listy i~klika na jej nazwę, lub dwukrotnie klika na krzywą na wykresie. Wyświetlane jest okno z~informacjami o~krzywej. Niektóre z~nich są modyfikowalne (nazwa, kolor), inne nie (pole powierzchni pod krzywą). Dostępna jest też opcja usunięcia krzywej.
+\item \textbf{Usunięcie krzywej.} Użytkownik wybiera opcję usunięcia krzywej na liście krzywych lub w~oknie właściwości krzywej. Krzywa usuwana jest zarówno z~wykresu, jak i~z~listy krzywych.
+\item \textbf{Zmiana nazwy krzywej/wykresu/osi.} Użytkownik modyfikuje nazwę w~oknie właściwości, po czym naciska przycisk “Zapisz”.
+\item \textbf{Zmiana koloru krzywej/tła wykresu.} Użytkownik wybiera kolor z~palety barw w~oknie właściwości (lub w~przypadku krzywych - na liście krzywych), po czym naciska przycisk “Zapisz”.
+\item \textbf{Zapis wykresu do pliku.} Użytkownik wybiera z~menu lub paska narzędzi opcję zapisu wykresu do pliku, wybiera wykres do zapisania, wpisuję nazwę pliku, ustawia jego lokalizację oraz format.
+\item \textbf{Zamknięcie programu.} Użytkownik wybiera opcję zamknięcia programu z~menu lub poprzez zamknięcie okna.
 \end{itemize}
 \subsection{Dodatkowe opcje}
 \begin{itemize}
-\item \textbf{Ustawienie linii siatki.} Użytkownik wpisuje w oknie właściwości wykresu liczbę określającą gęstość linii siatki w określonej współrzędnej, po czym naciska przycisk “Zapisz”.
+\item \textbf{Ustawienie linii siatki.} Użytkownik wpisuje w~oknie właściwości wykresu liczbę określającą gęstość linii siatki w określonej współrzędnej, po czym naciska przycisk “Zapisz”.
 \item \textbf{Zaznaczenie krzywej na wykresie.} Użytkownik klika na krzywą na wykresie. Krzywa jest zaznaczana.
-\item \textbf{Usunięcie krzywej z wykresu.} Użytkownik wybiera z menu lub paska narzędzi opcję usunięcia krzywej. Zaznaczona krzywa jest usuwana z wykresu.
+\item \textbf{Usunięcie krzywej z~wykresu.} Użytkownik wybiera z~menu lub paska narzędzi opcję usunięcia krzywej. Zaznaczona krzywa jest usuwana z~wykresu.
 \end{itemize}
 \begin{thebibliography}{1}
 \bibitem{roc}Jesse Davis, Mark Goadrich. The Relationship Between Precision-Recall and ROC Curves. ICML '06 Proceedings of the 23rd international conference on Machine learning. 2006.
