@@ -92,6 +92,8 @@ void Plot::populate()
 
 void Plot::updateGradient()
 {
+	//zabawy z gradientowym wyœwietlaniem kolorów
+
     QPalette pal = palette();
 
     const QColor buttonColor = pal.color( QPalette::Button );
