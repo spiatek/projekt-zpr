@@ -50,6 +50,8 @@ Plot::Plot(QWidget *parent):
 
 void Plot::populate()
 {
+	//przyk³ad dla krzywych sin i cos
+
     // Insert new curves
     QwtPlotCurve *cSin = new QwtPlotCurve("y = sin(x)");
     cSin->setRenderHint(QwtPlotItem::RenderAntialiased);
