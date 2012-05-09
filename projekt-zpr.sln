@@ -1,0 +1,32 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "projekt-zpr", "projekt-zpr.vcxproj", "{8FA4BDBA-3935-4ABB-B599-69B2B9C0FD2E}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "sinusplot", "..\..\..\..\..\..\Qt\qwt-6.0.1\examples\sinusplot\sinusplot.vcxproj", "{93C96889-898D-3C0F-9C84-2BA46CC382C6}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "wykres", "..\..\..\..\Downloads\wykres\wykres.vcxproj", "{8B19B5C3-137E-3693-8342-0B196DF74FFA}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{8FA4BDBA-3935-4ABB-B599-69B2B9C0FD2E}.Debug|Win32.ActiveCfg = Debug|Win32
+		{8FA4BDBA-3935-4ABB-B599-69B2B9C0FD2E}.Debug|Win32.Build.0 = Debug|Win32
+		{8FA4BDBA-3935-4ABB-B599-69B2B9C0FD2E}.Release|Win32.ActiveCfg = Release|Win32
+		{8FA4BDBA-3935-4ABB-B599-69B2B9C0FD2E}.Release|Win32.Build.0 = Release|Win32
+		{93C96889-898D-3C0F-9C84-2BA46CC382C6}.Debug|Win32.ActiveCfg = Debug|Win32
+		{93C96889-898D-3C0F-9C84-2BA46CC382C6}.Debug|Win32.Build.0 = Debug|Win32
+		{93C96889-898D-3C0F-9C84-2BA46CC382C6}.Release|Win32.ActiveCfg = Release|Win32
+		{93C96889-898D-3C0F-9C84-2BA46CC382C6}.Release|Win32.Build.0 = Release|Win32
+		{8B19B5C3-137E-3693-8342-0B196DF74FFA}.Debug|Win32.ActiveCfg = Debug|Win32
+		{8B19B5C3-137E-3693-8342-0B196DF74FFA}.Debug|Win32.Build.0 = Debug|Win32
+		{8B19B5C3-137E-3693-8342-0B196DF74FFA}.Release|Win32.ActiveCfg = Release|Win32
+		{8B19B5C3-137E-3693-8342-0B196DF74FFA}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
