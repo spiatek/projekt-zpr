@@ -2,6 +2,10 @@
 #include "Plot.h"
 #include <qmainwindow.h>
 
+class QAction;
+class QMenu;
+class QPlainTextEdit;
+
 class PlotWindow : public QMainWindow 
 {	
 	Q_OBJECT
@@ -9,17 +13,48 @@ class PlotWindow : public QMainWindow
 public:
 	PlotWindow();
 
+protected:
+	void closeEvent(QCloseEvent *event);
+
 private slots:
 	void open();
-	void save();
+	bool save();
 	void quit();
+	//void newFile();
+	bool saveAs();
+	void about();
+	//void plotWasModified();
 
 private:
-	Plot *plot;
+	void createActions();
+	void createMenus();
+	void createToolBars();
+	void createStatusBar();
+	void readSettings();
+	void writeSettings();
+	bool maybeSave();
+	void loadFile(const QString &fileName);
+	bool saveFile(const QString &fileName);
+	void setCurrentFile(const QString &fileName);
+	QString strippedName(const QString &fullFileName);
 
-	QAction *openAction;
-	QAction *saveAction;
-	QAction *exitAction;
+	//QPlainTextEdit *textEdit;
+	QString curFile;
 
 	QMenu *fileMenu;
+	QMenu *editMenu;
+	QMenu *helpMenu;
+	QToolBar *fileToolBar;
+	QToolBar *editToolBar;
+	QAction *newAct;
+	QAction *openAction;
+	QAction *saveAction;
+	QAction *saveAsAct;
+	QAction *exitAction;
+	//QAction *cutAct;
+	//QAction *copyAct;
+	//QAction *pasteAct;
+	QAction *aboutAct;
+	QAction *aboutQtAct;
+	Plot *plot;
 };
