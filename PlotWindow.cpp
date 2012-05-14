@@ -1,4 +1,5 @@
 #include "PlotWindow.h"
+#include "FunctionData.h"
 #include <qlayout.h>
 #include <qaction.h>
 #include <qtextcodec.h>
@@ -85,8 +86,9 @@ PlotWindow::PlotWindow()
      //textEdit = new QPlainTextEdit;
      //setCentralWidget(textEdit);
 
-	 plot = new Plot();
-	 setCentralWidget(plot);
+	 roc_plot = new Plot();
+	 pr_plot = new Plot();
+	 setCentralWidget(roc_plot);
 
      createActions();
      createMenus();
@@ -122,9 +124,18 @@ PlotWindow::PlotWindow()
  void PlotWindow::open()
  {
      //if (maybeSave()) {
-         QString fileName = QFileDialog::getOpenFileName(this);
+         /*QString fileName = QFileDialog::getOpenFileName(this);
          if (!fileName.isEmpty())
-             loadFile(fileName);
+             loadFile(fileName);*/
+	//TODO: pobieranie krzywej
+	 //type = proxy.getType();
+	 //auc = proxy.getAuc();
+	 if(/*type == ROC*/1) {
+		roc_plot->addCurve(new FunctionData(::sin), 0, 1.0/*, auc*/);
+	 }
+	 else {
+		 pr_plot->addCurve(new FunctionData(::sin), 1, 0.7/*, auc*/);
+	 }
      //}
  }
 

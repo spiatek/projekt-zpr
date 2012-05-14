@@ -1,6 +1,8 @@
 #include "Plot.h"
 #include "FunctionData.h"
+#include "Curve.h"
 
+#include <iostream>
 #include <qstring.h>
 #include <qtextcodec.h>
 #include <qwt_plot_panner.h>
@@ -10,11 +12,14 @@
 #include <qwt_plot_curve.h>
 #include <qwt_plot_marker.h>
 
-
 Plot::Plot(QWidget *parent):
     QwtPlot( parent )
 {
-    // panning with the left mouse button
+	const int qtc[] = { 3,2,7,13,8,14,9, 15, 10, 16, 11, 17, 12, 18, 5, 4, 6, 19, 0, 1 };
+	itColor = 0;
+	QtColors = qtc;
+
+	// panning with the left mouse button
     (void) new QwtPlotPanner( canvas() );
 
     // zoom in/out with the wheel
@@ -31,10 +36,10 @@ Plot::Plot(QWidget *parent):
 
     // axes 
     setAxisTitle(xBottom, "x" );
-    setAxisScale(xBottom, 0.0, 10.0);
+    setAxisScale(xBottom, 0.0, 1.0);
 
     setAxisTitle(yLeft, "y");
-    setAxisScale(yLeft, -1.0, 1.0);
+    setAxisScale(yLeft, 0.0, 1.0);
 
     // canvas
     canvas()->setLineWidth( 1 );
@@ -48,30 +53,49 @@ Plot::Plot(QWidget *parent):
     //populate();
 }
 
-void Plot::populate()
+int Plot::addCurve(QwtSeriesData<QPointF> *_points, int _type, double _auc)
+{	
+	QwtPlotCurve *qcurve = new QwtPlotCurve(generateName());
+	
+	qcurve->setLegendAttribute(QwtPlotCurve::LegendShowLine, true);
+	qcurve->setRenderHint(QwtPlotItem::RenderAntialiased);
+	qcurve->setPen(QPen(generateColor(*qcurve)));
+    qcurve->attach(this);
+
+	if(itColor%2 == 0) {
+		qcurve->setData(new FunctionData(::sin));
+	}
+	else {
+		qcurve->setData(new FunctionData(::cos));
+	}
+	
+	Curve *curve = new Curve(_type, _auc, qcurve->title());
+	curves_.push_back(*curve);
+
+	return 0;
+}
+
+QColor Plot::generateColor(QwtPlotCurve& qpc)
 {
-	//przyk³ad dla krzywych sin i cos
+	QColor color;
+	color.setRgb(QtColors[itColor]);
+	itColor++;
+	if(itColor == sizeof(QtColors)) {
+		itColor = 0;
+	}
+	return color;
+}
 
-    // Insert new curves
-    QwtPlotCurve *cSin = new QwtPlotCurve("y = sin(x)");
-    cSin->setRenderHint(QwtPlotItem::RenderAntialiased);
-    cSin->setLegendAttribute(QwtPlotCurve::LegendShowLine, true);
-    cSin->setPen(QPen(Qt::red));
-    cSin->attach(this);
+QString Plot::generateName()
+{
+	int curveNr = curves_.size() + 1;
+	QString name = QString("krzywa_%1").arg(curveNr);
+	return name;
+}
 
-    QwtPlotCurve *cCos = new QwtPlotCurve("y = cos(x)");
-    cCos->setRenderHint(QwtPlotItem::RenderAntialiased);
-    cCos->setLegendAttribute(QwtPlotCurve::LegendShowLine, true);
-    cCos->setPen(QPen(Qt::blue));
-    cCos->attach(this);
-
-    // Create sin and cos data
-    cSin->setData(new FunctionData(::sin));
-    cCos->setData(new FunctionData(::cos));
-
-    // Insert markers
-    
-    //  ...a horizontal line at y = 0...
+void Plot::insertMarkers()
+{
+	//  ...a horizontal line at y = 0...
     QwtPlotMarker *mY = new QwtPlotMarker();
     mY->setLabel(QString::fromLatin1("y = 0"));
     mY->setLabelAlignment(Qt::AlignRight|Qt::AlignTop);
@@ -124,3 +148,4 @@ void Plot::resizeEvent( QResizeEvent *event )
     //updateGradient();
 #endif
 }
+

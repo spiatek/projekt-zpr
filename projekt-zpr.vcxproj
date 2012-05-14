@@ -81,6 +81,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Curve.cpp" />
     <ClCompile Include="GeneratedFiles\Debug\moc_PlotWindow.cpp" />
     <ClCompile Include="GeneratedFiles\Release\moc_PlotWindow.cpp" />
     <ClCompile Include="main.cpp" />
@@ -88,6 +89,7 @@
     <ClCompile Include="PlotWindow.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Curve.h" />
     <ClInclude Include="FunctionData.h" />
     <ClInclude Include="Plot.h" />
     <CustomBuild Include="PlotWindow.h">

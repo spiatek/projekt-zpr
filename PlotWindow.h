@@ -1,5 +1,6 @@
 #pragma once
 #include "Plot.h"
+//#include "CurveManager.h"
 #include <qmainwindow.h>
 
 class QAction;
@@ -56,5 +57,8 @@ private:
 	//QAction *pasteAct;
 	QAction *aboutAct;
 	QAction *aboutQtAct;
-	Plot *plot;
+
+	//CurveManager *manager;
+	Plot *roc_plot;
+	Plot *pr_plot;
 };
