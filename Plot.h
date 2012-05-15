@@ -6,6 +6,8 @@
 
 class Plot : public QwtPlot
 {
+	Q_OBJECT
+
 public:
     Plot(QWidget *parent = NULL);
 
@@ -16,7 +18,11 @@ public:
 	int modifyCurveColor(int, QColor);						//zmiana koloru krzywej
 
 protected:
-    virtual void resizeEvent( QResizeEvent * );
+    virtual void resizeEvent(QResizeEvent*);
+	bool eventFilter(QObject *obj, QEvent *event);
+
+signals:
+	void coordinatesAssembled(QPoint);
 
 private:
 	QColor generateColor(QwtPlotCurve&);

@@ -2,6 +2,7 @@
 #include "Plot.h"
 //#include "CurveManager.h"
 #include <qmainwindow.h>
+#include <qpoint.h>
 
 class QAction;
 class QMenu;
@@ -15,7 +16,8 @@ public:
 	PlotWindow();
 
 protected:
-	void closeEvent(QCloseEvent *event);
+	void closeEvent(QCloseEvent*);
+	//bool eventFilter(QObject *obj, QEvent *event);
 
 private slots:
 	void open();
@@ -24,7 +26,8 @@ private slots:
 	//void newFile();
 	bool saveAs();
 	void about();
-	//void plotWasModified();
+	void plotWasModified();
+	void coordinates(QPoint);
 
 private:
 	void createActions();

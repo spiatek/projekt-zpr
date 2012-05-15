@@ -1,3 +1,4 @@
+#include <QtGui>
 #include "PlotWindow.h"
 #include "FunctionData.h"
 #include <qlayout.h>
@@ -65,27 +66,12 @@ void PlotWindow::closeEvent(QCloseEvent *event)
      }
  }
 */
-void PlotWindow::quit()
-{
-}
-/*
-void PlotWindow::save()
-{
-}
-
-void PlotWindow::open()
-{
-}*/
-
-#include <QtGui>
-
- #include "PlotWindow.h"
 
 PlotWindow::PlotWindow()
  {
      //textEdit = new QPlainTextEdit;
      //setCentralWidget(textEdit);
-
+	 
 	 roc_plot = new Plot();
 	 pr_plot = new Plot();
 	 setCentralWidget(roc_plot);
@@ -97,7 +83,8 @@ PlotWindow::PlotWindow()
 
      readSettings();
 
-     //connect(plot, SIGNAL(contentsChanged()), this, SLOT(plotWasModified()));
+     connect(roc_plot, SIGNAL(contentsChanged()), this, SLOT(plotWasModified()));
+	 connect(roc_plot, SIGNAL(coordinatesAssembled(QPoint)), this, SLOT(coordinates(QPoint)));
 
      setCurrentFile("");
      setUnifiedTitleAndToolBarOnMac(true);
@@ -112,6 +99,7 @@ PlotWindow::PlotWindow()
      //    event->ignore();
      //}
  }
+
 /*
  void PlotWindow::newFile()
  {
@@ -121,8 +109,12 @@ PlotWindow::PlotWindow()
      }
  }*/
 
- void PlotWindow::open()
- {
+void PlotWindow::quit()
+{
+}
+
+void PlotWindow::open()
+{
      //if (maybeSave()) {
          /*QString fileName = QFileDialog::getOpenFileName(this);
          if (!fileName.isEmpty())
@@ -164,15 +156,15 @@ PlotWindow::PlotWindow()
 				" wyœwietlanie i porównywanie wykresów oraz zapisywanie"
 				" ich do pliku."));
  }
- /*
+ 
  void PlotWindow::plotWasModified()
  {
-     setWindowModified(plot->document()->isModified());
- }*/
+     //setWindowModified(plot->document()->isModified());
+ }
 
  void PlotWindow::createActions()
  {
-     newAct = new QAction(QIcon(":/images/new.png"), tr("&New"), this);
+	 newAct = new QAction(QIcon(":/images/new.png"), tr("&New"), this);
      newAct->setShortcuts(QKeySequence::New);
      newAct->setStatusTip(tr("Create a new file"));
      //connect(newAct, SIGNAL(triggered()), this, SLOT(newFile()));
@@ -249,6 +241,11 @@ PlotWindow::PlotWindow()
      helpMenu = menuBar()->addMenu(tr("&Help"));
      helpMenu->addAction(aboutAct);
      helpMenu->addAction(aboutQtAct);
+ }
+
+ void PlotWindow::coordinates(QPoint point)
+ {
+     statusBar()->showMessage(QString("Wspó³rzêdne (%1,%2)").arg(point.x()).arg(point.y()));
  }
 
  void PlotWindow::createToolBars()

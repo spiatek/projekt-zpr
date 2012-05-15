@@ -11,6 +11,7 @@
 #include <qwt_plot_magnifier.h>
 #include <qwt_plot_curve.h>
 #include <qwt_plot_marker.h>
+#include <qevent.h>
 
 Plot::Plot(QWidget *parent):
     QwtPlot( parent )
@@ -20,7 +21,7 @@ Plot::Plot(QWidget *parent):
 	QtColors = qtc;
 
 	// panning with the left mouse button
-    (void) new QwtPlotPanner( canvas() );
+    //(void) new QwtPlotPanner( canvas() );
 
     // zoom in/out with the wheel
     (void) new QwtPlotMagnifier( canvas() );
@@ -49,6 +50,9 @@ Plot::Plot(QWidget *parent):
     QPalette canvasPalette( Qt::white );
     canvasPalette.setColor( QPalette::Foreground, QColor( 133, 190, 232 ) );
     canvas()->setPalette( canvasPalette );
+
+	QWidget::setMouseTracking(true);
+	installEventFilter(this);
 
     //populate();
 }
@@ -149,3 +153,12 @@ void Plot::resizeEvent( QResizeEvent *event )
 #endif
 }
 
+bool Plot::eventFilter(QObject *obj, QEvent *event)
+{
+	if(event->type() == QEvent::MouseMove)
+  {
+    QMouseEvent *mouseEvent = static_cast<QMouseEvent*>(event);
+	emit coordinatesAssembled(mouseEvent->pos());
+  }
+  return false;
+}
