@@ -1,26 +1,38 @@
 #pragma once
 
 #include <string>
+#include <iostream>
 #include <qwt_plot_curve.h>
 #include <qwt_text.h>
 #include <qstring.h>
 
-class Curve {
+using namespace std;
 
-public:
-	Curve(int _type, double _auc, const QwtText _title) : 
-	  title_(_title), type_(_type), auc_(_auc), isHidden_(false) {}
-
-	/*Curve(const QwtPlotCurve& _curve, int _type, double _auc) : 
-		curve_(_curve), type_(_type), auc_(_auc), isHidden_(false) {}*/
-
-	int getType();
-	double getAUC();
+class Curve : QwtPlotCurve {
 
 private:
+	static int id_;
 	int type_;					//typ krzywej
 	double auc_;				//pole pod krzyw¹
-	//QwtPlotCurve curve_;		//krzywa
 	bool isHidden_;				//czy ukryta
-	QwtText title_;
-};	
+
+public:
+
+	Curve() { ++id_; }
+	Curve(int _type, double _auc) : type_(_type), auc_(_auc), isHidden_(false) { ++id_; }
+	Curve(const QwtText&);
+	//Curve& operator= (const Curve&);
+
+	using QwtPlotCurve::setLegendAttribute;
+	using QwtPlotCurve::setRenderHint;
+	using QwtPlotCurve::setPen;
+    using QwtPlotCurve::attach;
+	using QwtPlotCurve::setData;
+	using QwtPlotCurve::hide;
+	using QwtPlotCurve::setVisible;
+
+	void init(int, double);
+	int getId();
+	int getType();
+	double getAUC();
+};

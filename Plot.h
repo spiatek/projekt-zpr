@@ -1,5 +1,5 @@
 #pragma once
-#include <vector>
+#include <list>
 #include <qwt_plot.h>
 #include <qwt_plot_curve.h>
 #include "Curve.h"
@@ -12,10 +12,10 @@ public:
     Plot(QWidget *parent = NULL);
 
 	int addCurve(QwtSeriesData<QPointF> *, int, double);	//dodanie krzywej do wykresu
-	int deleteCurve(int);									//usuniêcie krzywej o danym id
-	int hideCurve(int);										//ukrycie krzywej z wykresu
-	int unhideCurve(int);									//odkrycie ukrytej krzywej
-	int modifyCurveColor(int, QColor);						//zmiana koloru krzywej
+	int deleteCurve(int);									//usuniêcie krzywej o danej nazwie
+	int hideCurve(int);										//ukrycie krzywej  o danej nazwie z wykresu
+	int unhideCurve(int);									//odkrycie ukrytej krzywej o danej nazwie
+	int modifyCurveColor(int, QColor);						//zmiana koloru krzywej o danej nazwie
 
 protected:
     virtual void resizeEvent(QResizeEvent*);
@@ -25,13 +25,13 @@ signals:
 	void coordinatesAssembled(QPoint);
 
 private:
-	QColor generateColor(QwtPlotCurve&);
+	QColor generateColor();
 	QString generateName();
     void insertMarkers();
     void updateGradient();
 
 	int type;						//typ krzywej (ROC, PR)
-	std::vector<Curve> curves_;
+	list<Curve*> curves_;
 
 	const int* QtColors;
 	int itColor;

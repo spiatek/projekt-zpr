@@ -59,27 +59,75 @@ Plot::Plot(QWidget *parent):
 
 int Plot::addCurve(QwtSeriesData<QPointF> *_points, int _type, double _auc)
 {	
-	QwtPlotCurve *qcurve = new QwtPlotCurve(generateName());
+	Curve *curve = new Curve(generateName());
 	
-	qcurve->setLegendAttribute(QwtPlotCurve::LegendShowLine, true);
-	qcurve->setRenderHint(QwtPlotItem::RenderAntialiased);
-	qcurve->setPen(QPen(generateColor(*qcurve)));
-    qcurve->attach(this);
+	curve->setLegendAttribute(QwtPlotCurve::LegendShowLine, true);
+	curve->setRenderHint(QwtPlotItem::RenderAntialiased);
+	curve->setPen(QPen(generateColor()));
+    curve->attach(this);
 
 	if(itColor%2 == 0) {
-		qcurve->setData(new FunctionData(::sin));
+		curve->setData(new FunctionData(::sin));
 	}
 	else {
-		qcurve->setData(new FunctionData(::cos));
+		curve->setData(new FunctionData(::cos));
 	}
 	
-	Curve *curve = new Curve(_type, _auc, qcurve->title());
-	curves_.push_back(*curve);
+	curve->init(_type, _auc);
+	curves_.push_back(curve);
 
 	return 0;
 }
 
-QColor Plot::generateColor(QwtPlotCurve& qpc)
+int Plot::deleteCurve(int _id)								//usuniêcie krzywej o danym id
+{
+	list<Curve*>::const_iterator it;
+	for(it = curves_.begin(); it != curves_.end(); ++it) 
+	{	
+		if((*it)->getId() == _id) {
+			curves_.erase(it);
+		}
+	}
+	return 0;
+}
+
+int Plot::hideCurve(int _id)
+{
+	list<Curve*>::iterator it;
+	for(it = curves_.begin(); it != curves_.end(); ++it) 
+	{
+		if((*it)->getId() == _id) {
+			(*it)->hide();
+		}
+	}
+	return 0;
+}
+
+int Plot::unhideCurve(int _id)
+{
+	list<Curve*>::iterator it;
+	for(it = curves_.begin(); it != curves_.end(); ++it) 
+	{
+		if((*it)->getId() == _id) {
+			(*it)->setVisible(this);
+		}
+	}
+	return 0;
+}
+
+int Plot::modifyCurveColor(int _id, QColor color)
+{
+	list<Curve*>::iterator it;
+	for(it = curves_.begin(); it != curves_.end(); ++it) 
+	{
+		if((*it)->getId() == _id) {
+			(*it)->setPen(color);
+		}
+	}
+	return 0;
+}
+
+QColor Plot::generateColor()
 {
 	QColor color;
 	color.setRgb(QtColors[itColor]);
