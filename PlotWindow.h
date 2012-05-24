@@ -29,6 +29,12 @@ private slots:
 	void plotWasModified();
 	void coordinates(QPoint);
 
+#ifndef QT_NO_PRINTER
+    void print();
+#endif
+
+	void exportDocument();
+	
 signals:
 	void plotRefresh();
 
@@ -44,7 +50,7 @@ private:
 	bool saveFile(const QString &fileName);
 	void setCurrentFile(const QString &fileName);
 	QString strippedName(const QString &fullFileName);
-
+	
 	//QPlainTextEdit *textEdit;
 	QString curFile;
 
@@ -57,6 +63,8 @@ private:
 	QAction *openAction;
 	QAction *saveAction;
 	QAction *saveAsAct;
+	QAction *printAction;
+	QAction *exportAction;
 	QAction *exitAction;
 	//QAction *cutAct;
 	//QAction *copyAct;

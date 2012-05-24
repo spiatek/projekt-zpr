@@ -1,4 +1,3 @@
-#include <QtGui>
 #include "PlotWindow.h"
 #include "FunctionData.h"
 #include <qlayout.h>
@@ -6,66 +5,19 @@
 #include <qtextcodec.h>
 #include <qapplication.h>
 #include <qmenubar.h>
+#include <qtoolbar.h>
+#include <qimagewriter.h>
+#include <qprinter.h>
+#include <qstatusbar.h>
 #include <qstyleoption.h>
 #include <qmessagebox.h>
-/*
-PlotWindow::PlotWindow()
-{
-	QTextCodec::setCodecForCStrings(QTextCodec::codecForName("Windows-1250"));		//nie do koñca dzia³a
-    openAction = new QAction(tr("£aduj z pliku"), this);
-	saveAction = new QAction(tr("Zapisz wykres"), this);
-	exitAction = new QAction(tr("Zakoñcz"), this);
-
-	connect(openAction, SIGNAL(triggered()), this, SLOT(open()));
-	connect(saveAction, SIGNAL(triggered()), this, SLOT(save()));
-	connect(exitAction, SIGNAL(triggered()), qApp, SLOT(quit()));
-
-	fileMenu = menuBar()->addMenu(tr("&Plik"));
-	fileMenu->addAction(openAction);
-	fileMenu->addAction(saveAction);
-	fileMenu->addSeparator();
-	fileMenu->addAction(exitAction);
-
-	plot = new Plot();
-    setCentralWidget(plot);
-
-	QTextCodec::setCodecForCStrings(QTextCodec::codecForName("UTF-8"));		//nie do koñca dzia³a
-	setWindowTitle(tr("Narzêdzie do porównywania wykresów"));
-}
-
- bool PlotWindow::maybeSave()
- {
-	//if (textEdit->document()->isModified()) {
-		QMessageBox::StandardButton ret;
-		ret = QMessageBox::warning(this, tr("Application"),
-					tr("The document has been modified.\n"
-                         "Do you want to save your changes?"),
-		QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
-		if (ret == QMessageBox::Save)
-			return save();
-		else if (ret == QMessageBox::Cancel)
-			return false;
-     //}
-     //return true;
- }
-
- void PlotWindow::writeSettings()
- {
-     QSettings settings("Trolltech", "Application Example");
-     settings.setValue("pos", pos());
-     settings.setValue("size", size());
- }
-
-void PlotWindow::closeEvent(QCloseEvent *event)
- {
-     if (maybeSave()) {
-         writeSettings();
-         event->accept();
-     } else {
-         event->ignore();
-     }
- }
-*/
+#include <qregexp.h>
+#include <qevent.h>
+#include <qsettings.h>
+#include <qfileinfo.h>
+#include <qfiledialog.h>
+#include <qprintdialog.h>
+#include <qwt_plot_renderer.h>
 
 PlotWindow::PlotWindow()
  {
@@ -94,8 +46,8 @@ PlotWindow::PlotWindow()
  void PlotWindow::closeEvent(QCloseEvent *event)
  {
      //if (maybeSave()) {
-         writeSettings();
-         event->accept();
+	writeSettings();
+	event->accept();
      //} else {
      //    event->ignore();
      //}
@@ -180,17 +132,29 @@ void PlotWindow::open()
      saveAction = new QAction(QIcon("images/save.png"), tr("&Save"), this);
      saveAction->setShortcuts(QKeySequence::Save);
      saveAction->setStatusTip(tr("Save the document to disk"));
-     connect(saveAction, SIGNAL(triggered()), this, SLOT(save()));
+     //connect(saveAction, SIGNAL(triggered()), this, SLOT(save()));
 
      saveAsAct = new QAction(tr("Save &As..."), this);
      saveAsAct->setShortcuts(QKeySequence::SaveAs);
      saveAsAct->setStatusTip(tr("Save the document under a new name"));
-     connect(saveAsAct, SIGNAL(triggered()), this, SLOT(saveAs()));
+     //connect(saveAsAct, SIGNAL(triggered()), this, SLOT(saveAs()));
 
      exitAction = new QAction(tr("E&xit"), this);
      exitAction->setShortcuts(QKeySequence::Quit);
      exitAction->setStatusTip(tr("Exit the application"));
      connect(exitAction, SIGNAL(triggered()), this, SLOT(close()));
+
+#ifndef QT_NO_PRINTER
+	 printAction = new QAction(QIcon("images/print.png"), tr("Print"), this);
+	 printAction->setShortcuts(QKeySequence::Print);
+	 printAction->setStatusTip(tr("Print plot"));
+	 connect(printAction, SIGNAL(triggered()), this, SLOT(print()));
+#endif
+
+     exportAction = new QAction(QIcon("images/save.png"), tr("&Export"), this);
+     exportAction->setStatusTip(tr("Export document"));
+     connect(exportAction, SIGNAL(triggered()), this, SLOT(exportDocument()));
+
 	 /*
      cutAct = new QAction(QIcon(":/images/cut.png"), tr("Cu&t"), this);
      cutAct->setShortcuts(QKeySequence::Cut);
@@ -227,10 +191,14 @@ void PlotWindow::open()
  void PlotWindow::createMenus()
  {
      fileMenu = menuBar()->addMenu(tr("&File"));
-     fileMenu->addAction(newAct);
+     //fileMenu->addAction(newAct);
      fileMenu->addAction(openAction);
-     fileMenu->addAction(saveAction);
-     fileMenu->addAction(saveAsAct);
+     //fileMenu->addAction(saveAction);
+     //fileMenu->addAction(saveAsAct);
+#ifndef QT_NO_PRINTER
+     fileMenu->addAction(printAction);
+#endif
+     fileMenu->addAction(exportAction);
      fileMenu->addSeparator();
      fileMenu->addAction(exitAction);
 
@@ -254,9 +222,14 @@ void PlotWindow::open()
  void PlotWindow::createToolBars()
  {
      fileToolBar = addToolBar(tr("File"));
-     fileToolBar->addAction(newAct);
+     //fileToolBar->addAction(newAct);
      fileToolBar->addAction(openAction);
-     fileToolBar->addAction(saveAction);
+     //fileToolBar->addAction(saveAction);
+#ifndef QT_NO_PRINTER
+	 fileToolBar->addAction(printAction);
+#endif
+	 fileToolBar->addAction(exportAction);
+
 
 /*     editToolBar = addToolBar(tr("Edit"));
      editToolBar->addAction(cutAct);
@@ -366,3 +339,87 @@ void PlotWindow::open()
  {
      return QFileInfo(fullFileName).fileName();
  }
+
+
+#ifndef QT_NO_PRINTER
+
+void PlotWindow::print()
+{
+    QPrinter printer(QPrinter::HighResolution);
+
+    QString docName = roc_plot->title().text();
+    if ( !docName.isEmpty() )
+    {
+        docName.replace (QRegExp (QString::fromLatin1 ("\n")), tr (" -- "));
+        printer.setDocName (docName);
+    }
+
+    printer.setCreator("Plot example");
+    printer.setOrientation(QPrinter::Landscape);
+
+    QPrintDialog dialog(&printer);
+    if ( dialog.exec() )
+    {
+        QwtPlotRenderer renderer;
+
+        if ( printer.colorMode() == QPrinter::GrayScale )
+        {
+            renderer.setDiscardFlag(QwtPlotRenderer::DiscardCanvasBackground);
+            renderer.setLayoutFlag(QwtPlotRenderer::FrameWithScales);
+        }
+
+        renderer.renderTo(roc_plot, printer);
+    }
+}
+
+#endif
+
+void PlotWindow::exportDocument()
+{
+#ifndef QT_NO_PRINTER
+    QString fileName = "plot.pdf";
+#else
+    QString fileName = "plot.png";
+#endif
+	
+#ifndef QT_NO_FILEDIALOG
+    const QList<QByteArray> imageFormats = QImageWriter::supportedImageFormats();
+	
+    QStringList filter;
+    filter += "PDF Documents (*.pdf)";
+#ifndef QWT_NO_SVG
+    filter += "SVG Documents (*.svg)";
+#endif
+    filter += "Postscript Documents (*.ps)";
+
+    if ( imageFormats.size() > 0 )
+    {
+        QString imageFilter("Images (");
+        for ( int i = 0; i < imageFormats.size(); i++ )
+        {
+            if ( i > 0 )
+                imageFilter += " ";
+            imageFilter += "*.";
+            imageFilter += imageFormats[i];
+        }
+        imageFilter += ")";
+
+        filter += imageFilter;
+    }
+
+    fileName = QFileDialog::getSaveFileName(
+        this, "Export File Name", fileName,
+        filter.join(";;"), NULL, QFileDialog::DontConfirmOverwrite);
+#endif
+	
+    if ( !fileName.isEmpty() )
+    {
+        QwtPlotRenderer renderer;
+		
+        // flags to make the document look like the widget
+        renderer.setDiscardFlag(QwtPlotRenderer::DiscardBackground, false);
+        renderer.setLayoutFlag(QwtPlotRenderer::KeepFrames, true);
+
+        renderer.renderDocument(roc_plot, fileName, QSizeF(300, 200), 85);
+	}
+}
