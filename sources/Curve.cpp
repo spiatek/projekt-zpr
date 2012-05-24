@@ -1,4 +1,4 @@
-#include "Curve.h"
+#include "..\headers\Curve.h"
 
 using namespace std;
 

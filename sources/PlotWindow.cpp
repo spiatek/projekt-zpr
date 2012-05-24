@@ -1,5 +1,5 @@
-#include "PlotWindow.h"
-#include "FunctionData.h"
+#include "..\headers\PlotWindow.h"
+#include "..\headers\FunctionData.h"
 #include <qlayout.h>
 #include <qaction.h>
 #include <qtextcodec.h>

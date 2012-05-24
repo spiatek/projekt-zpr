@@ -1,5 +1,5 @@
 #pragma once
-#include "Plot.h"
+#include "..\headers\Plot.h"
 //#include "CurveManager.h"
 #include <qmainwindow.h>
 #include <qpoint.h>

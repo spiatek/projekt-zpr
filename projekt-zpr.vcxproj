@@ -81,7 +81,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Curve.cpp" />
+    <ClCompile Include="sources\Curve.cpp" />
     <ClCompile Include="GeneratedFiles\Debug\moc_Plot.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
@@ -90,14 +90,14 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="GeneratedFiles\Release\moc_PlotWindow.cpp" />
-    <ClCompile Include="main.cpp" />
-    <ClCompile Include="Plot.cpp" />
-    <ClCompile Include="PlotWindow.cpp" />
+    <ClCompile Include="sources\main.cpp" />
+    <ClCompile Include="sources\Plot.cpp" />
+    <ClCompile Include="sources\PlotWindow.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Curve.h" />
-    <ClInclude Include="FunctionData.h" />
-    <CustomBuild Include="Plot.h">
+    <ClInclude Include="headers\Curve.h" />
+    <ClInclude Include="headers\FunctionData.h" />
+    <CustomBuild Include="headers\Plot.h">
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Moc%27ing Plot.h...</Message>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp</Outputs>
@@ -107,7 +107,7 @@
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp</Outputs>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp"  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_NO_DEBUG -DNDEBUG -DQT_CORE_LIB -DQT_GUI_LIB "-I." "-I.\GeneratedFiles" "-I$(QTDIR)\include" "-I.\GeneratedFiles\$(ConfigurationName)\." "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtGui" "-I." "-I." "-I." "-I."</Command>
     </CustomBuild>
-    <CustomBuild Include="PlotWindow.h">
+    <CustomBuild Include="headers\PlotWindow.h">
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Moc%27ing PlotWindow.h...</Message>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp</Outputs>
@@ -125,6 +125,7 @@
     <None Include="images\new.png" />
     <None Include="images\open.png" />
     <None Include="images\paste.png" />
+    <None Include="images\print.png" />
     <None Include="images\save.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

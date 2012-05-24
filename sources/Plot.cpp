@@ -1,6 +1,6 @@
-#include "Plot.h"
-#include "FunctionData.h"
-#include "Curve.h"
+#include "..\headers\Plot.h"
+#include "..\headers\FunctionData.h"
+#include "..\headers\Curve.h"
 
 #include <iostream>
 #include <qstring.h>

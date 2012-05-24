@@ -1,5 +1,5 @@
 #include <qapplication.h>
-#include "PlotWindow.h"
+#include "..\headers\PlotWindow.h"
 
 int main(int argc, char *argv[])
 {	
