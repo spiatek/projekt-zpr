@@ -21,6 +21,9 @@ protected:
     virtual void resizeEvent(QResizeEvent*);
 	bool eventFilter(QObject *obj, QEvent *event);
 
+public slots:	
+	void refreshEvent();
+
 signals:
 	void coordinatesAssembled(QPoint);
 

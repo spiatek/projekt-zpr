@@ -85,6 +85,7 @@ PlotWindow::PlotWindow()
 
      connect(roc_plot, SIGNAL(contentsChanged()), this, SLOT(plotWasModified()));
 	 connect(roc_plot, SIGNAL(coordinatesAssembled(QPoint)), this, SLOT(coordinates(QPoint)));
+	 connect(this, SIGNAL(plotRefresh()), roc_plot, SLOT(refreshEvent()));
 
      setCurrentFile("");
      setUnifiedTitleAndToolBarOnMac(true);
@@ -129,6 +130,8 @@ void PlotWindow::open()
 		 pr_plot->addCurve(new FunctionData(::sin), 1, 0.7/*, auc*/);
 	 }
      //}
+
+	 emit plotRefresh();
  }
 
  bool PlotWindow::save()
@@ -164,17 +167,17 @@ void PlotWindow::open()
 
  void PlotWindow::createActions()
  {
-	 newAct = new QAction(QIcon(":/images/new.png"), tr("&New"), this);
+	 newAct = new QAction(QIcon("images/new.png"), tr("&New"), this);
      newAct->setShortcuts(QKeySequence::New);
      newAct->setStatusTip(tr("Create a new file"));
      //connect(newAct, SIGNAL(triggered()), this, SLOT(newFile()));
 
-     openAction = new QAction(QIcon(":/images/open.png"), tr("&Open..."), this);
+     openAction = new QAction(QIcon("images/open.png"), tr("&Open..."), this);
      openAction->setShortcuts(QKeySequence::Open);
      openAction->setStatusTip(tr("Open an existing file"));
      connect(openAction, SIGNAL(triggered()), this, SLOT(open()));
 
-     saveAction = new QAction(QIcon(":/images/save.png"), tr("&Save"), this);
+     saveAction = new QAction(QIcon("images/save.png"), tr("&Save"), this);
      saveAction->setShortcuts(QKeySequence::Save);
      saveAction->setStatusTip(tr("Save the document to disk"));
      connect(saveAction, SIGNAL(triggered()), this, SLOT(save()));

@@ -29,6 +29,9 @@ private slots:
 	void plotWasModified();
 	void coordinates(QPoint);
 
+signals:
+	void plotRefresh();
+
 private:
 	void createActions();
 	void createMenus();

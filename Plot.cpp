@@ -11,28 +11,59 @@
 #include <qwt_plot_magnifier.h>
 #include <qwt_plot_curve.h>
 #include <qwt_plot_marker.h>
+#include <qwt_plot_zoomer.h>
+#include <qwt_plot_grid.h>
 #include <qevent.h>
+
+class Grid: public QwtPlotGrid
+{
+public:
+    Grid()
+    {
+        enableXMin(true);
+		enableYMin(true);
+        setMajPen( QPen( Qt::white, 0, Qt::DotLine ) );
+        setMinPen( QPen( Qt::gray, 0 , Qt::DotLine ) );
+    }
+
+    virtual void updateScaleDiv( const QwtScaleDiv &xMap,
+        const QwtScaleDiv &yMap )
+    {
+        QList<double> ticksX[QwtScaleDiv::NTickTypes];
+
+        ticksX[QwtScaleDiv::MajorTick] = 
+            xMap.ticks( QwtScaleDiv::MediumTick );
+        ticksX[QwtScaleDiv::MinorTick] = 
+            xMap.ticks( QwtScaleDiv::MinorTick );
+
+		QList<double> ticksY[QwtScaleDiv::NTickTypes];
+
+        ticksY[QwtScaleDiv::MajorTick] = 
+            yMap.ticks( QwtScaleDiv::MediumTick );
+        ticksY[QwtScaleDiv::MinorTick] = 
+            yMap.ticks( QwtScaleDiv::MinorTick );
+
+		QwtPlotGrid::updateScaleDiv(
+            QwtScaleDiv( xMap.lowerBound(), xMap.upperBound(), ticksX ),
+            QwtScaleDiv( yMap.lowerBound(), yMap.upperBound(), ticksY ) );
+    }
+};
 
 Plot::Plot(QWidget *parent):
     QwtPlot( parent )
 {
+	QTextCodec::setCodecForCStrings(QTextCodec::codecForName("Windows-1250"));		//tu trzeba poprawiæ dla innych systemów
+	setObjectName("Porównanie krzywych");
+	setTitle("Wykres przedstawiaj¹cy porównanie krzywych");
+
 	const int qtc[] = { 3,2,7,13,8,14,9, 15, 10, 16, 11, 17, 12, 18, 5, 4, 6, 19, 0, 1 };
 	itColor = 0;
 	QtColors = qtc;
 
-	// panning with the left mouse button
-    //(void) new QwtPlotPanner( canvas() );
-
-    // zoom in/out with the wheel
-    (void) new QwtPlotMagnifier( canvas() );
-
     setAutoFillBackground( true );
     setPalette( QPalette( QColor( 185, 213, 248 ) ) );
-    //updateGradient();
+    updateGradient();
 
-	//QTextCodec::setCodecForTr (QTextCodec::codecForName ("UTF-8"));
-	QTextCodec::setCodecForCStrings(QTextCodec::codecForName("Windows-1250"));		//tu trzeba poprawiæ dla innych systemów
-    setTitle("Wykres przedstawiaj¹cy porównanie krzywych");
     insertLegend(new QwtLegend(), QwtPlot::RightLegend);
 
     // axes 
@@ -42,7 +73,26 @@ Plot::Plot(QWidget *parent):
     setAxisTitle(yLeft, "y");
     setAxisScale(yLeft, 0.0, 1.0);
 
-    // canvas
+	QwtPlotGrid *grid = new Grid;
+    grid->attach( this );
+
+	// LeftButton for the zooming
+    // MidButton for the panning
+    // RightButton: zoom out by 1
+    // Ctrl+RighButton: zoom out to full size
+
+    QwtPlotZoomer* zoomer = new QwtPlotZoomer( canvas() );
+    zoomer->setRubberBandPen( QColor( Qt::black ) );
+    zoomer->setTrackerPen( QColor( Qt::black ) );
+    zoomer->setMousePattern( QwtEventPattern::MouseSelect2,
+        Qt::RightButton, Qt::ControlModifier );
+    zoomer->setMousePattern( QwtEventPattern::MouseSelect3,
+        Qt::RightButton );
+
+	QwtPlotPanner *panner = new QwtPlotPanner( canvas() );
+    panner->setMouseButton( Qt::MidButton );
+
+	// canvas
     canvas()->setLineWidth( 1 );
     canvas()->setFrameStyle( QFrame::Box | QFrame::Plain );
     canvas()->setBorderRadius( 15 );
@@ -197,9 +247,15 @@ void Plot::resizeEvent( QResizeEvent *event )
 {
     QwtPlot::resizeEvent( event );
 #ifdef Q_WS_X11
-    //updateGradient();
+    updateGradient();
 #endif
 }
+
+void Plot::refreshEvent()
+{
+	replot();
+}
+
 
 bool Plot::eventFilter(QObject *obj, QEvent *event)
 {
