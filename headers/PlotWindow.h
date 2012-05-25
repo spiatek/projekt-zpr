@@ -7,6 +7,7 @@
 class QAction;
 class QMenu;
 class QPlainTextEdit;
+class Panel;
 
 class PlotWindow : public QMainWindow 
 {	
@@ -73,6 +74,7 @@ private:
 	QAction *aboutQtAct;
 
 	//CurveManager *manager;
+    Panel *panel;
 	Plot *roc_plot;
 	Plot *pr_plot;
 };

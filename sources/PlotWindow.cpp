@@ -1,5 +1,6 @@
 #include "..\headers\PlotWindow.h"
 #include "..\headers\FunctionData.h"
+#include "..\headers\Panel.h"
 #include <qlayout.h>
 #include <qaction.h>
 #include <qtextcodec.h>
@@ -24,9 +25,16 @@ PlotWindow::PlotWindow()
      //textEdit = new QPlainTextEdit;
      //setCentralWidget(textEdit);
 	 
-	 roc_plot = new Plot();
-	 pr_plot = new Plot();
-	 setCentralWidget(roc_plot);
+	 QWidget *w = new QWidget(this);
+	 roc_plot = new Plot(w);
+	 //pr_plot = new Plot(w);
+	 panel = new Panel(w);
+
+	 QHBoxLayout *hLayout = new QHBoxLayout(w);
+	 hLayout->addWidget(panel);
+	 hLayout->addWidget(roc_plot,10);
+	 
+	 setCentralWidget(w);
 
      createActions();
      createMenus();
@@ -38,6 +46,7 @@ PlotWindow::PlotWindow()
      connect(roc_plot, SIGNAL(contentsChanged()), this, SLOT(plotWasModified()));
 	 connect(roc_plot, SIGNAL(coordinatesAssembled(QPoint)), this, SLOT(coordinates(QPoint)));
 	 connect(this, SIGNAL(plotRefresh()), roc_plot, SLOT(refreshEvent()));
+	 connect(roc_plot, SIGNAL(curveAdded(QString, QColor, double)), panel, SLOT(addCurve(QString, QColor, double)));
 
      setCurrentFile("");
      setUnifiedTitleAndToolBarOnMac(true);

@@ -26,6 +26,7 @@ public slots:
 
 signals:
 	void coordinatesAssembled(QPoint);
+	void curveAdded(QString, QColor, double);
 
 private:
 	QColor generateColor();

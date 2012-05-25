@@ -64,7 +64,7 @@ Plot::Plot(QWidget *parent):
     setPalette( QPalette( QColor( 185, 213, 248 ) ) );
     updateGradient();
 
-    insertLegend(new QwtLegend(), QwtPlot::RightLegend);
+    //insertLegend(new QwtLegend(), QwtPlot::RightLegend);
 
     // axes 
     setAxisTitle(xBottom, "x" );
@@ -109,11 +109,14 @@ Plot::Plot(QWidget *parent):
 
 int Plot::addCurve(QwtSeriesData<QPointF> *_points, int _type, double _auc)
 {	
-	Curve *curve = new Curve(generateName());
+	QString name = generateName();
+	Curve *curve = new Curve(name);
 	
-	curve->setLegendAttribute(QwtPlotCurve::LegendShowLine, true);
+	//curve->setLegendAttribute(QwtPlotCurve::LegendShowLine, true);
 	curve->setRenderHint(QwtPlotItem::RenderAntialiased);
-	curve->setPen(QPen(generateColor()));
+
+	QColor color = generateColor();
+	curve->setPen(QPen(color));
     curve->attach(this);
 
 	if(itColor%2 == 0) {
@@ -125,6 +128,8 @@ int Plot::addCurve(QwtSeriesData<QPointF> *_points, int _type, double _auc)
 	
 	curve->init(_type, _auc);
 	curves_.push_back(curve);
+
+	emit curveAdded(name, color, _auc);
 
 	return 0;
 }
