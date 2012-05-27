@@ -227,6 +227,11 @@ QWidget *Panel::createNewTab(QWidget *parent)
 	curvesLayout->setColumnStretch(1, 10);
     curvesLayout->setRowStretch(14, 20);
 
+	connect(nameButton, SIGNAL(clicked()), this, SLOT(changeName()));
+	connect(colorButton, SIGNAL(clicked()), this, SLOT(setColor()));
+	connect(deleteButton, SIGNAL(clicked()), this, SLOT(deleteCurve()));
+	connect(hideAllButton, SIGNAL(clicked()), this, SLOT(hideAll()));
+
 	curvesTab->repaint();
 
 	return curvesTab;
@@ -262,18 +267,28 @@ void Panel::addCurve(QString _name, QColor _color, double _auc)
 void Panel::edited(const QString& which)
 {
 	lineEdit->setText(which);
-	
-	connect(nameButton, SIGNAL(clicked()), this, SLOT(changeName()));
-	connect(colorButton, SIGNAL(clicked()), this, SLOT(setColor()));
-	connect(deleteButton, SIGNAL(clicked()), this, SLOT(deleteCurve()));
-	connect(hideAllButton, SIGNAL(clicked()), this, SLOT(hideAll()));
+	emit getColorAuc(which);
+	//curvesTab->repaint();
+}
+
+void Panel::readColorAuc(QColor _color, double _auc)
+{
+	colorLabel->setPalette(QPalette(_color));
+	colorLabel->setAutoFillBackground(true);
+
+	QString auc = QString("%1").arg(_auc);
+	aucLabel->clear();
+	aucLabel->setText(auc);
 
 	curvesTab->repaint();
 }
 
 void Panel::changeName()
 {
-	//emit, ¿eby zmieniæ nazwê
+	int index = curveCombo->currentIndex();
+	QString name = lineEdit->text();
+	curveCombo->setItemText(index, name);
+	emit nameChange(index, name);
 }
 
 void Panel::setColor()
@@ -285,11 +300,15 @@ void Panel::setColor()
         colorLabel->setPalette(QPalette(color));
         colorLabel->setAutoFillBackground(true);
     }
+	QString name = curveCombo->currentText();
+	colorButton->setChecked(false);
+	emit colorChange(name, color);
  }
 
 void Panel::deleteCurve()
 {
-	//emit, ¿eby usun¹æ krzyw¹
+	int index = curveCombo->currentIndex();
+	//emit curveDelete(index);
 }
 
 void Panel::hideAll()

@@ -1,5 +1,10 @@
 #include "..\headers\Curve.h"
 
+#include <string>
+#include <qwt_text.h>
+#include <qstring.h>
+#include <qcolor.h>
+
 using namespace std;
 
 int Curve::id_ = 0;
@@ -19,10 +24,11 @@ Curve& Curve::operator= (const Curve &_curve)
 	return *this;
 }
 */
-void Curve::init(int _type, double _auc)
+void Curve::init(int _type, double _auc, QColor _color)
 {
 	type_ = _type;
 	auc_ = _auc;
+	color_ = _color;
 	isHidden_ = false;
 }
 
@@ -39,4 +45,9 @@ int Curve::getType()
 double Curve::getAUC()
 {
 	return auc_;
+}
+
+QColor Curve::getColor()
+{
+	return color_;
 }

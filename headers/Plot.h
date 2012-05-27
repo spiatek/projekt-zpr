@@ -23,11 +23,15 @@ public slots:
 	void refreshEvent();
 	void cAdded();
 	void showItem(QwtPlotItem*, bool);
+	void changeName(int, QString);
+	void changeColor(QString, QColor);
+	void getColAuc(QString);
 
 signals:
 	void coordinatesAssembled(QPoint);
 	void curveAdded(QString, QColor, double);
 	void curveAdd();
+	void resendColorAuc(QColor, double);
 
 private:
 	QColor generateColor();
@@ -36,7 +40,7 @@ private:
     void updateGradient();
 
 	int type;						//typ krzywej (ROC, PR)
-	list<Curve*> curves_;
+	std::list<Curve*> curves_;
 	QwtLegend *legend;
 
 	const int* QtColors;

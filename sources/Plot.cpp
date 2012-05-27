@@ -17,6 +17,8 @@
 #include <qwt_legend_item.h>
 #include <qevent.h>
 
+using namespace std;
+
 class Grid: public QwtPlotGrid
 {
 public:
@@ -156,7 +158,7 @@ int Plot::addCurve(QwtSeriesData<QPointF> *_points, int _type, double _auc)
 		curve->setData(new FunctionData(::cos));
 	}
 	
-	curve->init(_type, _auc);
+	curve->init(_type, _auc, color);
 	curves_.push_back(curve);
 
 	emit curveAdded(name, color, _auc);
@@ -296,4 +298,40 @@ void Plot::cAdded(void)
             items[i]->setVisible(true);
         }
     }
+}
+
+void Plot::changeName(int _pos, QString _newName)
+{
+	QwtPlotItemList items = itemList(QwtPlotItem::Rtti_PlotCurve);
+	items[_pos]->setTitle(_newName);
+	legend->repaint();
+}
+
+void Plot::changeColor(QString _name, QColor _newColor)
+{
+	QwtPlotItemList items = itemList(QwtPlotItem::Rtti_PlotCurve);
+	list<Curve*>::const_iterator it;
+	for(it = curves_.begin(); it != curves_.end(); ++it) 
+	{	
+		if((*it)->title() == _name) {
+			(*it)->setPen(_newColor);
+		}
+	}
+	legend->repaint();
+}
+
+void Plot::getColAuc(QString _name)
+{
+	QColor color;
+	double auc;
+	QwtPlotItemList items = itemList(QwtPlotItem::Rtti_PlotCurve);
+	list<Curve*>::const_iterator it;
+	for(it = curves_.begin(); it != curves_.end(); ++it) 
+	{	
+		if((*it)->title() == _name) {
+			color = (*it)->getColor();
+			auc = (*it)->getAUC();
+		}
+	}
+	emit resendColorAuc(color, auc);
 }

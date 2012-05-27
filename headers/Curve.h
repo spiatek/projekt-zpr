@@ -1,20 +1,13 @@
 #pragma once
 
-#include <string>
-#include <iostream>
 #include <qwt_plot_curve.h>
-#include <qwt_text.h>
-#include <qstring.h>
+#include <QColor>
+#include <iostream>
 
-using namespace std;
+class QwtPlotCurve;
+class QColor;
 
 class Curve : QwtPlotCurve {
-
-private:
-	static int id_;
-	int type_;					//typ krzywej
-	double auc_;				//pole pod krzyw¹
-	bool isHidden_;				//czy ukryta
 
 public:
 
@@ -33,8 +26,18 @@ public:
 	using QwtPlotCurve::title;
 	using QwtPlotCurve::setTitle;
 
-	void init(int, double);
+	void init(int, double, QColor);
 	int getId();
 	int getType();
 	double getAUC();
+	QColor getColor();
+
+private:
+
+	static int id_;
+	int type_;					//typ krzywej
+	double auc_;				//pole pod krzyw¹
+	bool isHidden_;				//czy ukryta
+	QColor color_;
+
 };

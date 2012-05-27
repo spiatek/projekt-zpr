@@ -48,6 +48,10 @@ PlotWindow::PlotWindow()
 	 //connect(this, SIGNAL(plotRefresh()), roc_plot, SLOT(refreshEvent()));
 	 connect(roc_plot, SIGNAL(curveAdded(QString, QColor, double)), panel, SLOT(addCurve(QString, QColor, double)));
 	 //connect(panel, SIGNAL(settingsChanged(QString)), roc_plot, SLOT(hideCurve(QString)));
+	 connect(panel, SIGNAL(nameChange(int, QString)), roc_plot, SLOT(changeName(int, QString)));
+	 connect(panel, SIGNAL(colorChange(QString, QColor)), roc_plot, SLOT(changeColor(QString, QColor)));
+	 connect(panel, SIGNAL(getColorAuc(QString)), roc_plot, SLOT(getColAuc(QString)));
+	 connect(roc_plot, SIGNAL(resendColorAuc(QColor, double)), panel, SLOT(readColorAuc(QColor, double)));
 
      setCurrentFile("");
      setUnifiedTitleAndToolBarOnMac(true);

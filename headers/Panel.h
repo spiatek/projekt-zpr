@@ -27,6 +27,9 @@ public:
 
 signals:
     void settingsChanged(QString);
+	void nameChange(int, QString);
+	void colorChange(QString, QColor);
+	void getColorAuc(QString);
 
 private slots:
 	void addCurve(QString, QColor, double);
@@ -35,6 +38,7 @@ private slots:
 	void changeName();
 	void deleteCurve();
 	void hideAll();
+	void readColorAuc(QColor, double);
 
 private:
     /*QWidget *createPlotTab(QWidget *);
