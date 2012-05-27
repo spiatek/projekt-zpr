@@ -90,7 +90,7 @@ Plot::Plot(QWidget *parent):
     legend->setItemMode(QwtLegend::CheckableItem);
     insertLegend(legend, QwtPlot::RightLegend);
 	
-	connect(this, SIGNAL(curveAdded(QString, QColor, double)), SLOT(cAdded(QString, QColor, double)));
+	connect(this, SIGNAL(curveAdd()), SLOT(cAdded()));
     connect(this, SIGNAL(legendChecked(QwtPlotItem *, bool)), SLOT(showItem(QwtPlotItem *, bool)));
 	
     replot(); // creating the legend items	
@@ -142,7 +142,7 @@ int Plot::addCurve(QwtSeriesData<QPointF> *_points, int _type, double _auc)
 	QString name = generateName();
 	Curve *curve = new Curve(name);
 	
-	curve->setLegendAttribute(QwtPlotCurve::LegendShowLine, true);
+	//curve->setLegendAttribute(QwtPlotCurve::LegendShowLine, true);
 	curve->setRenderHint(QwtPlotItem::RenderAntialiased);
 
 	QColor color = generateColor();
@@ -160,6 +160,7 @@ int Plot::addCurve(QwtSeriesData<QPointF> *_points, int _type, double _auc)
 	curves_.push_back(curve);
 
 	emit curveAdded(name, color, _auc);
+	emit curveAdd();
 
 	return 0;
 }
@@ -282,7 +283,7 @@ void Plot::showItem(QwtPlotItem *item, bool on)
 	item->setVisible(on);
 }
 
-void Plot::cAdded(QString, QColor, double)
+void Plot::cAdded(void)
 {
 	QwtPlotItemList items = itemList(QwtPlotItem::Rtti_PlotCurve);
 	for ( int i = 0; i < items.size(); i++ )

@@ -9,8 +9,11 @@
 
 class QGridLayout;
 class QComboBox;
+class QPushButton;
+class QLabel;
 class SpinBox;
 class CheckBox;
+class QLineEdit;
 
 class Panel: public QTabWidget
 {
@@ -27,13 +30,18 @@ signals:
 
 private slots:
 	void addCurve(QString, QColor, double);
-	void edited(int);
+	void edited(const QString&);
+	void setColor();
+	void changeName();
+	void deleteCurve();
+	void hideAll();
 
 private:
     /*QWidget *createPlotTab(QWidget *);
     QWidget *createCanvasTab(QWidget *);
     QWidget *createCurveTab(QWidget *);
 	*/
+	QWidget *createNewTab(QWidget *);
 	/*
     SpinBox *d_numPoints;
     SpinBox *d_updateInterval;
@@ -45,7 +53,15 @@ private:
     CheckBox *d_immediatePaint;
 */
 	QWidget* curvesTab;
+	QComboBox* curveCombo;
+	QLabel* colorLabel;
+	QLabel* aucLabel;
+	QPushButton* colorButton;
+	QPushButton* nameButton;
+	QPushButton* deleteButton;
+	QPushButton* hideAllButton;
 	QGridLayout* curvesLayout;
+	QLineEdit* lineEdit;
 	//QCheckListIcon* checkList;
 
 	int counter;

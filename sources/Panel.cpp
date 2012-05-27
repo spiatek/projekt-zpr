@@ -5,6 +5,11 @@
 #include <qspinbox.h>
 #include <qcheckbox.h>
 #include <qwt_plot_curve.h>
+#include <qlineedit.h>
+#include <qpushbutton.h>
+#include <qcolor.h>
+#include <qcolordialog.h>
+#include <qtextcodec.h>
 
 class SpinBox: public QSpinBox
 {
@@ -39,19 +44,20 @@ public:
 Panel::Panel(QWidget *parent):
     QTabWidget(parent)
 {
+	QTextCodec::setCodecForCStrings(QTextCodec::codecForName("Windows-1250"));	
     setTabPosition(QTabWidget::North);
 		
 	//addTab(createPlotTab(this), "Plot");
     //addTab(createCanvasTab(this), "Canvas");
     //addTab(createCurveTab(this), "Curve");
-	
-	curvesTab = new QWidget(parent);
-	curvesLayout = new QGridLayout(curvesTab);
-    addTab(curvesTab, "Krzywe");
-	counter = 0;
+
+	addTab(createNewTab(this), "Curve Properties");
 
    // setSettings(Settings());
-/*
+
+	connect(curveCombo, SIGNAL(currentIndexChanged(const QString&)), SLOT(edited(const QString&)));
+
+	/*
     connect(d_numPoints, SIGNAL(valueChanged(int)), SLOT(edited()) );
     connect(d_updateInterval, SIGNAL(valueChanged(int)), SLOT(edited()) );
     connect(d_curveWidth, SIGNAL(valueChanged(int)), SLOT(edited()) );
@@ -179,27 +185,116 @@ QWidget *Panel::createCurveTab(QWidget *parent)
     return page;
 }*/
 
+QWidget *Panel::createNewTab(QWidget *parent)
+{
+	curvesTab = new QWidget(parent);
+
+	curveCombo = new QComboBox(parent);
+	//curvesTab = new QWidget(parent);
+	curvesLayout = new QGridLayout(curvesTab);
+    //addTab(curvesTab, "Krzywe");
+	//counter = 0;
+
+    //curvesLayout = new QGridLayout(parent);
+    curvesLayout->addWidget(new QLabel("Choose curve:", parent), 0, 0 );
+    curvesLayout->addWidget(curveCombo, 1, 0);
+
+	lineEdit = new QLineEdit("", curvesTab);
+	QLabel *label1 = new QLabel("Title:", curvesTab);
+	curvesLayout->addWidget(label1, 4, 0);
+	curvesLayout->addWidget(lineEdit, 5, 0);
+	nameButton = new QPushButton(tr("Change title"));
+	curvesLayout->addWidget(nameButton, 6, 0);
+
+	QLabel *label2 = new QLabel("Color:", curvesTab);
+	curvesLayout->addWidget(label2, 7, 0);
+	colorLabel = new QLabel();
+	curvesLayout->addWidget(colorLabel, 8, 0);
+	colorButton = new QPushButton(tr("Change color"));
+	curvesLayout->addWidget(colorButton, 9, 0);
+
+	QLabel *label3 = new QLabel("AUC:", curvesTab);
+	curvesLayout->addWidget(label3, 10, 0);
+	aucLabel = new QLabel();
+	curvesLayout->addWidget(aucLabel, 11, 0);
+
+	deleteButton = new QPushButton(tr("Delete curve"));
+	curvesLayout->addWidget(deleteButton, 12, 0);
+
+	hideAllButton = new QPushButton(tr("Hide all except of this"));
+	curvesLayout->addWidget(hideAllButton, 13, 0);
+
+	curvesLayout->setColumnStretch(1, 10);
+    curvesLayout->setRowStretch(14, 20);
+
+	curvesTab->repaint();
+
+	return curvesTab;
+}
+
 void Panel::addCurve(QString _name, QColor _color, double _auc)
 {
 	//checkList = new QCheckListIcon();
-	CheckBox *curve = new CheckBox(_name, curvesTab);
-	curve->setChecked(true);
-	curvesLayout->addWidget(curve, counter++, 0, 1, -1);
-    curvesLayout->addLayout(new QHBoxLayout(), counter++, 0);
-    curvesLayout->setColumnStretch(1, 10);
-    curvesLayout->setRowStretch(counter, 10);
+	curveCombo->addItem(_name);
+	curveCombo->setCurrentIndex(curveCombo->count() - 1);
+	lineEdit->setText(_name);
+	
+	colorLabel->setPalette(QPalette(_color));
+	colorLabel->setAutoFillBackground(true);
+
+	QString auc = QString("%1").arg(_auc);
+	aucLabel->clear();
+	aucLabel->setText(auc);
+
+	//CheckBox *curve = new CheckBox(_name, curvesTab);
+	//curve->setChecked(true);
+	//curvesLayout->addWidget(curve, counter++, 0, 1, -1);
+    //curvesLayout->addLayout(new QHBoxLayout(), counter++, 0);
+    //curvesLayout->setColumnStretch(1, 10);
+    //curvesLayout->setRowStretch(counter, 10);
 	curvesTab->repaint();
 	//checkboxes->push_back(curve);
 	//int size = checkboxes->size();
 	//int index = size - 1;
 
-	connect(curve, SIGNAL(stateChanged(int)), SLOT(edited(int)));
 }
 
-void Panel::edited(int i)
+void Panel::edited(const QString& which)
 {
-	QString str = QString("kkkk").arg(i);
-    emit settingsChanged(str);
+	lineEdit->setText(which);
+	
+	connect(nameButton, SIGNAL(clicked()), this, SLOT(changeName()));
+	connect(colorButton, SIGNAL(clicked()), this, SLOT(setColor()));
+	connect(deleteButton, SIGNAL(clicked()), this, SLOT(deleteCurve()));
+	connect(hideAllButton, SIGNAL(clicked()), this, SLOT(hideAll()));
+
+	curvesTab->repaint();
+}
+
+void Panel::changeName()
+{
+	//emit, ¿eby zmieniæ nazwê
+}
+
+void Panel::setColor()
+{
+    QColor color;
+	color = QColorDialog::getColor(Qt::green, this, "Select Color", QColorDialog::DontUseNativeDialog);
+    if (color.isValid()) {
+        //colorLabel->setText(color.name());
+        colorLabel->setPalette(QPalette(color));
+        colorLabel->setAutoFillBackground(true);
+    }
+ }
+
+void Panel::deleteCurve()
+{
+	//emit, ¿eby usun¹æ krzyw¹
+}
+
+void Panel::hideAll()
+{
+	//emit, ¿eby usun¹æ krzyw¹
 }
 
 /*

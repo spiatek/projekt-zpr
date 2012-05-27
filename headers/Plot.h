@@ -21,12 +21,13 @@ protected:
 
 public slots:	
 	void refreshEvent();
-	void cAdded(QString, QColor, double);
+	void cAdded();
 	void showItem(QwtPlotItem*, bool);
 
 signals:
 	void coordinatesAssembled(QPoint);
 	void curveAdded(QString, QColor, double);
+	void curveAdd();
 
 private:
 	QColor generateColor();
