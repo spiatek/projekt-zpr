@@ -13,8 +13,6 @@ public:
 
 	int addCurve(QwtSeriesData<QPointF> *, int, double);	//dodanie krzywej do wykresu
 	int deleteCurve(int);									//usuniêcie krzywej o danej nazwie
-	int hideCurve(int);										//ukrycie krzywej  o danej nazwie z wykresu
-	int unhideCurve(int);									//odkrycie ukrytej krzywej o danej nazwie
 	int modifyCurveColor(int, QColor);						//zmiana koloru krzywej o danej nazwie
 
 protected:
@@ -23,6 +21,8 @@ protected:
 
 public slots:	
 	void refreshEvent();
+	void cAdded(QString, QColor, double);
+	void showItem(QwtPlotItem*, bool);
 
 signals:
 	void coordinatesAssembled(QPoint);
@@ -36,6 +36,7 @@ private:
 
 	int type;						//typ krzywej (ROC, PR)
 	list<Curve*> curves_;
+	QwtLegend *legend;
 
 	const int* QtColors;
 	int itColor;

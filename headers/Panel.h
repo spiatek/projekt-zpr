@@ -3,6 +3,8 @@
 
 //#include "settings.h"
 #include <qtabwidget.h>
+#include <list>
+#include <qlistwidget.h>
 #include <qlist.h>
 
 class QGridLayout;
@@ -20,13 +22,12 @@ public:
     //Settings settings() const;
     //void setSettings(const Settings &);
 
-//Q_SIGNALS:
-    //void settingsChanged(const Settings &);
+signals:
+    void settingsChanged(QString);
 
 private slots:
 	void addCurve(QString, QColor, double);
-
-//    void edited();
+	void edited(int);
 
 private:
     /*QWidget *createPlotTab(QWidget *);
@@ -45,6 +46,7 @@ private:
 */
 	QWidget* curvesTab;
 	QGridLayout* curvesLayout;
+	//QCheckListIcon* checkList;
 
 	int counter;
 

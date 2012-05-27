@@ -181,21 +181,27 @@ QWidget *Panel::createCurveTab(QWidget *parent)
 
 void Panel::addCurve(QString _name, QColor _color, double _auc)
 {
+	//checkList = new QCheckListIcon();
 	CheckBox *curve = new CheckBox(_name, curvesTab);
+	curve->setChecked(true);
 	curvesLayout->addWidget(curve, counter++, 0, 1, -1);
     curvesLayout->addLayout(new QHBoxLayout(), counter++, 0);
     curvesLayout->setColumnStretch(1, 10);
     curvesLayout->setRowStretch(counter, 10);
 	curvesTab->repaint();
+	//checkboxes->push_back(curve);
+	//int size = checkboxes->size();
+	//int index = size - 1;
+
+	connect(curve, SIGNAL(stateChanged(int)), SLOT(edited(int)));
 }
 
-/*
-void Panel::edited()
+void Panel::edited(int i)
 {
-    const Settings s = settings();
-    Q_EMIT settingsChanged(s);
+	QString str = QString("kkkk").arg(i);
+    emit settingsChanged(str);
 }
-*/
+
 /*
 Settings Panel::settings() const
 {

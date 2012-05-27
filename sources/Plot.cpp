@@ -13,6 +13,8 @@
 #include <qwt_plot_marker.h>
 #include <qwt_plot_zoomer.h>
 #include <qwt_plot_grid.h>
+#include <qwt_plot_item.h>
+#include <qwt_legend_item.h>
 #include <qevent.h>
 
 class Grid: public QwtPlotGrid
@@ -62,9 +64,17 @@ Plot::Plot(QWidget *parent):
 
     setAutoFillBackground( true );
     setPalette( QPalette( QColor( 185, 213, 248 ) ) );
-    updateGradient();
+    //updateGradient();
 
-    //insertLegend(new QwtLegend(), QwtPlot::RightLegend);
+	legend = new QwtLegend;
+    legend->setItemMode(QwtLegend::CheckableItem);
+    insertLegend(legend, QwtPlot::RightLegend);
+	
+	connect(this, SIGNAL(curveAdded(QString, QColor, double)), SLOT(cAdded(QString, QColor, double)));
+    connect(this, SIGNAL(legendChecked(QwtPlotItem *, bool)), SLOT(showItem(QwtPlotItem *, bool)));
+	
+    replot(); // creating the legend items	
+    setAutoReplot(true);
 
     // axes 
     setAxisTitle(xBottom, "x" );
@@ -112,7 +122,7 @@ int Plot::addCurve(QwtSeriesData<QPointF> *_points, int _type, double _auc)
 	QString name = generateName();
 	Curve *curve = new Curve(name);
 	
-	//curve->setLegendAttribute(QwtPlotCurve::LegendShowLine, true);
+	curve->setLegendAttribute(QwtPlotCurve::LegendShowLine, true);
 	curve->setRenderHint(QwtPlotItem::RenderAntialiased);
 
 	QColor color = generateColor();
@@ -141,30 +151,6 @@ int Plot::deleteCurve(int _id)								//usuniêcie krzywej o danym id
 	{	
 		if((*it)->getId() == _id) {
 			curves_.erase(it);
-		}
-	}
-	return 0;
-}
-
-int Plot::hideCurve(int _id)
-{
-	list<Curve*>::iterator it;
-	for(it = curves_.begin(); it != curves_.end(); ++it) 
-	{
-		if((*it)->getId() == _id) {
-			(*it)->hide();
-		}
-	}
-	return 0;
-}
-
-int Plot::unhideCurve(int _id)
-{
-	list<Curve*>::iterator it;
-	for(it = curves_.begin(); it != curves_.end(); ++it) 
-	{
-		if((*it)->getId() == _id) {
-			(*it)->setVisible(this);
 		}
 	}
 	return 0;
@@ -252,7 +238,7 @@ void Plot::resizeEvent( QResizeEvent *event )
 {
     QwtPlot::resizeEvent( event );
 #ifdef Q_WS_X11
-    updateGradient();
+    //updateGradient();
 #endif
 }
 
@@ -260,7 +246,6 @@ void Plot::refreshEvent()
 {
 	replot();
 }
-
 
 bool Plot::eventFilter(QObject *obj, QEvent *event)
 {
@@ -270,4 +255,24 @@ bool Plot::eventFilter(QObject *obj, QEvent *event)
 	emit coordinatesAssembled(mouseEvent->pos());
   }
   return false;
+}
+
+void Plot::showItem(QwtPlotItem *item, bool on)
+{
+	item->setVisible(on);
+}
+
+void Plot::cAdded(QString, QColor, double)
+{
+	QwtPlotItemList items = itemList(QwtPlotItem::Rtti_PlotCurve);
+	for ( int i = 0; i < items.size(); i++ )
+    {
+		if ( i == items.size() - 1 )
+        {
+			QwtLegendItem *legendItem = (QwtLegendItem *)legend->find(items[i]);
+            if ( legendItem )
+                legendItem->setChecked(true);
+            items[i]->setVisible(true);
+        }
+    }
 }

@@ -30,6 +30,8 @@ public:
 	using QwtPlotCurve::setData;
 	using QwtPlotCurve::hide;
 	using QwtPlotCurve::setVisible;
+	using QwtPlotCurve::title;
+	using QwtPlotCurve::setTitle;
 
 	void init(int, double);
 	int getId();
