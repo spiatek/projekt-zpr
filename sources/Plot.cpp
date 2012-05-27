@@ -51,6 +51,26 @@ public:
     }
 };
 
+class MyZoomer: public QwtPlotZoomer
+{
+public:
+    MyZoomer(QwtPlotCanvas *canvas):
+        QwtPlotZoomer(canvas)
+    {
+        setTrackerMode(AlwaysOn);
+    }
+
+    virtual QwtText trackerTextF(const QPointF &pos) const
+    {
+        QColor bg(Qt::white);
+        bg.setAlpha(200);
+
+        QwtText text = QwtPlotZoomer::trackerTextF(pos);
+        text.setBackgroundBrush( QBrush( bg ));
+        return text;
+    }
+};
+
 Plot::Plot(QWidget *parent):
     QwtPlot( parent )
 {
@@ -91,8 +111,8 @@ Plot::Plot(QWidget *parent):
     // RightButton: zoom out by 1
     // Ctrl+RighButton: zoom out to full size
 
-    QwtPlotZoomer* zoomer = new QwtPlotZoomer( canvas() );
-    zoomer->setRubberBandPen( QColor( Qt::black ) );
+    QwtPlotZoomer* zoomer = new MyZoomer( canvas() );
+	zoomer->setRubberBandPen( QColor( Qt::black ) );
     zoomer->setTrackerPen( QColor( Qt::black ) );
     zoomer->setMousePattern( QwtEventPattern::MouseSelect2,
         Qt::RightButton, Qt::ControlModifier );
