@@ -14,7 +14,6 @@ public:
 	Curve() { ++id_; }
 	Curve(int _type, double _auc) : type_(_type), auc_(_auc), isHidden_(false) { ++id_; }
 	Curve(const QwtText&);
-	//Curve& operator= (const Curve&);
 
 	using QwtPlotCurve::setLegendAttribute;
 	using QwtPlotCurve::setRenderHint;

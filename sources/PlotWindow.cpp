@@ -22,12 +22,8 @@
 
 PlotWindow::PlotWindow()
  {
-     //textEdit = new QPlainTextEdit;
-     //setCentralWidget(textEdit);
-	 
 	 QWidget *w = new QWidget(this);
 	 roc_plot = new Plot(w);
-	 //pr_plot = new Plot(w);
 	 panel = new Panel(w);
 
 	 QHBoxLayout *hLayout = new QHBoxLayout(w);
@@ -44,16 +40,17 @@ PlotWindow::PlotWindow()
      readSettings();
 
      connect(roc_plot, SIGNAL(contentsChanged()), this, SLOT(plotWasModified()));
-	 //connect(roc_plot, SIGNAL(coordinatesAssembled(QPoint)), this, SLOT(coordinates(QPoint)));
-	 //connect(this, SIGNAL(plotRefresh()), roc_plot, SLOT(refreshEvent()));
 	 connect(roc_plot, SIGNAL(curveAdded(QString, QColor, double)), panel, SLOT(addCurve(QString, QColor, double)));
-	 //connect(panel, SIGNAL(settingsChanged(QString)), roc_plot, SLOT(hideCurve(QString)));
 	 connect(panel, SIGNAL(nameChange(int, QString)), roc_plot, SLOT(changeName(int, QString)));
 	 connect(panel, SIGNAL(colorChange(QString, QColor)), roc_plot, SLOT(changeColor(QString, QColor)));
 	 connect(panel, SIGNAL(getColorAuc(QString)), roc_plot, SLOT(getColAuc(QString)));
 	 connect(roc_plot, SIGNAL(resendColorAuc(QColor, double)), panel, SLOT(readColorAuc(QColor, double)));
 	 connect(panel, SIGNAL(curveDelete(int)), roc_plot, SLOT(deleteCurve(int)));
 	 connect(panel, SIGNAL(hideAllExceptOfThis(int)), roc_plot, SLOT(leaveOneUnhided(int)));
+	 connect(panel, SIGNAL(changeBackgroundColor(QColor)), roc_plot, SLOT(modifyBackgroundColor(QColor)));
+	 connect(panel, SIGNAL(plotNameChange(QString)), roc_plot, SLOT(changePlotName(QString)));
+	 connect(panel, SIGNAL(labelsChange(QString, QString)), roc_plot, SLOT(changePlotLabels(QString, QString)));
+	 connect(panel, SIGNAL(gridChange(int)), roc_plot, SLOT(changeGridState(int)));
 
      setCurrentFile("");
      setUnifiedTitleAndToolBarOnMac(true);
@@ -61,22 +58,9 @@ PlotWindow::PlotWindow()
 
  void PlotWindow::closeEvent(QCloseEvent *event)
  {
-     //if (maybeSave()) {
 	writeSettings();
 	event->accept();
-     //} else {
-     //    event->ignore();
-     //}
  }
-
-/*
- void PlotWindow::newFile()
- {
-     if (maybeSave()) {
-         plot->;
-         setCurrentFile("");
-     }
- }*/
 
 void PlotWindow::quit()
 {
@@ -84,20 +68,12 @@ void PlotWindow::quit()
 
 void PlotWindow::open()
 {
-     //if (maybeSave()) {
-         /*QString fileName = QFileDialog::getOpenFileName(this);
-         if (!fileName.isEmpty())
-             loadFile(fileName);*/
-	//TODO: pobieranie krzywej
-	 //type = proxy.getType();
-	 //auc = proxy.getAuc();
 	 if(/*type == ROC*/1) {
 		roc_plot->addCurve(new FunctionData(::sin), 0, 1.0/*, auc*/);
 	 }
 	 else {
 		 pr_plot->addCurve(new FunctionData(::sin), 1, 0.7/*, auc*/);
 	 }
-     //}
 
 	 emit plotRefresh();
  }
@@ -130,30 +106,14 @@ void PlotWindow::open()
  
  void PlotWindow::plotWasModified()
  {
-     //setWindowModified(plot->document()->isModified());
  }
 
  void PlotWindow::createActions()
  {
-	 newAct = new QAction(QIcon("images/new.png"), tr("&New"), this);
-     newAct->setShortcuts(QKeySequence::New);
-     newAct->setStatusTip(tr("Create a new file"));
-     //connect(newAct, SIGNAL(triggered()), this, SLOT(newFile()));
-
      openAction = new QAction(QIcon("images/open.png"), tr("&Open..."), this);
      openAction->setShortcuts(QKeySequence::Open);
      openAction->setStatusTip(tr("Open an existing file"));
      connect(openAction, SIGNAL(triggered()), this, SLOT(open()));
-
-     saveAction = new QAction(QIcon("images/save.png"), tr("&Save"), this);
-     saveAction->setShortcuts(QKeySequence::Save);
-     saveAction->setStatusTip(tr("Save the document to disk"));
-     //connect(saveAction, SIGNAL(triggered()), this, SLOT(save()));
-
-     saveAsAct = new QAction(tr("Save &As..."), this);
-     saveAsAct->setShortcuts(QKeySequence::SaveAs);
-     saveAsAct->setStatusTip(tr("Save the document under a new name"));
-     //connect(saveAsAct, SIGNAL(triggered()), this, SLOT(saveAs()));
 
      exitAction = new QAction(tr("E&xit"), this);
      exitAction->setShortcuts(QKeySequence::Quit);
@@ -171,25 +131,6 @@ void PlotWindow::open()
      exportAction->setStatusTip(tr("Export document"));
      connect(exportAction, SIGNAL(triggered()), this, SLOT(exportDocument()));
 
-	 /*
-     cutAct = new QAction(QIcon(":/images/cut.png"), tr("Cu&t"), this);
-     cutAct->setShortcuts(QKeySequence::Cut);
-     cutAct->setStatusTip(tr("Cut the current selection's contents to the "
-                             "clipboard"));
-     connect(cutAct, SIGNAL(triggered()), textEdit, SLOT(cut()));
-
-     copyAct = new QAction(QIcon(":/images/copy.png"), tr("&Copy"), this);
-     copyAct->setShortcuts(QKeySequence::Copy);
-     copyAct->setStatusTip(tr("Copy the current selection's contents to the "
-                              "clipboard"));
-     connect(copyAct, SIGNAL(triggered()), textEdit, SLOT(copy()));
-
-     pasteAct = new QAction(QIcon(":/images/paste.png"), tr("&Paste"), this);
-     pasteAct->setShortcuts(QKeySequence::Paste);
-     pasteAct->setStatusTip(tr("Paste the clipboard's contents into the current "
-                               "selection"));
-     connect(pasteAct, SIGNAL(triggered()), textEdit, SLOT(paste()));
-	 */
      aboutAct = new QAction(tr("&About"), this);
      aboutAct->setStatusTip(tr("Show the application's About box"));
      connect(aboutAct, SIGNAL(triggered()), this, SLOT(about()));
@@ -197,31 +138,20 @@ void PlotWindow::open()
      aboutQtAct = new QAction(tr("About &Qt"), this);
      aboutQtAct->setStatusTip(tr("Show the Qt library's About box"));
      connect(aboutQtAct, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
-	 /*
-     cutAct->setEnabled(false);
-     copyAct->setEnabled(false);
-     connect(textEdit, SIGNAL(copyAvailable(bool)), cutAct, SLOT(setEnabled(bool)));
-     connect(textEdit, SIGNAL(copyAvailable(bool)), copyAct, SLOT(setEnabled(bool)));*/
  }
 
  void PlotWindow::createMenus()
  {
      fileMenu = menuBar()->addMenu(tr("&File"));
-     //fileMenu->addAction(newAct);
      fileMenu->addAction(openAction);
-     //fileMenu->addAction(saveAction);
-     //fileMenu->addAction(saveAsAct);
+
 #ifndef QT_NO_PRINTER
      fileMenu->addAction(printAction);
 #endif
-     fileMenu->addAction(exportAction);
+
+	 fileMenu->addAction(exportAction);
      fileMenu->addSeparator();
      fileMenu->addAction(exitAction);
-
-    /* editMenu = menuBar()->addMenu(tr("&Edit"));
-     editMenu->addAction(cutAct);
-     editMenu->addAction(copyAct);
-     editMenu->addAction(pasteAct);*/
 
      menuBar()->addSeparator();
 
@@ -238,19 +168,13 @@ void PlotWindow::open()
  void PlotWindow::createToolBars()
  {
      fileToolBar = addToolBar(tr("File"));
-     //fileToolBar->addAction(newAct);
      fileToolBar->addAction(openAction);
-     //fileToolBar->addAction(saveAction);
+     
 #ifndef QT_NO_PRINTER
 	 fileToolBar->addAction(printAction);
 #endif
+
 	 fileToolBar->addAction(exportAction);
-
-
-/*     editToolBar = addToolBar(tr("Edit"));
-     editToolBar->addAction(cutAct);
-     editToolBar->addAction(copyAct);
-     editToolBar->addAction(pasteAct);*/
  }
 
  void PlotWindow::createStatusBar()
@@ -273,23 +197,7 @@ void PlotWindow::open()
      settings.setValue("pos", pos());
      settings.setValue("size", size());
  }
- /*
- bool PlotWindow::maybeSave()
- {
-     if (textEdit->document()->isModified()) {
-         QMessageBox::StandardButton ret;
-         ret = QMessageBox::warning(this, tr("Application"),
-                      tr("The document has been modified.\n"
-                         "Do you want to save your changes?"),
-                      QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
-         if (ret == QMessageBox::Save)
-             return save();
-         else if (ret == QMessageBox::Cancel)
-             return false;
-     }
-     return true;
- }
- */
+
  void PlotWindow::loadFile(const QString &fileName)
  {
      QFile file(fileName);
@@ -316,46 +224,17 @@ void PlotWindow::open()
 
  bool PlotWindow::saveFile(const QString &fileName)
  {
-/*     QFile file(fileName);
-     if (!file.open(QFile::WriteOnly | QFile::Text)) {
-         QMessageBox::warning(this, tr("Application"),
-                              tr("Cannot write file %1:\n%2.")
-                              .arg(fileName)
-                              .arg(file.errorString()));
-         return false;
-     }
-
-     QTextStream out(&file);
- #ifndef QT_NO_CURSOR
-     QApplication::setOverrideCursor(Qt::WaitCursor);
- #endif
-     out << textEdit->toPlainText();
- #ifndef QT_NO_CURSOR
-     QApplication::restoreOverrideCursor();
- #endif
-
-     setCurrentFile(fileName);
-     statusBar()->showMessage(tr("File saved"), 2000);*/
      return true;
  }
 
  void PlotWindow::setCurrentFile(const QString &fileName)
- {/*
-     curFile = fileName;
-     textEdit->document()->setModified(false);
-     setWindowModified(false);
-
-     QString shownName = curFile;
-     if (curFile.isEmpty())
-         shownName = "untitled.txt";
-     setWindowFilePath(shownName);*/
+ {
  }
 
  QString PlotWindow::strippedName(const QString &fullFileName)
  {
      return QFileInfo(fullFileName).fileName();
  }
-
 
 #ifndef QT_NO_PRINTER
 

@@ -4,6 +4,8 @@
 #include <qwt_plot_curve.h>
 #include "..\headers\Curve.h"
 
+class QwtPlotGrid;
+
 class Plot : public QwtPlot
 {
 	Q_OBJECT
@@ -27,7 +29,11 @@ public slots:
 	void getColAuc(QString);
 	void deleteCurve(int);									//usuniêcie krzywej o danej nazwie
 	void leaveOneUnhided(int);
-
+	void modifyBackgroundColor(QColor);
+	void changePlotName(QString);
+	void changePlotLabels(QString, QString);
+	void changeGridState(int);
+	
 signals:
 	void coordinatesAssembled(QPoint);
 	void curveAdded(QString, QColor, double);
@@ -43,6 +49,7 @@ private:
 	int type;						//typ krzywej (ROC, PR)
 	std::list<Curve*> curves_;
 	QwtLegend *legend;
+	QwtPlotGrid *grid;
 
 	const int* QtColors;
 	int itColor;

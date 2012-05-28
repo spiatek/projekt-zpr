@@ -10,6 +10,7 @@ class QComboBox;
 class QPushButton;
 class QLabel;
 class QLineEdit;
+class QCheckBox;
 
 class Panel: public QTabWidget
 {
@@ -25,6 +26,10 @@ signals:
 	void getColorAuc(QString);
 	void curveDelete(int);
 	void hideAllExceptOfThis(int);
+	void changeBackgroundColor(QColor);
+	void plotNameChange(QString);
+	void labelsChange(QString, QString);
+	void gridChange(int);
 
 private slots:
 	void addCurve(QString, QColor, double);
@@ -34,11 +39,20 @@ private slots:
 	void deleteCurve();
 	void hideAll();
 	void readColorAuc(QColor, double);
+	void setBcgColor();
+	void changePlotName();
+	void changeLabels();
+	void changeGrid(int);
 
 private:
-	QWidget *createNewTab(QWidget *);
+	QWidget *createCurveTab(QWidget *);
+	QWidget *createPlotTab(QWidget *);
+
 	QWidget* curvesTab;
+	QWidget* plotTab;
+
 	QComboBox* curveCombo;
+	QLineEdit* lineEdit;
 	QLabel* colorLabel;
 	QLabel* aucLabel;
 	QPushButton* colorButton;
@@ -46,5 +60,14 @@ private:
 	QPushButton* deleteButton;
 	QPushButton* hideAllButton;
 	QGridLayout* curvesLayout;
-	QLineEdit* lineEdit;
+
+	QLineEdit* plotName;
+	QLineEdit* labelX;
+	QLineEdit* labelY;
+	QLabel* plotBcgColorLabel;
+	QPushButton* plotNameButton;
+	QPushButton* labelButton;
+	QPushButton* plotBcgColorButton;
+	QGridLayout* plotLayout;
+	QCheckBox* gridCheckBox;
 };

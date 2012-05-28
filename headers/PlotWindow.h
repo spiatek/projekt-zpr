@@ -1,6 +1,5 @@
 #pragma once
 #include "..\headers\Plot.h"
-//#include "CurveManager.h"
 #include <qmainwindow.h>
 #include <qpoint.h>
 
@@ -18,13 +17,11 @@ public:
 
 protected:
 	void closeEvent(QCloseEvent*);
-	//bool eventFilter(QObject *obj, QEvent *event);
 
 private slots:
 	void open();
 	bool save();
 	void quit();
-	//void newFile();
 	bool saveAs();
 	void about();
 	void plotWasModified();
@@ -52,7 +49,6 @@ private:
 	void setCurrentFile(const QString &fileName);
 	QString strippedName(const QString &fullFileName);
 	
-	//QPlainTextEdit *textEdit;
 	QString curFile;
 
 	QMenu *fileMenu;
@@ -67,13 +63,9 @@ private:
 	QAction *printAction;
 	QAction *exportAction;
 	QAction *exitAction;
-	//QAction *cutAct;
-	//QAction *copyAct;
-	//QAction *pasteAct;
 	QAction *aboutAct;
 	QAction *aboutQtAct;
 
-	//CurveManager *manager;
     Panel *panel;
 	Plot *roc_plot;
 	Plot *pr_plot;

@@ -85,7 +85,7 @@ Plot::Plot(QWidget *parent):
 	QtColors = qtc;
 
     setAutoFillBackground( true );
-    setPalette( QPalette( QColor( 185, 213, 248 ) ) );
+    setPalette(QPalette(QColor(185, 213, 248)));
     //updateGradient();
 
 	legend = new QwtLegend;
@@ -95,7 +95,7 @@ Plot::Plot(QWidget *parent):
 	connect(this, SIGNAL(curveAdd()), SLOT(cAdded()));
     connect(this, SIGNAL(legendChecked(QwtPlotItem *, bool)), SLOT(showItem(QwtPlotItem *, bool)));
 	
-    replot(); // creating the legend items	
+    //replot(); // creating the legend items	
     setAutoReplot(true);
 
     // axes 
@@ -105,8 +105,8 @@ Plot::Plot(QWidget *parent):
     setAxisTitle(yLeft, "y");
     setAxisScale(yLeft, 0.0, 1.0);
 
-	QwtPlotGrid *grid = new Grid;
-    grid->attach( this );
+	grid = new Grid;
+    grid->attach(this);
 
 	// LeftButton for the zooming
     // MidButton for the panning
@@ -135,8 +135,6 @@ Plot::Plot(QWidget *parent):
 
 	QWidget::setMouseTracking(true);
 	installEventFilter(this);
-
-    //populate();
 }
 
 int Plot::addCurve(QwtSeriesData<QPointF> *_points, int _type, double _auc)
@@ -350,4 +348,32 @@ void Plot::leaveOneUnhided(int _pos)
 			items[i]->setVisible(false);
 		}
     }
+}
+
+void Plot::modifyBackgroundColor(QColor _color)
+{
+	setPalette(QPalette(_color));
+	replot();
+}
+
+void Plot::changePlotName(QString _name)
+{
+	setTitle(_name);
+	replot();
+}
+
+void Plot::changePlotLabels(QString _labelX, QString _labelY)
+{
+	setAxisTitle(xBottom, _labelX);
+	setAxisTitle(yLeft, _labelY);
+	replot();
+}
+
+void Plot::changeGridState(int _state)
+{
+	if(_state == 0)
+		grid->detach();
+	else
+		grid->attach(this);
+	replot();
 }
