@@ -167,18 +167,6 @@ int Plot::addCurve(QwtSeriesData<QPointF> *_points, int _type, double _auc)
 	return 0;
 }
 
-int Plot::deleteCurve(int _id)								//usuniêcie krzywej o danym id
-{
-	list<Curve*>::const_iterator it;
-	for(it = curves_.begin(); it != curves_.end(); ++it) 
-	{	
-		if((*it)->getId() == _id) {
-			curves_.erase(it);
-		}
-	}
-	return 0;
-}
-
 int Plot::modifyCurveColor(int _id, QColor color)
 {
 	list<Curve*>::iterator it;
@@ -334,4 +322,32 @@ void Plot::getColAuc(QString _name)
 		}
 	}
 	emit resendColorAuc(color, auc);
+}
+
+void Plot::deleteCurve(int _id)								//usuniêcie krzywej o danym id
+{
+	QwtPlotItemList items = itemList(QwtPlotItem::Rtti_PlotCurve);
+	items[_id]->detach();
+	legend->repaint();
+	replot();	
+}
+
+void Plot::leaveOneUnhided(int _pos)
+{
+	QwtPlotItemList items = itemList(QwtPlotItem::Rtti_PlotCurve);
+	for(int i = 0; i < items.size(); i++)
+    {
+		QwtLegendItem *legendItem = (QwtLegendItem *)legend->find(items[i]);
+		if(i == _pos)
+        {
+            if(legendItem)
+                legendItem->setChecked(true);
+            items[i]->setVisible(true);
+        }
+		else {
+			if(legendItem)
+                legendItem->setChecked(false);
+			items[i]->setVisible(false);
+		}
+    }
 }

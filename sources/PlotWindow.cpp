@@ -52,6 +52,8 @@ PlotWindow::PlotWindow()
 	 connect(panel, SIGNAL(colorChange(QString, QColor)), roc_plot, SLOT(changeColor(QString, QColor)));
 	 connect(panel, SIGNAL(getColorAuc(QString)), roc_plot, SLOT(getColAuc(QString)));
 	 connect(roc_plot, SIGNAL(resendColorAuc(QColor, double)), panel, SLOT(readColorAuc(QColor, double)));
+	 connect(panel, SIGNAL(curveDelete(int)), roc_plot, SLOT(deleteCurve(int)));
+	 connect(panel, SIGNAL(hideAllExceptOfThis(int)), roc_plot, SLOT(leaveOneUnhided(int)));
 
      setCurrentFile("");
      setUnifiedTitleAndToolBarOnMac(true);

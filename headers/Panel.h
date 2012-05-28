@@ -1,7 +1,5 @@
-#ifndef _PANEL_H_
-#define _PANEL_H_ 1
+#pragma once
 
-//#include "settings.h"
 #include <qtabwidget.h>
 #include <list>
 #include <qlistwidget.h>
@@ -11,8 +9,6 @@ class QGridLayout;
 class QComboBox;
 class QPushButton;
 class QLabel;
-class SpinBox;
-class CheckBox;
 class QLineEdit;
 
 class Panel: public QTabWidget
@@ -22,14 +18,13 @@ class Panel: public QTabWidget
 public:
     Panel(QWidget * = NULL);
 
-    //Settings settings() const;
-    //void setSettings(const Settings &);
-
 signals:
     void settingsChanged(QString);
 	void nameChange(int, QString);
 	void colorChange(QString, QColor);
 	void getColorAuc(QString);
+	void curveDelete(int);
+	void hideAllExceptOfThis(int);
 
 private slots:
 	void addCurve(QString, QColor, double);
@@ -41,21 +36,7 @@ private slots:
 	void readColorAuc(QColor, double);
 
 private:
-    /*QWidget *createPlotTab(QWidget *);
-    QWidget *createCanvasTab(QWidget *);
-    QWidget *createCurveTab(QWidget *);
-	*/
 	QWidget *createNewTab(QWidget *);
-	/*
-    SpinBox *d_numPoints;
-    SpinBox *d_updateInterval;
-    QComboBox *d_updateType;
-
-    QComboBox *d_gridStyle;
-    CheckBox *d_paintCache;
-    CheckBox *d_paintOnScreen;
-    CheckBox *d_immediatePaint;
-*/
 	QWidget* curvesTab;
 	QComboBox* curveCombo;
 	QLabel* colorLabel;
@@ -66,13 +47,4 @@ private:
 	QPushButton* hideAllButton;
 	QGridLayout* curvesLayout;
 	QLineEdit* lineEdit;
-	//QCheckListIcon* checkList;
-
-	int counter;
-
-  /*  SpinBox  *d_curveWidth;
-    QComboBox *d_curvePen;
-    CheckBox *d_curveFilled;*/
 };
-
-#endif

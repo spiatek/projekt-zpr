@@ -12,7 +12,6 @@ public:
     Plot(QWidget *parent = NULL);
 
 	int addCurve(QwtSeriesData<QPointF> *, int, double);	//dodanie krzywej do wykresu
-	int deleteCurve(int);									//usuniêcie krzywej o danej nazwie
 	int modifyCurveColor(int, QColor);						//zmiana koloru krzywej o danej nazwie
 
 protected:
@@ -26,6 +25,8 @@ public slots:
 	void changeName(int, QString);
 	void changeColor(QString, QColor);
 	void getColAuc(QString);
+	void deleteCurve(int);									//usuniêcie krzywej o danej nazwie
+	void leaveOneUnhided(int);
 
 signals:
 	void coordinatesAssembled(QPoint);
