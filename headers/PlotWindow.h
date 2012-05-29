@@ -23,10 +23,7 @@ private slots:
 	void open();
 	bool save();
 	void quit();
-	bool saveAs();
 	void about();
-	void plotWasModified();
-	void coordinates(QPoint);
 	void switchPlot();
 
 #ifndef QT_NO_PRINTER
@@ -44,21 +41,15 @@ private:
 	void createMenus();
 	void createToolBars();
 	void createStatusBar();
-	void readSettings();
-	void writeSettings();
-	bool maybeSave();
 	void loadFile(const QString &fileName);
 	bool saveFile(const QString &fileName);
-	void setCurrentFile(const QString &fileName);
-	QString strippedName(const QString &fullFileName);
-
-	QString curFile;
 
 	QMenu *fileMenu;
-	QMenu *editMenu;
+	QMenu *switchMenu;
 	QMenu *helpMenu;
+
 	QToolBar *fileToolBar;
-	QToolBar *editToolBar;
+	
 	QAction *openAction;
 	QAction *printAction;
 	QAction *switchAction;

@@ -43,19 +43,16 @@ PlotWindow::PlotWindow()
      createToolBars();
      createStatusBar();
 
-     readSettings();
 	 switchPlot();
 
-     setCurrentFile("");
      setUnifiedTitleAndToolBarOnMac(true);
  }
 
  void PlotWindow::closeEvent(QCloseEvent *event)
  {
-	writeSettings();
 	event->accept();
  }
-
+ 
 void PlotWindow::quit()
 {
 }
@@ -71,20 +68,19 @@ void PlotWindow::switchPlot()
 	current_plot->setVisible(true);
 	hLayout->addWidget(current_panel);
 	hLayout->addWidget(current_plot,10);
-	//emit plotSwitched(plot_type);
 
-	 connect(current_plot, SIGNAL(contentsChanged()), this, SLOT(plotWasModified()));
-	 connect(current_plot, SIGNAL(curveAdded(QString, QColor, double)), current_panel, SLOT(addCurve(QString, QColor, double)));
-	 connect(current_panel, SIGNAL(nameChange(int, QString)), current_plot, SLOT(changeName(int, QString)));
-	 connect(current_panel, SIGNAL(colorChange(QString, QColor)), current_plot, SLOT(changeColor(QString, QColor)));
-	 connect(current_panel, SIGNAL(getColorAuc(QString)), current_plot, SLOT(getColAuc(QString)));
-	 connect(current_plot, SIGNAL(resendColorAuc(QColor, double)), current_panel, SLOT(readColorAuc(QColor, double)));
-	 connect(current_panel, SIGNAL(curveDelete(int)), current_plot, SLOT(deleteCurve(int)));
-	 connect(current_panel, SIGNAL(hideAllExceptOfThis(int)), current_plot, SLOT(leaveOneUnhided(int)));
-	 connect(current_panel, SIGNAL(changeBackgroundColor(QColor)), current_plot, SLOT(modifyBackgroundColor(QColor)));
-	 connect(current_panel, SIGNAL(plotNameChange(QString)), current_plot, SLOT(changePlotName(QString)));
-	 connect(current_panel, SIGNAL(labelsChange(QString, QString)), current_plot, SLOT(changePlotLabels(QString, QString)));
-	 connect(current_panel, SIGNAL(gridChange(int)), current_plot, SLOT(changeGridState(int)));
+	connect(current_plot, SIGNAL(contentsChanged()), this, SLOT(plotWasModified()));
+	connect(current_plot, SIGNAL(curveAdded(QString, QColor, double)), current_panel, SLOT(addCurve(QString, QColor, double)));
+	connect(current_panel, SIGNAL(nameChange(int, QString)), current_plot, SLOT(changeName(int, QString)));
+	connect(current_panel, SIGNAL(colorChange(QString, QColor)), current_plot, SLOT(changeColor(QString, QColor)));
+	connect(current_panel, SIGNAL(getColorAuc(QString)), current_plot, SLOT(getColAuc(QString)));
+	connect(current_plot, SIGNAL(resendColorAuc(QColor, double)), current_panel, SLOT(readColorAuc(QColor, double)));
+	connect(current_panel, SIGNAL(curveDelete(int)), current_plot, SLOT(deleteCurve(int)));
+	connect(current_panel, SIGNAL(hideAllExceptOfThis(int)), current_plot, SLOT(leaveOneUnhided(int)));
+	connect(current_panel, SIGNAL(changeBackgroundColor(QColor)), current_plot, SLOT(modifyBackgroundColor(QColor)));
+	connect(current_panel, SIGNAL(plotNameChange(QString)), current_plot, SLOT(changePlotName(QString)));
+	connect(current_panel, SIGNAL(labelsChange(QString, QString)), current_plot, SLOT(changePlotLabels(QString, QString)));
+	connect(current_panel, SIGNAL(gridChange(int)), current_plot, SLOT(changeGridState(int)));
 }
 
 void PlotWindow::open()
@@ -101,69 +97,50 @@ void PlotWindow::open()
 
  bool PlotWindow::save()
  {
-     if (curFile.isEmpty()) {
-         return saveAs();
-     } else {
-         return saveFile(curFile);
-     }
+	 return true;
  }
 
- bool PlotWindow::saveAs()
- {
-     QString fileName = QFileDialog::getSaveFileName(this);
-     if (fileName.isEmpty())
-         return false;
+void PlotWindow::about()
+{
+	QMessageBox::about(this, tr("O programie"), 
+		tr("Program pozwala na importowanie danych w formacie AUC, wyœwietlanie i porównywanie wykresów oraz zapisywanie ich do pliku."));
+}
 
-     return saveFile(fileName);
- }
+void PlotWindow::createActions()
+{
+	openAction = new QAction(QIcon("images/open.png"), tr("&Open..."), this);
+	openAction->setShortcuts(QKeySequence::Open);
+	openAction->setStatusTip(tr("Open an existing file"));
+	connect(openAction, SIGNAL(triggered()), this, SLOT(open()));
 
- void PlotWindow::about()
- {
-    QMessageBox::about(this, tr("O programie"),
-             tr("Program pozwala na importowanie danych w formacie AUC,"
-				" wyœwietlanie i porównywanie wykresów oraz zapisywanie"
-				" ich do pliku."));
- }
- 
- void PlotWindow::plotWasModified()
- {
- }
-
- void PlotWindow::createActions()
- {
-     openAction = new QAction(QIcon("images/open.png"), tr("&Open..."), this);
-     openAction->setShortcuts(QKeySequence::Open);
-     openAction->setStatusTip(tr("Open an existing file"));
-     connect(openAction, SIGNAL(triggered()), this, SLOT(open()));
-
-     exitAction = new QAction(tr("E&xit"), this);
-     exitAction->setShortcuts(QKeySequence::Quit);
-     exitAction->setStatusTip(tr("Exit the application"));
-     connect(exitAction, SIGNAL(triggered()), this, SLOT(close()));
+	exitAction = new QAction(tr("E&xit"), this);
+	exitAction->setShortcuts(QKeySequence::Quit);
+	exitAction->setStatusTip(tr("Exit the application"));
+	connect(exitAction, SIGNAL(triggered()), this, SLOT(close()));
 
 #ifndef QT_NO_PRINTER
-	 printAction = new QAction(QIcon("images/print.png"), tr("Print"), this);
-	 printAction->setShortcuts(QKeySequence::Print);
-	 printAction->setStatusTip(tr("Print plot"));
-	 connect(printAction, SIGNAL(triggered()), this, SLOT(print()));
+	printAction = new QAction(QIcon("images/print.png"), tr("Print"), this);
+	printAction->setShortcuts(QKeySequence::Print);
+	printAction->setStatusTip(tr("Print plot"));
+	connect(printAction, SIGNAL(triggered()), this, SLOT(print()));
 #endif
 
-     exportAction = new QAction(QIcon("images/save.png"), tr("&Export"), this);
-     exportAction->setStatusTip(tr("Export document"));
-     connect(exportAction, SIGNAL(triggered()), this, SLOT(exportDocument()));
+	exportAction = new QAction(QIcon("images/save.png"), tr("&Export"), this);
+	exportAction->setStatusTip(tr("Export document"));
+	connect(exportAction, SIGNAL(triggered()), this, SLOT(exportDocument()));
 
-	 switchAction = new QAction(QIcon("images/switch.png"), tr("Switch"), this);
-	 switchAction->setStatusTip(tr("Switch plot"));
-	 connect(switchAction, SIGNAL(triggered()), this, SLOT(switchPlot()));
+	switchAction = new QAction(QIcon("images/switch.png"), tr("Switch"), this);
+	switchAction->setStatusTip(tr("Switch plot"));
+	connect(switchAction, SIGNAL(triggered()), this, SLOT(switchPlot()));
 
-     aboutAct = new QAction(tr("&About"), this);
-     aboutAct->setStatusTip(tr("Show the application's About box"));
-     connect(aboutAct, SIGNAL(triggered()), this, SLOT(about()));
+	aboutAct = new QAction(tr("&About"), this);
+	aboutAct->setStatusTip(tr("Show the application's About box"));
+	connect(aboutAct, SIGNAL(triggered()), this, SLOT(about()));
 
-     aboutQtAct = new QAction(tr("About &Qt"), this);
-     aboutQtAct->setStatusTip(tr("Show the Qt library's About box"));
-     connect(aboutQtAct, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
- }
+	aboutQtAct = new QAction(tr("About &Qt"), this);
+	aboutQtAct->setStatusTip(tr("Show the Qt library's About box"));
+	connect(aboutQtAct, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
+}
 
  void PlotWindow::createMenus()
  {
@@ -180,21 +157,16 @@ void PlotWindow::open()
 
      menuBar()->addSeparator();
 
-     fileMenu = menuBar()->addMenu(tr("&Plot"));
-	 fileMenu->addAction(switchAction);
+     switchMenu = menuBar()->addMenu(tr("&Plot"));
+	 switchMenu->addAction(switchAction);
 
      helpMenu = menuBar()->addMenu(tr("&Help"));
      helpMenu->addAction(aboutAct);
      helpMenu->addAction(aboutQtAct);
  }
 
- void PlotWindow::coordinates(QPoint point)
- {
-     statusBar()->showMessage(QString("Wspó³rzêdne (%1,%2)").arg(point.x()).arg(point.y()));
- }
-
- void PlotWindow::createToolBars()
- {
+void PlotWindow::createToolBars()
+{
      fileToolBar = addToolBar(tr("File"));
      fileToolBar->addAction(openAction);
      
@@ -204,66 +176,12 @@ void PlotWindow::open()
 
 	 fileToolBar->addAction(exportAction);
 	 fileToolBar->addAction(switchAction);
- }
+}
 
- void PlotWindow::createStatusBar()
- {
-     statusBar()->showMessage(tr("Ready"));
- }
-
- void PlotWindow::readSettings()
- {
-     QSettings settings("Trolltech", "Application Example");
-     QPoint pos = settings.value("pos", QPoint(200, 200)).toPoint();
-     QSize size = settings.value("size", QSize(400, 400)).toSize();
-     resize(size);
-     move(pos);
- }
-
- void PlotWindow::writeSettings()
- {
-     QSettings settings("Trolltech", "Application Example");
-     settings.setValue("pos", pos());
-     settings.setValue("size", size());
- }
-
- void PlotWindow::loadFile(const QString &fileName)
- {
-     QFile file(fileName);
-     if (!file.open(QFile::ReadOnly | QFile::Text)) {
-         QMessageBox::warning(this, tr("Application"),
-                              tr("Cannot read file %1:\n%2.")
-                              .arg(fileName)
-                              .arg(file.errorString()));
-         return;
-     }
-
-     QTextStream in(&file);
- #ifndef QT_NO_CURSOR
-     QApplication::setOverrideCursor(Qt::WaitCursor);
- #endif
-     //textEdit->setPlainText(in.readAll());
- #ifndef QT_NO_CURSOR
-     QApplication::restoreOverrideCursor();
- #endif
-
-     setCurrentFile(fileName);
-     statusBar()->showMessage(tr("File loaded"), 2000);
- }
-
- bool PlotWindow::saveFile(const QString &fileName)
- {
-     return true;
- }
-
- void PlotWindow::setCurrentFile(const QString &fileName)
- {
- }
-
- QString PlotWindow::strippedName(const QString &fullFileName)
- {
-     return QFileInfo(fullFileName).fileName();
- }
+void PlotWindow::createStatusBar()
+{
+	statusBar()->showMessage(tr("Ready"));
+}
 
 #ifndef QT_NO_PRINTER
 
