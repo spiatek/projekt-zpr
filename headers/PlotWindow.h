@@ -7,6 +7,7 @@ class QAction;
 class QMenu;
 class QPlainTextEdit;
 class Panel;
+class QHBoxLayout;
 
 class PlotWindow : public QMainWindow 
 {	
@@ -26,6 +27,7 @@ private slots:
 	void about();
 	void plotWasModified();
 	void coordinates(QPoint);
+	void switchPlot();
 
 #ifndef QT_NO_PRINTER
     void print();
@@ -48,7 +50,7 @@ private:
 	bool saveFile(const QString &fileName);
 	void setCurrentFile(const QString &fileName);
 	QString strippedName(const QString &fullFileName);
-	
+
 	QString curFile;
 
 	QMenu *fileMenu;
@@ -56,17 +58,21 @@ private:
 	QMenu *helpMenu;
 	QToolBar *fileToolBar;
 	QToolBar *editToolBar;
-	QAction *newAct;
 	QAction *openAction;
-	QAction *saveAction;
-	QAction *saveAsAct;
 	QAction *printAction;
+	QAction *switchAction;
 	QAction *exportAction;
 	QAction *exitAction;
 	QAction *aboutAct;
 	QAction *aboutQtAct;
 
+	int plot_type;
+
+	QWidget *w;
+	QHBoxLayout *hLayout;
+
     Panel *panel;
 	Plot *roc_plot;
 	Plot *pr_plot;
+	Plot *current_plot;
 };

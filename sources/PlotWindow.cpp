@@ -22,13 +22,18 @@
 
 PlotWindow::PlotWindow()
  {
-	 QWidget *w = new QWidget(this);
-	 roc_plot = new Plot(w);
+	 w = new QWidget(this);
+	 roc_plot = new Plot(w, 0);
+	 pr_plot = new Plot(w, 1);
 	 panel = new Panel(w);
 
-	 QHBoxLayout *hLayout = new QHBoxLayout(w);
+	 pr_plot->hide();
+	 current_plot = roc_plot;
+	 plot_type = 0;
+
+	 hLayout = new QHBoxLayout(w);
 	 hLayout->addWidget(panel);
-	 hLayout->addWidget(roc_plot,10);
+	 hLayout->addWidget(current_plot,10);
 	 
 	 setCentralWidget(w);
 
@@ -39,18 +44,18 @@ PlotWindow::PlotWindow()
 
      readSettings();
 
-     connect(roc_plot, SIGNAL(contentsChanged()), this, SLOT(plotWasModified()));
-	 connect(roc_plot, SIGNAL(curveAdded(QString, QColor, double)), panel, SLOT(addCurve(QString, QColor, double)));
-	 connect(panel, SIGNAL(nameChange(int, QString)), roc_plot, SLOT(changeName(int, QString)));
-	 connect(panel, SIGNAL(colorChange(QString, QColor)), roc_plot, SLOT(changeColor(QString, QColor)));
-	 connect(panel, SIGNAL(getColorAuc(QString)), roc_plot, SLOT(getColAuc(QString)));
-	 connect(roc_plot, SIGNAL(resendColorAuc(QColor, double)), panel, SLOT(readColorAuc(QColor, double)));
-	 connect(panel, SIGNAL(curveDelete(int)), roc_plot, SLOT(deleteCurve(int)));
-	 connect(panel, SIGNAL(hideAllExceptOfThis(int)), roc_plot, SLOT(leaveOneUnhided(int)));
-	 connect(panel, SIGNAL(changeBackgroundColor(QColor)), roc_plot, SLOT(modifyBackgroundColor(QColor)));
-	 connect(panel, SIGNAL(plotNameChange(QString)), roc_plot, SLOT(changePlotName(QString)));
-	 connect(panel, SIGNAL(labelsChange(QString, QString)), roc_plot, SLOT(changePlotLabels(QString, QString)));
-	 connect(panel, SIGNAL(gridChange(int)), roc_plot, SLOT(changeGridState(int)));
+     connect(current_plot, SIGNAL(contentsChanged()), this, SLOT(plotWasModified()));
+	 connect(current_plot, SIGNAL(curveAdded(QString, QColor, double)), panel, SLOT(addCurve(QString, QColor, double)));
+	 connect(panel, SIGNAL(nameChange(int, QString)), current_plot, SLOT(changeName(int, QString)));
+	 connect(panel, SIGNAL(colorChange(QString, QColor)), current_plot, SLOT(changeColor(QString, QColor)));
+	 connect(panel, SIGNAL(getColorAuc(QString)), current_plot, SLOT(getColAuc(QString)));
+	 connect(current_plot, SIGNAL(resendColorAuc(QColor, double)), panel, SLOT(readColorAuc(QColor, double)));
+	 connect(panel, SIGNAL(curveDelete(int)), current_plot, SLOT(deleteCurve(int)));
+	 connect(panel, SIGNAL(hideAllExceptOfThis(int)), current_plot, SLOT(leaveOneUnhided(int)));
+	 connect(panel, SIGNAL(changeBackgroundColor(QColor)), current_plot, SLOT(modifyBackgroundColor(QColor)));
+	 connect(panel, SIGNAL(plotNameChange(QString)), current_plot, SLOT(changePlotName(QString)));
+	 connect(panel, SIGNAL(labelsChange(QString, QString)), current_plot, SLOT(changePlotLabels(QString, QString)));
+	 connect(panel, SIGNAL(gridChange(int)), current_plot, SLOT(changeGridState(int)));
 
      setCurrentFile("");
      setUnifiedTitleAndToolBarOnMac(true);
@@ -66,16 +71,25 @@ void PlotWindow::quit()
 {
 }
 
+void PlotWindow::switchPlot()
+{
+	current_plot->hide();
+	plot_type = (plot_type + 1) % 2;
+	current_plot = (plot_type == 0) ? roc_plot : pr_plot;
+	current_plot->setVisible(true);
+	hLayout->addWidget(current_plot,10);
+}
+
 void PlotWindow::open()
 {
-	 if(/*type == ROC*/1) {
-		roc_plot->addCurve(new FunctionData(::sin), 0, 1.0/*, auc*/);
-	 }
-	 else {
-		 pr_plot->addCurve(new FunctionData(::sin), 1, 0.7/*, auc*/);
-	 }
-
-	 emit plotRefresh();
+	if(plot_type == 0) {
+		current_plot->addCurve(new FunctionData(::sin), 0, 1.0);
+	}
+	else {
+		current_plot->addCurve(new FunctionData(::sin), 1, 0.7);
+	}
+	
+	emit plotRefresh();
  }
 
  bool PlotWindow::save()
@@ -131,6 +145,10 @@ void PlotWindow::open()
      exportAction->setStatusTip(tr("Export document"));
      connect(exportAction, SIGNAL(triggered()), this, SLOT(exportDocument()));
 
+	 switchAction = new QAction(QIcon("images/switch.png"), tr("Switch"), this);
+	 switchAction->setStatusTip(tr("Switch plot"));
+	 connect(switchAction, SIGNAL(triggered()), this, SLOT(switchPlot()));
+
      aboutAct = new QAction(tr("&About"), this);
      aboutAct->setStatusTip(tr("Show the application's About box"));
      connect(aboutAct, SIGNAL(triggered()), this, SLOT(about()));
@@ -155,6 +173,9 @@ void PlotWindow::open()
 
      menuBar()->addSeparator();
 
+     fileMenu = menuBar()->addMenu(tr("&Plot"));
+	 fileMenu->addAction(switchAction);
+
      helpMenu = menuBar()->addMenu(tr("&Help"));
      helpMenu->addAction(aboutAct);
      helpMenu->addAction(aboutQtAct);
@@ -175,6 +196,7 @@ void PlotWindow::open()
 #endif
 
 	 fileToolBar->addAction(exportAction);
+	 fileToolBar->addAction(switchAction);
  }
 
  void PlotWindow::createStatusBar()
@@ -242,7 +264,7 @@ void PlotWindow::print()
 {
     QPrinter printer(QPrinter::HighResolution);
 
-    QString docName = roc_plot->title().text();
+    QString docName = current_plot->title().text();
     if ( !docName.isEmpty() )
     {
         docName.replace (QRegExp (QString::fromLatin1 ("\n")), tr (" -- "));
@@ -263,7 +285,7 @@ void PlotWindow::print()
             renderer.setLayoutFlag(QwtPlotRenderer::FrameWithScales);
         }
 
-        renderer.renderTo(roc_plot, printer);
+        renderer.renderTo(current_plot, printer);
     }
 }
 
@@ -315,6 +337,6 @@ void PlotWindow::exportDocument()
         renderer.setDiscardFlag(QwtPlotRenderer::DiscardBackground, false);
         renderer.setLayoutFlag(QwtPlotRenderer::KeepFrames, true);
 
-        renderer.renderDocument(roc_plot, fileName, QSizeF(300, 200), 85);
+        renderer.renderDocument(current_plot, fileName, QSizeF(300, 200), 85);
 	}
 }

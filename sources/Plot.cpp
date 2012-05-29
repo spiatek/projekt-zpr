@@ -73,12 +73,15 @@ public:
     }
 };
 
-Plot::Plot(QWidget *parent):
-    QwtPlot( parent )
+Plot::Plot(QWidget *parent, int _type):
+    QwtPlot( parent ), type(_type)
 {
 	QTextCodec::setCodecForCStrings(QTextCodec::codecForName("Windows-1250"));		//tu trzeba poprawiæ dla innych systemów
 	setObjectName("Porównanie krzywych");
-	setTitle("Wykres przedstawiaj¹cy porównanie krzywych");
+	if(type == 0)
+		setTitle("Porównanie krzywych ROC");
+	else
+		setTitle("Porównanie krzywych PR");
 
 	const int qtc[] = { 3,2,7,13,8,14,9, 15, 10, 16, 11, 17, 12, 18, 5, 4, 6, 19, 0, 1 };
 	itColor = 0;

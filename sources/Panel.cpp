@@ -153,6 +153,9 @@ void Panel::readColorAuc(QColor _color, double _auc)
 
 void Panel::changeName()
 {
+	if(curveCombo->count() == 0) {
+		return;
+	}
 	int index = curveCombo->currentIndex();
 	QString name = lineEdit->text();
 	curveCombo->setItemText(index, name);
@@ -161,12 +164,18 @@ void Panel::changeName()
 
 void Panel::changePlotName()
 {
+	if(curveCombo->count() == 0) {
+		return;
+	}
 	QString name = plotName->text();
 	emit plotNameChange(name);
 }
 
 void Panel::changeLabels()
 {
+	if(curveCombo->count() == 0) {
+		return;
+	}
 	QString nameX = labelX->text();
 	QString nameY = labelY->text();
 	emit labelsChange(nameX, nameY);
@@ -205,6 +214,10 @@ void Panel::setBcgColor()
 
 void Panel::deleteCurve()
 {
+	if(curveCombo->count() == 0) {
+		return;
+	}
+
 	int index = curveCombo->currentIndex();
 	curveCombo->removeItem(index);
 	emit curveDelete(index);

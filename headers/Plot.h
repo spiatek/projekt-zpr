@@ -11,7 +11,7 @@ class Plot : public QwtPlot
 	Q_OBJECT
 
 public:
-    Plot(QWidget *parent = NULL);
+    Plot(QWidget *parent = NULL, int _type = 0);
 
 	int addCurve(QwtSeriesData<QPointF> *, int, double);	//dodanie krzywej do wykresu
 	int modifyCurveColor(int, QColor);						//zmiana koloru krzywej o danej nazwie
