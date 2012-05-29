@@ -25,14 +25,15 @@ PlotWindow::PlotWindow()
 	 w = new QWidget(this);
 	 roc_plot = new Plot(w, 0);
 	 pr_plot = new Plot(w, 1);
-	 panel = new Panel(w);
+	 roc_panel = new Panel(w, 0);
+	 pr_panel = new Panel(w, 0);
 
-	 pr_plot->hide();
-	 current_plot = roc_plot;
-	 plot_type = 0;
+	 current_plot = pr_plot;
+	 current_panel = pr_panel;
+	 plot_type = 1;
 
 	 hLayout = new QHBoxLayout(w);
-	 hLayout->addWidget(panel);
+	 hLayout->addWidget(current_panel);
 	 hLayout->addWidget(current_plot,10);
 	 
 	 setCentralWidget(w);
@@ -43,19 +44,7 @@ PlotWindow::PlotWindow()
      createStatusBar();
 
      readSettings();
-
-     connect(current_plot, SIGNAL(contentsChanged()), this, SLOT(plotWasModified()));
-	 connect(current_plot, SIGNAL(curveAdded(QString, QColor, double)), panel, SLOT(addCurve(QString, QColor, double)));
-	 connect(panel, SIGNAL(nameChange(int, QString)), current_plot, SLOT(changeName(int, QString)));
-	 connect(panel, SIGNAL(colorChange(QString, QColor)), current_plot, SLOT(changeColor(QString, QColor)));
-	 connect(panel, SIGNAL(getColorAuc(QString)), current_plot, SLOT(getColAuc(QString)));
-	 connect(current_plot, SIGNAL(resendColorAuc(QColor, double)), panel, SLOT(readColorAuc(QColor, double)));
-	 connect(panel, SIGNAL(curveDelete(int)), current_plot, SLOT(deleteCurve(int)));
-	 connect(panel, SIGNAL(hideAllExceptOfThis(int)), current_plot, SLOT(leaveOneUnhided(int)));
-	 connect(panel, SIGNAL(changeBackgroundColor(QColor)), current_plot, SLOT(modifyBackgroundColor(QColor)));
-	 connect(panel, SIGNAL(plotNameChange(QString)), current_plot, SLOT(changePlotName(QString)));
-	 connect(panel, SIGNAL(labelsChange(QString, QString)), current_plot, SLOT(changePlotLabels(QString, QString)));
-	 connect(panel, SIGNAL(gridChange(int)), current_plot, SLOT(changeGridState(int)));
+	 switchPlot();
 
      setCurrentFile("");
      setUnifiedTitleAndToolBarOnMac(true);
@@ -73,11 +62,29 @@ void PlotWindow::quit()
 
 void PlotWindow::switchPlot()
 {
+	current_panel->hide();
 	current_plot->hide();
 	plot_type = (plot_type + 1) % 2;
+	current_panel = (plot_type == 0) ? roc_panel : pr_panel;
+	current_panel->setVisible(true);
 	current_plot = (plot_type == 0) ? roc_plot : pr_plot;
 	current_plot->setVisible(true);
+	hLayout->addWidget(current_panel);
 	hLayout->addWidget(current_plot,10);
+	//emit plotSwitched(plot_type);
+
+	 connect(current_plot, SIGNAL(contentsChanged()), this, SLOT(plotWasModified()));
+	 connect(current_plot, SIGNAL(curveAdded(QString, QColor, double)), current_panel, SLOT(addCurve(QString, QColor, double)));
+	 connect(current_panel, SIGNAL(nameChange(int, QString)), current_plot, SLOT(changeName(int, QString)));
+	 connect(current_panel, SIGNAL(colorChange(QString, QColor)), current_plot, SLOT(changeColor(QString, QColor)));
+	 connect(current_panel, SIGNAL(getColorAuc(QString)), current_plot, SLOT(getColAuc(QString)));
+	 connect(current_plot, SIGNAL(resendColorAuc(QColor, double)), current_panel, SLOT(readColorAuc(QColor, double)));
+	 connect(current_panel, SIGNAL(curveDelete(int)), current_plot, SLOT(deleteCurve(int)));
+	 connect(current_panel, SIGNAL(hideAllExceptOfThis(int)), current_plot, SLOT(leaveOneUnhided(int)));
+	 connect(current_panel, SIGNAL(changeBackgroundColor(QColor)), current_plot, SLOT(modifyBackgroundColor(QColor)));
+	 connect(current_panel, SIGNAL(plotNameChange(QString)), current_plot, SLOT(changePlotName(QString)));
+	 connect(current_panel, SIGNAL(labelsChange(QString, QString)), current_plot, SLOT(changePlotLabels(QString, QString)));
+	 connect(current_panel, SIGNAL(gridChange(int)), current_plot, SLOT(changeGridState(int)));
 }
 
 void PlotWindow::open()

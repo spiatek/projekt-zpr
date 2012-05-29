@@ -17,7 +17,7 @@ class Panel: public QTabWidget
     Q_OBJECT
 
 public:
-    Panel(QWidget * = NULL);
+    Panel(QWidget * = NULL, int _type = 0);
 
 signals:
     void settingsChanged(QString);
@@ -43,6 +43,7 @@ private slots:
 	void changePlotName();
 	void changeLabels();
 	void changeGrid(int);
+	//void switchPlot(int);
 
 private:
 	QWidget *createCurveTab(QWidget *);
@@ -51,7 +52,8 @@ private:
 	QWidget* curvesTab;
 	QWidget* plotTab;
 
-	QComboBox* curveCombo;
+	QComboBox* curvesCombo;
+
 	QLineEdit* lineEdit;
 	QLabel* colorLabel;
 	QLabel* aucLabel;
@@ -70,4 +72,6 @@ private:
 	QPushButton* plotBcgColorButton;
 	QGridLayout* plotLayout;
 	QCheckBox* gridCheckBox;
+
+	int type;
 };

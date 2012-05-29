@@ -37,6 +37,7 @@ private slots:
 	
 signals:
 	void plotRefresh();
+	void plotSwitched(int);
 
 private:
 	void createActions();
@@ -71,7 +72,10 @@ private:
 	QWidget *w;
 	QHBoxLayout *hLayout;
 
-    Panel *panel;
+    Panel *roc_panel;
+    Panel *pr_panel;
+	Panel *current_panel;
+
 	Plot *roc_plot;
 	Plot *pr_plot;
 	Plot *current_plot;

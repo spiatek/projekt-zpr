@@ -10,11 +10,13 @@
 #include <qcolordialog.h>
 #include <qtextcodec.h>
 
-Panel::Panel(QWidget *parent):
+Panel::Panel(QWidget *parent, int _type):
     QTabWidget(parent)
 {
 	QTextCodec::setCodecForCStrings(QTextCodec::codecForName("Windows-1250"));	
     setTabPosition(QTabWidget::North);
+
+	type = _type;
 		
 	addTab(createCurveTab(this), "Curve Properties");
 	addTab(createPlotTab(this), "Plot Properties");
@@ -24,13 +26,13 @@ QWidget *Panel::createCurveTab(QWidget *parent)
 {
 	curvesTab = new QWidget(parent);
 
-	curveCombo = new QComboBox(parent);
+	curvesCombo = new QComboBox(parent);
 	curvesLayout = new QGridLayout(curvesTab);
 
 	int row = 0;
 
     curvesLayout->addWidget(new QLabel("Choose curve:", parent), row++, 0 );
-    curvesLayout->addWidget(curveCombo, row++, 0);
+    curvesLayout->addWidget(curvesCombo, row++, 0);
 
 	QLabel *label1 = new QLabel("Title:", curvesTab);
 	lineEdit = new QLineEdit("", curvesTab);
@@ -60,7 +62,7 @@ QWidget *Panel::createCurveTab(QWidget *parent)
 	curvesLayout->setColumnStretch(1, 10);
     curvesLayout->setRowStretch(row, 20);
 
-	connect(curveCombo, SIGNAL(currentIndexChanged(const QString&)), SLOT(edited(const QString&)));
+	connect(curvesCombo, SIGNAL(currentIndexChanged(const QString&)), SLOT(edited(const QString&)));
 	connect(nameButton, SIGNAL(clicked()), this, SLOT(changeName()));
 	connect(colorButton, SIGNAL(clicked()), this, SLOT(setColor()));
 	connect(deleteButton, SIGNAL(clicked()), this, SLOT(deleteCurve()));
@@ -120,8 +122,8 @@ QWidget *Panel::createPlotTab(QWidget *parent)
 
 void Panel::addCurve(QString _name, QColor _color, double _auc)
 {
-	curveCombo->addItem(_name);
-	curveCombo->setCurrentIndex(curveCombo->count() - 1);
+	curvesCombo->addItem(_name);
+	curvesCombo->setCurrentIndex(curvesCombo->count() - 1);
 	lineEdit->setText(_name);
 	
 	colorLabel->setPalette(QPalette(_color));
@@ -153,29 +155,23 @@ void Panel::readColorAuc(QColor _color, double _auc)
 
 void Panel::changeName()
 {
-	if(curveCombo->count() == 0) {
+	if(curvesCombo->count() == 0) {
 		return;
 	}
-	int index = curveCombo->currentIndex();
+	int index = curvesCombo->currentIndex();
 	QString name = lineEdit->text();
-	curveCombo->setItemText(index, name);
+	curvesCombo->setItemText(index, name);
 	emit nameChange(index, name);
 }
 
 void Panel::changePlotName()
 {
-	if(curveCombo->count() == 0) {
-		return;
-	}
 	QString name = plotName->text();
 	emit plotNameChange(name);
 }
 
 void Panel::changeLabels()
 {
-	if(curveCombo->count() == 0) {
-		return;
-	}
 	QString nameX = labelX->text();
 	QString nameY = labelY->text();
 	emit labelsChange(nameX, nameY);
@@ -189,13 +185,16 @@ void Panel::changeGrid(int _state)
 
 void Panel::setColor()
 {
+	if(curvesCombo->count() == 0) {
+		return;
+	}
     QColor color;
 	color = QColorDialog::getColor(Qt::green, this, "Select Color", QColorDialog::DontUseNativeDialog);
     if (color.isValid()) {
         colorLabel->setPalette(QPalette(color));
         colorLabel->setAutoFillBackground(true);
     }
-	QString name = curveCombo->currentText();
+	QString name = curvesCombo->currentText();
 	colorButton->setChecked(false);
 	emit colorChange(name, color);
  }
@@ -214,30 +213,30 @@ void Panel::setBcgColor()
 
 void Panel::deleteCurve()
 {
-	if(curveCombo->count() == 0) {
+	if(curvesCombo->count() == 0) {
 		return;
 	}
 
-	int index = curveCombo->currentIndex();
-	curveCombo->removeItem(index);
+	int index = curvesCombo->currentIndex();
+	curvesCombo->removeItem(index);
 	emit curveDelete(index);
 
-	if(curveCombo->count() == 0) {
+	if(curvesCombo->count() == 0) {
 		lineEdit->clear();
 		colorLabel->clear();
 		aucLabel->clear();
 		return;
 	}
 	
-	curveCombo->setCurrentIndex(0);		//after delete display first
+	curvesCombo->setCurrentIndex(0);		//after delete display first
 
-	QString which = curveCombo->currentText();
+	QString which = curvesCombo->currentText();
 	lineEdit->setText(which);
 	emit getColorAuc(which);
 }
 
 void Panel::hideAll()
 {
-	int index = curveCombo->currentIndex();
+	int index = curvesCombo->currentIndex();
 	emit hideAllExceptOfThis(index);
 }
