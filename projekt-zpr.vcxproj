@@ -96,6 +96,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="GeneratedFiles\Release\moc_PlotWindow.cpp" />
+    <ClCompile Include="sources\fileProxy.cpp" />
     <ClCompile Include="sources\main.cpp" />
     <ClCompile Include="sources\Panel.cpp" />
     <ClCompile Include="sources\Plot.cpp" />
@@ -103,6 +104,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="headers\Curve.h" />
+    <ClInclude Include="headers\fileProxy.h" />
     <ClInclude Include="headers\FunctionData.h" />
     <CustomBuild Include="headers\Panel.h">
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>

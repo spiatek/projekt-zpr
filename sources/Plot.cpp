@@ -102,10 +102,16 @@ Plot::Plot(QWidget *parent, int _type):
     setAutoReplot(true);
 
     // axes 
-    setAxisTitle(xBottom, "x" );
-    setAxisScale(xBottom, 0.0, 1.0);
+    if(type == 0) {
+		setAxisTitle(xBottom, "False Positive Rate" );
+		setAxisTitle(yLeft, "True Positive Rate");
+	}
+	else {
+		setAxisTitle(xBottom, "Recall" );
+		setAxisTitle(yLeft, "Precision");
+	}
 
-    setAxisTitle(yLeft, "y");
+	setAxisScale(xBottom, 0.0, 1.0);
     setAxisScale(yLeft, 0.0, 1.0);
 
 	grid = new Grid;
