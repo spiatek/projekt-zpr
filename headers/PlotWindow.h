@@ -1,7 +1,8 @@
 #pragma once
-#include "..\headers\Plot.h"
+#include "../headers/Plot.h"
 #include <qmainwindow.h>
 #include <qpoint.h>
+#include "../headers/fileProxy.h"
 
 class QAction;
 class QMenu;
@@ -70,4 +71,8 @@ private:
 	Plot *roc_plot;
 	Plot *pr_plot;
 	Plot *current_plot;
+	
+	//wywalic
+	ProxyFile *pFile;
+	QVector<QPointF>* dPoints;
 };

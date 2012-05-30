@@ -2,7 +2,7 @@
 #include <list>
 #include <qwt_plot.h>
 #include <qwt_plot_curve.h>
-#include "..\headers\Curve.h"
+#include "../headers/Curve.h"
 
 class QwtPlotGrid;
 

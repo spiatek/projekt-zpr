@@ -1,6 +1,6 @@
-#include "..\headers\Plot.h"
-#include "..\headers\FunctionData.h"
-#include "..\headers\Curve.h"
+#include "../headers/Plot.h"
+#include "../headers/FunctionData.h"
+#include "../headers/Curve.h"
 
 #include <iostream>
 #include <qstring.h>
@@ -151,13 +151,15 @@ int Plot::addCurve(QwtSeriesData<QPointF> *_points, int _type, double _auc)
 	QColor color = generateColor();
 	curve->setPen(QPen(color));
     curve->attach(this);
-
+/*
 	if(itColor%2 == 0) {
 		curve->setData(new FunctionData(::sin));
 	}
 	else {
 		curve->setData(new FunctionData(::cos));
 	}
+*/
+	curve->setData(_points);	
 	
 	curve->init(_type, _auc, color);
 	curves_.push_back(curve);

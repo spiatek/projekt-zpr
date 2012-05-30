@@ -1,4 +1,4 @@
-#include "..\headers\Curve.h"
+#include "../headers/Curve.h"
 
 #include <string>
 #include <qwt_text.h>
