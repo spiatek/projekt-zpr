@@ -14,22 +14,7 @@ QVector<QPointF> *dataPoints;
     	dataPoints=_dataPoints;
     }
 
-////////////////////////
 
-
-
-    FunctionData(double(*y)(double)):
-        QwtSyntheticPointData(100),
-        d_y(y)
-    {
-    }
-
-/*
-    virtual double y(double x) const
-    {
-        return d_y(x);
-    }
-*/
 
 //CALCULATE Y VALUE FOR A X VALUE
     virtual double y(double x) const

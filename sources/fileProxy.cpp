@@ -1,4 +1,4 @@
-#include "fileProxy.h"
+#include "../headers/fileProxy.h"
 #include <QFile>
 
 //constructor
@@ -8,6 +8,7 @@ RealFile::RealFile(QString _path){
 
 //destructor
 RealFile::~RealFile(){
+qDebug()<<" RealFile::DESTROY";
 	//delete data_points;
 }
 
@@ -25,6 +26,7 @@ qDebug()<<" RealFile::getData";
 		QStringList field = line.split("\t", QString::SkipEmptyParts);
 		if (field.size()!=2){
 			qDebug()<<"fileproxy error:"<<line;
+		
 			continue;
 		}
 		qDebug()<<field.at(0).toFloat()<<","<<field.at(1).toFloat()<<"  size:"<<field.size();
@@ -43,6 +45,7 @@ ProxyFile::ProxyFile(QString _path){
 }
 
 ProxyFile::~ProxyFile(){
+qDebug()<<" ProxyFile::DESTROY";
 	delete p_real_file;
 }
 

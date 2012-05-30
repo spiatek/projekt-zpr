@@ -94,10 +94,10 @@ Plot::Plot(QWidget *parent, int _type):
 	legend = new QwtLegend;
     legend->setItemMode(QwtLegend::CheckableItem);
     insertLegend(legend, QwtPlot::RightLegend);
-	
+
 	connect(this, SIGNAL(curveAdd()), SLOT(cAdded()));
     connect(this, SIGNAL(legendChecked(QwtPlotItem *, bool)), SLOT(showItem(QwtPlotItem *, bool)));
-	
+
     //replot(); // creating the legend items	
     setAutoReplot(true);
 
@@ -144,7 +144,7 @@ int Plot::addCurve(QwtSeriesData<QPointF> *_points, int _type, double _auc)
 {	
 	QString name = generateName();
 	Curve *curve = new Curve(name);
-	
+
 	//curve->setLegendAttribute(QwtPlotCurve::LegendShowLine, true);
 	curve->setRenderHint(QwtPlotItem::RenderAntialiased);
 
@@ -160,7 +160,7 @@ int Plot::addCurve(QwtSeriesData<QPointF> *_points, int _type, double _auc)
 	}
 */
 	curve->setData(_points);	
-	
+
 	curve->init(_type, _auc, color);
 	curves_.push_back(curve);
 
@@ -223,7 +223,7 @@ void Plot::insertMarkers()
 
 void Plot::updateGradient()
 {
-	//zabawy z gradientowym wyœwietlaniem kolorów
+	//zabawy z gradientowym wy½wietlaniem kolorów
 
     QPalette pal = palette();
 

@@ -106,11 +106,11 @@ void PlotWindow::open()
     
 	if (constIterator->compare("roc",Qt::CaseInsensitive)==0){
 		qDebug()<<"ROC  !"<<*constIterator<<"!";
-		current_plot->addCurve(new FunctionData(dPoints), 0, 1.0);
+		roc_plot->addCurve(new FunctionData(dPoints), 0, 1.0);
 	}
 	else if (constIterator->compare("pr",Qt::CaseInsensitive)==0){ 
 			qDebug()<<"PR   !"<<*constIterator<<"!";
-		current_plot->addCurve(new FunctionData(dPoints), 1, 0.7);
+		pr_plot->addCurve(new FunctionData(dPoints), 1, 0.7);
 	}
 	else{
 		//nieznane rozszerzenie
