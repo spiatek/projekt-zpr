@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 #include "../headers/fileProxy.h"
+=======
+#include "..\headers\fileProxy.h"
+>>>>>>> 0d05fe1bc363618f6730e4ea7197553bb2cceb0d
 #include <QFile>
 
 //constructor

@@ -26,6 +26,7 @@ signals:
 	void getColorAuc(QString);
 	void curveDelete(int);
 	void hideAllExceptOfThis(int);
+	void clearPlot();
 	void changeBackgroundColor(QColor);
 	void plotNameChange(QString);
 	void labelsChange(QString, QString);
@@ -38,6 +39,7 @@ private slots:
 	void changeName();
 	void deleteCurve();
 	void hideAll();
+	void clearAll();
 	void readColorAuc(QColor, double);
 	void setBcgColor();
 	void changePlotName();
@@ -61,6 +63,7 @@ private:
 	QPushButton* nameButton;
 	QPushButton* deleteButton;
 	QPushButton* hideAllButton;
+	QPushButton* clearButton;
 	QGridLayout* curvesLayout;
 
 	QLineEdit* plotName;

@@ -59,6 +59,9 @@ QWidget *Panel::createCurveTab(QWidget *parent)
 	hideAllButton = new QPushButton(tr("Hide all except of this"));
 	curvesLayout->addWidget(hideAllButton, row++, 0);
 
+	clearButton = new QPushButton(tr("Clear all"));
+	curvesLayout->addWidget(clearButton, row++, 0);
+
 	curvesLayout->setColumnStretch(1, 10);
     curvesLayout->setRowStretch(row, 20);
 
@@ -67,6 +70,7 @@ QWidget *Panel::createCurveTab(QWidget *parent)
 	connect(colorButton, SIGNAL(clicked()), this, SLOT(setColor()));
 	connect(deleteButton, SIGNAL(clicked()), this, SLOT(deleteCurve()));
 	connect(hideAllButton, SIGNAL(clicked()), this, SLOT(hideAll()));
+	connect(clearButton, SIGNAL(clicked()), this, SLOT(clearAll()));
 
 	curvesTab->repaint();
 
@@ -161,12 +165,14 @@ void Panel::changeName()
 	int index = curvesCombo->currentIndex();
 	QString name = lineEdit->text();
 	curvesCombo->setItemText(index, name);
+	nameButton->setChecked(false);
 	emit nameChange(index, name);
 }
 
 void Panel::changePlotName()
 {
 	QString name = plotName->text();
+	plotNameButton->setChecked(false);
 	emit plotNameChange(name);
 }
 
@@ -174,12 +180,14 @@ void Panel::changeLabels()
 {
 	QString nameX = labelX->text();
 	QString nameY = labelY->text();
+	labelButton->setChecked(false);
 	emit labelsChange(nameX, nameY);
 
 }
 
 void Panel::changeGrid(int _state)
 {
+	gridCheckBox->setChecked(false);
 	emit gridChange(_state);
 }
 
@@ -219,11 +227,12 @@ void Panel::deleteCurve()
 
 	int index = curvesCombo->currentIndex();
 	curvesCombo->removeItem(index);
+	deleteButton->setChecked(false);
 	emit curveDelete(index);
 
 	if(curvesCombo->count() == 0) {
 		lineEdit->clear();
-		colorLabel->clear();
+		colorLabel->setPalette(QPalette(Qt::white));
 		aucLabel->clear();
 		return;
 	}
@@ -238,5 +247,16 @@ void Panel::deleteCurve()
 void Panel::hideAll()
 {
 	int index = curvesCombo->currentIndex();
+	hideAllButton->setChecked(false);
 	emit hideAllExceptOfThis(index);
+}
+
+void Panel::clearAll()
+{
+	clearButton->setChecked(false);
+	curvesCombo->clear();
+	lineEdit->clear();
+	colorLabel->setPalette(QPalette(Qt::white));
+	aucLabel->clear();
+	emit clearPlot();
 }

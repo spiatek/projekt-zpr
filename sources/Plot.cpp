@@ -102,10 +102,16 @@ Plot::Plot(QWidget *parent, int _type):
     setAutoReplot(true);
 
     // axes 
-    setAxisTitle(xBottom, "x" );
-    setAxisScale(xBottom, 0.0, 1.0);
+    if(type == 0) {
+		setAxisTitle(xBottom, "False Positive Rate" );
+		setAxisTitle(yLeft, "True Positive Rate");
+	}
+	else {
+		setAxisTitle(xBottom, "Recall" );
+		setAxisTitle(yLeft, "Precision");
+	}
 
-    setAxisTitle(yLeft, "y");
+	setAxisScale(xBottom, 0.0, 1.0);
     setAxisScale(yLeft, 0.0, 1.0);
 
 	grid = new Grid;
@@ -164,8 +170,20 @@ int Plot::addCurve(QwtSeriesData<QPointF> *_points, int _type, double _auc)
 	curve->init(_type, _auc, color);
 	curves_.push_back(curve);
 
+	QwtPlotItemList items = itemList(QwtPlotItem::Rtti_PlotCurve);
+	for ( int i = 0; i < items.size(); i++ )
+    {
+		if ( i == items.size() - 1 )
+        {
+			QwtLegendItem *legendItem = (QwtLegendItem *)legend->find(items[i]);
+            if ( legendItem )
+                legendItem->setChecked(true);
+            items[i]->setVisible(true);
+        }
+    }
+
 	emit curveAdded(name, color, _auc);
-	emit curveAdd();
+	//emit curveAdd();
 
 	return 0;
 }
@@ -278,7 +296,7 @@ void Plot::showItem(QwtPlotItem *item, bool on)
 
 void Plot::cAdded(void)
 {
-	QwtPlotItemList items = itemList(QwtPlotItem::Rtti_PlotCurve);
+	/*QwtPlotItemList items = itemList(QwtPlotItem::Rtti_PlotCurve);
 	for ( int i = 0; i < items.size(); i++ )
     {
 		if ( i == items.size() - 1 )
@@ -288,7 +306,7 @@ void Plot::cAdded(void)
                 legendItem->setChecked(true);
             items[i]->setVisible(true);
         }
-    }
+    }*/
 }
 
 void Plot::changeName(int _pos, QString _newName)
@@ -353,6 +371,21 @@ void Plot::leaveOneUnhided(int _pos)
 			items[i]->setVisible(false);
 		}
     }
+}
+
+void Plot::clearAll()
+{
+	QwtPlotItemList items = itemList(QwtPlotItem::Rtti_PlotCurve);
+	for(int i = 0; i < items.size(); i++)
+    {
+		QwtLegendItem *legendItem = (QwtLegendItem *)legend->find(items[i]);
+		if(legendItem) {
+			legendItem->setChecked(false);
+		}
+		items[i]->detach();
+	}
+	legend->repaint();
+	replot();
 }
 
 void Plot::modifyBackgroundColor(QColor _color)
