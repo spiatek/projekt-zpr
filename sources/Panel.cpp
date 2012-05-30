@@ -1,4 +1,4 @@
-#include "..\headers\Panel.h"
+#include "../headers/Panel.h"
 #include <qlabel.h>
 #include <qcombobox.h>
 #include <qlayout.h>

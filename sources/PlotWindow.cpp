@@ -1,6 +1,6 @@
-#include "..\headers\PlotWindow.h"
-#include "..\headers\FunctionData.h"
-#include "..\headers\Panel.h"
+#include "../headers/PlotWindow.h"
+#include "../headers/FunctionData.h"
+#include "../headers/Panel.h"
 #include <qlayout.h>
 #include <qaction.h>
 #include <qtextcodec.h>
@@ -85,11 +85,36 @@ void PlotWindow::switchPlot()
 
 void PlotWindow::open()
 {
-	if(plot_type == 0) {
-		current_plot->addCurve(new FunctionData(::sin), 0, 1.0);
+
+	QString fileName = QFileDialog::getOpenFileName(this,
+	 												tr("Open File"),
+	 												QDir::currentPath(),
+  													tr("ROC files (*.roc);;PR files (*.pr);;all files (*.*)"));
+         
+	if (!fileName.isEmpty()){
+		pFile = new ProxyFile(fileName);
+ 		dPoints=pFile->getData();
+ 	}
+ 	else{
+ 		return;
+ 	}
+	
+	QStringList field = fileName.split(".", QString::SkipEmptyParts);
+	
+	QStringList::const_iterator constIterator;
+    constIterator = --field.constEnd();//!!   
+    
+	if (constIterator->compare("roc",Qt::CaseInsensitive)==0){
+		qDebug()<<"ROC  !"<<*constIterator<<"!";
+		current_plot->addCurve(new FunctionData(dPoints), 0, 1.0);
 	}
-	else {
-		current_plot->addCurve(new FunctionData(::sin), 1, 0.7);
+	else if (constIterator->compare("pr",Qt::CaseInsensitive)==0){ 
+			qDebug()<<"PR   !"<<*constIterator<<"!";
+		current_plot->addCurve(new FunctionData(dPoints), 1, 0.7);
+	}
+	else{
+		//nieznane rozszerzenie
+		return;
 	}
 	
 	emit plotRefresh();

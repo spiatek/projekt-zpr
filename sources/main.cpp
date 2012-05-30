@@ -1,7 +1,7 @@
 #include <qapplication.h>
 #include <qtranslator.h>
 #include <qlibraryinfo.h>
-#include "..\headers\PlotWindow.h"
+#include "../headers/PlotWindow.h"
 
 int main(int argc, char *argv[])
 {	
