@@ -60,6 +60,7 @@ private:
 	QAction *aboutQtAct;
 
 	int plot_type;
+	int switched;
 
 	QWidget *w;
 	QHBoxLayout *hLayout;
