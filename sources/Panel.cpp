@@ -59,6 +59,9 @@ QWidget *Panel::createCurveTab(QWidget *parent)
 	hideAllButton = new QPushButton(tr("Hide all except of this"));
 	curvesLayout->addWidget(hideAllButton, row++, 0);
 
+	clearButton = new QPushButton(tr("Clear all"));
+	curvesLayout->addWidget(clearButton, row++, 0);
+
 	curvesLayout->setColumnStretch(1, 10);
     curvesLayout->setRowStretch(row, 20);
 
@@ -67,6 +70,7 @@ QWidget *Panel::createCurveTab(QWidget *parent)
 	connect(colorButton, SIGNAL(clicked()), this, SLOT(setColor()));
 	connect(deleteButton, SIGNAL(clicked()), this, SLOT(deleteCurve()));
 	connect(hideAllButton, SIGNAL(clicked()), this, SLOT(hideAll()));
+	connect(clearButton, SIGNAL(clicked()), this, SLOT(clearAll()));
 
 	curvesTab->repaint();
 
@@ -228,7 +232,7 @@ void Panel::deleteCurve()
 
 	if(curvesCombo->count() == 0) {
 		lineEdit->clear();
-		colorLabel->clear();
+		colorLabel->setPalette(QPalette(Qt::white));
 		aucLabel->clear();
 		return;
 	}
@@ -245,4 +249,14 @@ void Panel::hideAll()
 	int index = curvesCombo->currentIndex();
 	hideAllButton->setChecked(false);
 	emit hideAllExceptOfThis(index);
+}
+
+void Panel::clearAll()
+{
+	clearButton->setChecked(false);
+	curvesCombo->clear();
+	lineEdit->clear();
+	colorLabel->setPalette(QPalette(Qt::white));
+	aucLabel->clear();
+	emit clearPlot();
 }

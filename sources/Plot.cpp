@@ -373,6 +373,21 @@ void Plot::leaveOneUnhided(int _pos)
     }
 }
 
+void Plot::clearAll()
+{
+	QwtPlotItemList items = itemList(QwtPlotItem::Rtti_PlotCurve);
+	for(int i = 0; i < items.size(); i++)
+    {
+		QwtLegendItem *legendItem = (QwtLegendItem *)legend->find(items[i]);
+		if(legendItem) {
+			legendItem->setChecked(false);
+		}
+		items[i]->detach();
+	}
+	legend->repaint();
+	replot();
+}
+
 void Plot::modifyBackgroundColor(QColor _color)
 {
 	setPalette(QPalette(_color));

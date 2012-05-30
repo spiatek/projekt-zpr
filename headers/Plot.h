@@ -29,6 +29,7 @@ public slots:
 	void getColAuc(QString);
 	void deleteCurve(int);									//usuniêcie krzywej o danej nazwie
 	void leaveOneUnhided(int);
+	void clearAll();
 	void modifyBackgroundColor(QColor);
 	void changePlotName(QString);
 	void changePlotLabels(QString, QString);

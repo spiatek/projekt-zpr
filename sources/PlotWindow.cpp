@@ -80,6 +80,7 @@ void PlotWindow::switchPlot()
 		connect(current_plot, SIGNAL(resendColorAuc(QColor, double)), current_panel, SLOT(readColorAuc(QColor, double)));
 		connect(current_panel, SIGNAL(curveDelete(int)), current_plot, SLOT(deleteCurve(int)));
 		connect(current_panel, SIGNAL(hideAllExceptOfThis(int)), current_plot, SLOT(leaveOneUnhided(int)));
+		connect(current_panel, SIGNAL(clearPlot()), current_plot, SLOT(clearAll()));
 		connect(current_panel, SIGNAL(changeBackgroundColor(QColor)), current_plot, SLOT(modifyBackgroundColor(QColor)));
 		connect(current_panel, SIGNAL(plotNameChange(QString)), current_plot, SLOT(changePlotName(QString)));
 		connect(current_panel, SIGNAL(labelsChange(QString, QString)), current_plot, SLOT(changePlotLabels(QString, QString)));
@@ -112,11 +113,11 @@ void PlotWindow::open()
     
 	if (constIterator->compare("roc",Qt::CaseInsensitive)==0){
 		qDebug()<<"ROC  !"<<*constIterator<<"!";
-		current_plot->addCurve(new FunctionData(dPoints), 0, 1.0);
+		roc_plot->addCurve(new FunctionData(dPoints), 0, 1.0);
 	}
 	else if (constIterator->compare("pr",Qt::CaseInsensitive)==0){ 
 			qDebug()<<"PR   !"<<*constIterator<<"!";
-		current_plot->addCurve(new FunctionData(dPoints), 1, 0.7);
+		pr_plot->addCurve(new FunctionData(dPoints), 1, 0.7);
 	}
 	else{
 		//nieznane rozszerzenie
