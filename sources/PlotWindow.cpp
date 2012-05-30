@@ -1,6 +1,6 @@
-#include "..\headers\PlotWindow.h"
-#include "..\headers\FunctionData.h"
-#include "..\headers\Panel.h"
+#include "../headers/PlotWindow.h"
+#include "../headers/FunctionData.h"
+#include "../headers/Panel.h"
 #include <qlayout.h>
 #include <qaction.h>
 #include <qtextcodec.h>
@@ -91,7 +91,7 @@ void PlotWindow::open()
 	else {
 		current_plot->addCurve(new FunctionData(::sin), 1, 0.7);
 	}
-	
+
 	emit plotRefresh();
  }
 

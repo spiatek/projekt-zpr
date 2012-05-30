@@ -161,12 +161,14 @@ void Panel::changeName()
 	int index = curvesCombo->currentIndex();
 	QString name = lineEdit->text();
 	curvesCombo->setItemText(index, name);
+	nameButton->setChecked(false);
 	emit nameChange(index, name);
 }
 
 void Panel::changePlotName()
 {
 	QString name = plotName->text();
+	plotNameButton->setChecked(false);
 	emit plotNameChange(name);
 }
 
@@ -174,12 +176,14 @@ void Panel::changeLabels()
 {
 	QString nameX = labelX->text();
 	QString nameY = labelY->text();
+	labelButton->setChecked(false);
 	emit labelsChange(nameX, nameY);
 
 }
 
 void Panel::changeGrid(int _state)
 {
+	gridCheckBox->setChecked(false);
 	emit gridChange(_state);
 }
 
@@ -219,6 +223,7 @@ void Panel::deleteCurve()
 
 	int index = curvesCombo->currentIndex();
 	curvesCombo->removeItem(index);
+	deleteButton->setChecked(false);
 	emit curveDelete(index);
 
 	if(curvesCombo->count() == 0) {
@@ -238,5 +243,6 @@ void Panel::deleteCurve()
 void Panel::hideAll()
 {
 	int index = curvesCombo->currentIndex();
+	hideAllButton->setChecked(false);
 	emit hideAllExceptOfThis(index);
 }
