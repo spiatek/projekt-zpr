@@ -97,13 +97,17 @@ void PlotWindow::open()
 	 												tr("Open File"),
 	 												QDir::currentPath(),
   													tr("ROC files (*.roc);;PR files (*.pr);;all files (*.*)"));
-         
+     /*    
 	if (!fileName.isEmpty()){
-		pFile = new ProxyFile(fileName);
- 		dPoints=pFile->getData();
+		//pFile = new ProxyFile(fileName);
+ 		//dPoints=pFile->getData();
  	}
  	else{
  		return;
+ 	}*/
+	
+	if (fileName.isEmpty()){
+		return;
  	}
 	
 	QStringList field = fileName.split(".", QString::SkipEmptyParts);
@@ -113,11 +117,11 @@ void PlotWindow::open()
     
 	if (constIterator->compare("roc",Qt::CaseInsensitive)==0){
 		qDebug()<<"ROC  !"<<*constIterator<<"!";
-		roc_plot->addCurve(new FunctionData(dPoints), 0, 1.0);
+		roc_plot->addCurve(fileName, 0, 1.0);
 	}
 	else if (constIterator->compare("pr",Qt::CaseInsensitive)==0){ 
 			qDebug()<<"PR   !"<<*constIterator<<"!";
-		pr_plot->addCurve(new FunctionData(dPoints), 1, 0.7);
+		pr_plot->addCurve(fileName, 1, 0.7);
 	}
 	else{
 		//nieznane rozszerzenie

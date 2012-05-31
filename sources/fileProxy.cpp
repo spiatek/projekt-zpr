@@ -1,8 +1,5 @@
-<<<<<<< HEAD
+
 #include "../headers/fileProxy.h"
-=======
-#include "..\headers\fileProxy.h"
->>>>>>> 0d05fe1bc363618f6730e4ea7197553bb2cceb0d
 #include <QFile>
 
 //constructor
@@ -17,26 +14,26 @@ qDebug()<<" RealFile::DESTROY";
 }
 
 QVector<QPointF>* RealFile::getData(){
-qDebug()<<" RealFile::getData";
+//qDebug()<<" RealFile::getData";
 	//read from file
 	QFile file(path);
 	file.open(QIODevice::ReadOnly | QIODevice::Text);
 	QTextStream in(&file);
 	QString line;
-	qDebug()<<" RealFile::getData2";
+	//qDebug()<<" RealFile::getData2";
 	
 	while (!in.atEnd()) {
 		line= in.readLine();
 		QStringList field = line.split("\t", QString::SkipEmptyParts);
 		if (field.size()!=2){
-			qDebug()<<"fileproxy error:"<<line;
+		//	qDebug()<<"fileproxy error:"<<line<<"   segments:"<<field.size();
 		
 			continue;
 		}
-		qDebug()<<field.at(0).toFloat()<<","<<field.at(1).toFloat()<<"  size:"<<field.size();
+	//	qDebug()<<field.at(0).toFloat()<<","<<field.at(1).toFloat()<<"  size:"<<field.size();
 		data_points.append( QPointF( field.at(0).toFloat(), field.at(1).toFloat() ) );	
 	}
-	qDebug()<<" RealFile::getData return";
+	//qDebug()<<" RealFile::getData return";
 	return &data_points;
 }
 

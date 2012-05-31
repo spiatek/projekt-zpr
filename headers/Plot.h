@@ -3,6 +3,9 @@
 #include <qwt_plot.h>
 #include <qwt_plot_curve.h>
 #include "../headers/Curve.h"
+#include "../headers/fileProxy.h"
+
+#define CURVE_LIMIT 20
 
 class QwtPlotGrid;
 
@@ -13,7 +16,7 @@ class Plot : public QwtPlot
 public:
     Plot(QWidget *parent = NULL, int _type = 0);
 
-	int addCurve(QwtSeriesData<QPointF> *, int, double);	//dodanie krzywej do wykresu
+	int addCurve(QString, int, double);	//dodanie krzywej do wykresu
 	int modifyCurveColor(int, QColor);						//zmiana koloru krzywej o danej nazwie
 
 protected:
@@ -48,7 +51,9 @@ private:
     void updateGradient();
 
 	int type;						//typ krzywej (ROC, PR)
-	std::list<Curve*> curves_;
+	int curve_counter;
+	std::vector<Curve*> curves_;
+	std::vector<ProxyFile*> proxies_;
 	QwtLegend *legend;
 	QwtPlotGrid *grid;
 

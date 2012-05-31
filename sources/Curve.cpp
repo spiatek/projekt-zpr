@@ -19,6 +19,7 @@ void Curve::init(int _type, double _auc, QColor _color)
 	auc_ = _auc;
 	color_ = _color;
 	isHidden_ = false;
+	
 }
 
 int Curve::getId()
@@ -39,4 +40,9 @@ double Curve::getAUC()
 QColor Curve::getColor()
 {
 	return color_;
+}
+
+QwtText Curve::getTitle()
+{
+	return this->title();
 }

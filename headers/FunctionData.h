@@ -2,16 +2,52 @@
 #include <qwt_plot_curve.h>
 #include <cmath>
 
-class FunctionData: public QwtSyntheticPointData
+class FunctionData:  public QwtSeriesData<QPointF> //
 {
 public:
-//WYWALIC
-
-QVector<QPointF> *dataPoints;
+	QVector<QPointF> *dataPoints;
 	
-	FunctionData(QVector<QPointF> *_dataPoints): QwtSyntheticPointData(100)
+
+
+
+//TEST!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+	FunctionData(QVector<QPointF> *_dataPoints)
     {
     	dataPoints=_dataPoints;
+    }
+    
+   // const SignalData &values() const;
+    
+   // SignalData &values();
+    
+    virtual QPointF sample(size_t i) const{
+    	return (*dataPoints)[i];
+    }
+    
+    virtual size_t size() const
+    {
+    	return dataPoints->size();
+    }
+
+    virtual QRectF boundingRect() const{
+    
+    }
+    
+    
+
+
+
+
+
+////////////////////////
+/*
+
+
+    FunctionData(double(*y)(double)):
+        QwtSyntheticPointData(100),
+        d_y(y)
+    {
     }
 
 
@@ -54,4 +90,5 @@ QVector<QPointF> *dataPoints;
 
 private:
     double(*d_y)(double);
+    */
 };

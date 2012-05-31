@@ -144,19 +144,86 @@ Plot::Plot(QWidget *parent, int _type):
 
 	QWidget::setMouseTracking(true);
 	installEventFilter(this);
+	
+	curve_counter=0;
 }
 
-int Plot::addCurve(QwtSeriesData<QPointF> *_points, int _type, double _auc)
+int Plot::addCurve(QString fileName, int _type, double _auc)
 {	
-	QString name = generateName();
-	Curve *curve = new Curve(name);
+int atchn=0;
+for (int i=0; i<curves_.size(); i++){
+	if ((curves_[i])->attached){
+		atchn++;
+	}
+}
+qDebug()<<"attached1:"<<atchn;
 
+
+	ProxyFile *_proxy;
+	QColor color;
+	QString name;
+	Curve *curve;
+
+	bool exists=false;
+	for (int i=0; i<proxies_.size(); i++){
+		if ((proxies_[i])->real_file_path==fileName){
+		qDebug()<<"already exists";
+			curve=(curves_[i]);
+			
+			
+			if (curve->attached){
+			qDebug()<<"already attached";
+				return 0;
+			}
+			
+			exists=true;
+			
+			_proxy=proxies_[i];
+			(curves_[i])->attach(this);
+			color = (curves_[i])->getColor();
+			name = ((curves_[i])->getTitle()).text();
+			curve->attached=true;
+		}
+	}
+
+
+
+
+/*
+	if (curve_counter>=CURVE_LIMIT){
+		for (int i=0; i<curves_.size(); i++){
+			if ((curves_[i])->deleted){
+				delete curves_[i];
+				curves_.erase(curves_.begin()+i);
+				delete proxies_[i];
+				proxies_.erase(proxies_.begin()+i);
+				break;
+			}
+		}
+	}
+	if (curve_counter>=CURVE_LIMIT){
+	//too many curves, error message
+		return;
+	}
+*/
+
+
+
+
+
+if (exists==false){
+qDebug()<<"loading";
+
+	name = generateName();
+	curve = new Curve(name);
+	curve->attached=true;
 	//curve->setLegendAttribute(QwtPlotCurve::LegendShowLine, true);
 	curve->setRenderHint(QwtPlotItem::RenderAntialiased);
 
-	QColor color = generateColor();
+	color = generateColor();
 	curve->setPen(QPen(color));
     curve->attach(this);
+    
 /*
 	if(itColor%2 == 0) {
 		curve->setData(new FunctionData(::sin));
@@ -164,12 +231,31 @@ int Plot::addCurve(QwtSeriesData<QPointF> *_points, int _type, double _auc)
 	else {
 		curve->setData(new FunctionData(::cos));
 	}
+	
+	ProxyFile *_proxy
 */
-	curve->setData(_points);	
+	
+		qDebug()<<"DOESNT EXIST";
+		_proxy = new ProxyFile(fileName);
+	
+	QVector<QPointF>* dPoints;
+	dPoints=_proxy->getData();
+
+	curve->setData(new FunctionData(dPoints));	
+
+	
 
 	curve->init(_type, _auc, color);
 	curves_.push_back(curve);
+	proxies_.push_back(_proxy);
+	
+}
 
+curve->position=(itemList(QwtPlotItem::Rtti_PlotCurve)).size()-1;
+	qDebug()<<"curve position:"<<curve->position;
+	
+curve_counter++;
+qDebug()<<"QwtPlotItemList items = itemList(QwtPlotItem::Rtti_PlotCurve)";
 	QwtPlotItemList items = itemList(QwtPlotItem::Rtti_PlotCurve);
 	for ( int i = 0; i < items.size(); i++ )
     {
@@ -181,16 +267,32 @@ int Plot::addCurve(QwtSeriesData<QPointF> *_points, int _type, double _auc)
             items[i]->setVisible(true);
         }
     }
-
+qDebug()<<"emit";
 	emit curveAdded(name, color, _auc);
 	//emit curveAdd();
+	
+	qDebug()<<"emited cc:"<<curve_counter;
+	
+	
 
+		
+	
+	
+atchn=0;
+for (int i=0; i<curves_.size(); i++){
+	if ((curves_[i])->attached){
+		atchn++;
+	}
+}
+qDebug()<<"attached2:"<<atchn;
+
+	
 	return 0;
 }
 
 int Plot::modifyCurveColor(int _id, QColor color)
 {
-	list<Curve*>::iterator it;
+	vector<Curve*>::iterator it;
 	for(it = curves_.begin(); it != curves_.end(); ++it) 
 	{
 		if((*it)->getId() == _id) {
@@ -319,7 +421,7 @@ void Plot::changeName(int _pos, QString _newName)
 void Plot::changeColor(QString _name, QColor _newColor)
 {
 	QwtPlotItemList items = itemList(QwtPlotItem::Rtti_PlotCurve);
-	list<Curve*>::const_iterator it;
+	vector<Curve*>::const_iterator it;
 	for(it = curves_.begin(); it != curves_.end(); ++it) 
 	{	
 		if((*it)->title() == _name) {
@@ -334,7 +436,7 @@ void Plot::getColAuc(QString _name)
 	QColor color;
 	double auc;
 	QwtPlotItemList items = itemList(QwtPlotItem::Rtti_PlotCurve);
-	list<Curve*>::const_iterator it;
+	vector<Curve*>::const_iterator it;
 	for(it = curves_.begin(); it != curves_.end(); ++it) 
 	{	
 		if((*it)->title() == _name) {
@@ -347,10 +449,36 @@ void Plot::getColAuc(QString _name)
 
 void Plot::deleteCurve(int _id)								//usuniêcie krzywej o danym id
 {
+qDebug()<<"DETACH curve id:"<<_id;
+	
 	QwtPlotItemList items = itemList(QwtPlotItem::Rtti_PlotCurve);
+	qDebug()<<items.size()<<" count pre:"<<curve_counter<<" "<<curves_.size()<<"  "<<proxies_.size();
 	items[_id]->detach();
+	
+	//curves_[_id]->attached=false;
 	legend->repaint();
+	curve_counter--;
 	replot();	
+	qDebug()<<"curve counter:"<<curve_counter;
+	
+	int atchn=0;
+	for (int i=0; i<curves_.size(); i++){
+		if ((curves_[i])->position==_id){
+			curves_[i]->attached=false;
+		}
+		if (curves_[i]->position>_id){
+			curves_[i]->position--;
+		}
+	}
+	for (int i=0; i<curves_.size(); i++){
+		if ((curves_[i])->attached){
+			atchn++;
+		}
+	}
+qDebug()<<"DELETE number of attached:"<<atchn;
+	
+	
+	
 }
 
 void Plot::leaveOneUnhided(int _pos)

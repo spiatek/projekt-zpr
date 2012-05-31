@@ -30,6 +30,9 @@ public:
 	int getType();
 	double getAUC();
 	QColor getColor();
+	QwtText getTitle();
+	bool attached;
+	int position;
 
 private:
 

@@ -74,6 +74,6 @@ private:
 	Plot *current_plot;
 	
 	//wywalic
-	ProxyFile *pFile;
-	QVector<QPointF>* dPoints;
+	//ProxyFile <ProxyFile> *pFile
+	//QVector<QPointF>* dPoints;
 };
