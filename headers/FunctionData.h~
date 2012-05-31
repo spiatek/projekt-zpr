@@ -1,0 +1,57 @@
+#pragma once
+#include <qwt_plot_curve.h>
+#include <cmath>
+
+class FunctionData: public QwtSyntheticPointData
+{
+public:
+//WYWALIC
+
+QVector<QPointF> *dataPoints;
+	
+	FunctionData(QVector<QPointF> *_dataPoints): QwtSyntheticPointData(100)
+    {
+    	dataPoints=_dataPoints;
+    }
+
+
+
+//CALCULATE Y VALUE FOR A X VALUE
+    virtual double y(double x) const
+    {
+    	if (!dataPoints){
+    		qDebug()<<"!dp";
+    	    return 0.0;
+    	}
+    	else if (x<0.0){
+    		qDebug()<<"x<0";
+    		return 0.0;
+    	}
+    	else if (x>1.0){
+    		qDebug()<<"x>1";
+    		return 1.0;
+    	}
+    	else{
+    	//qDebug()<<"dpontssize:"<< dataPoints->size();
+    		QPointF pf;
+    		double closest=10.0,closesty;
+    		for (int i = 0; i < dataPoints->size(); ++i) {
+    			pf = (*dataPoints)[i];
+    			double pt = pf.x();	
+    			double d1 = closest;
+    			double d2 = fabs(pt-x);
+    			//qDebug()<<"  i:"<<i<<"  x:"<<x<<"  pt:"<<pt<<"  d1:"<<d1<<"  d2"<<d2<<"   clos"<<closest<<"   cly"<<closesty;
+     			if ( d2 < closest ){	
+     				closest=d2;
+     				closesty=pf.y();
+     			}
+     			//qDebug()<<"  i:"<<i<<"  x:"<<x<<"  pt:"<<pt<<"  d1:"<<d1<<"  d2"<<d2<<"   clos"<<closest<<"   cly"<<closesty;
+       		}
+       		//qDebug()<<"  x:"<<x<<"  closest:"<<closest<<"  y:"<<closesty;
+         	return closesty;
+    }
+}
+
+private:
+    double(*d_y)(double);
+};
