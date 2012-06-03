@@ -14,6 +14,7 @@
 #include <list>
 #include <qlistwidget.h>
 #include <qlist.h>
+#include <qpointer.h>
 
 class QGridLayout;
 class QComboBox;
@@ -27,7 +28,7 @@ class Panel: public QTabWidget
     Q_OBJECT
 
 public:
-    Panel(QWidget * = NULL, int _type = 0);
+    Panel(QPointer<QWidget> parent = NULL, int _type = 0);
 
 signals:
     void settingsChanged(QString);
@@ -57,33 +58,33 @@ private slots:
 	void changeGrid(int);
 
 private:
-	QWidget *createCurveTab(QWidget *);
-	QWidget *createPlotTab(QWidget *);
+	QPointer<QWidget> createCurveTab(QPointer<QWidget>);
+	QPointer<QWidget> createPlotTab(QPointer<QWidget>);
 
-	QWidget* curvesTab;
-	QWidget* plotTab;
+	QPointer<QWidget> curvesTab;
+	QPointer<QWidget> plotTab;
 
-	QComboBox* curvesCombo;
+	QPointer<QComboBox> curvesCombo;
 
-	QLineEdit* lineEdit;
-	QLabel* colorLabel;
-	QLabel* aucLabel;
-	QPushButton* colorButton;
-	QPushButton* nameButton;
-	QPushButton* deleteButton;
-	QPushButton* hideAllButton;
-	QPushButton* clearButton;
-	QGridLayout* curvesLayout;
+	QPointer<QLineEdit> lineEdit;
+	QPointer<QLabel> colorLabel;
+	QPointer<QLabel> aucLabel;
+	QPointer<QPushButton> colorButton;
+	QPointer<QPushButton> nameButton;
+	QPointer<QPushButton> deleteButton;
+	QPointer<QPushButton> hideAllButton;
+	QPointer<QPushButton> clearButton;
+	QPointer<QGridLayout> curvesLayout;
 
-	QLineEdit* plotName;
-	QLineEdit* labelX;
-	QLineEdit* labelY;
-	QLabel* plotBcgColorLabel;
-	QPushButton* plotNameButton;
-	QPushButton* labelButton;
-	QPushButton* plotBcgColorButton;
-	QGridLayout* plotLayout;
-	QCheckBox* gridCheckBox;
+	QPointer<QLineEdit> plotName;
+	QPointer<QLineEdit> labelX;
+	QPointer<QLineEdit> labelY;
+	QPointer<QLabel> plotBcgColorLabel;
+	QPointer<QPushButton> plotNameButton;
+	QPointer<QPushButton> labelButton;
+	QPointer<QPushButton> plotBcgColorButton;
+	QPointer<QGridLayout> plotLayout;
+	QPointer<QCheckBox> gridCheckBox;
 
 	int type;
 };
