@@ -182,8 +182,8 @@ void PlotWindow::open()
 */
 void PlotWindow::about()
 {	
-	QMessageBox::about(this, tr("O programie"), 
-		tr("Program pozwala na importowanie danych w formacie AUC, wywietlanie i porównywanie wykresów oraz zapisywanie ich do pliku."));
+	QMessageBox::about(this, tr("About program"), 
+		tr("Program enables loading curves from files with .roc and .pr extensions."));
 }
 
 /**

@@ -41,6 +41,7 @@
 #include <qwt_legend_item.h>
 #include <qevent.h>
 #include <qmessagebox.h>
+#include <qerrormessage.h>
 
 using namespace std;
 
@@ -124,7 +125,7 @@ Plot::Plot(QPointer<QWidget> parent, int _type):
 		}
 	}
 	catch(QString& w) {
-		QMessageBox::about(this, tr("Nieobs³ugiwany typ wykresu"), w);
+		QMessageBox::about(this, tr("Nieznany typ wykresu"), w);
 	}
 
 	///Initialize table containing color values
@@ -161,7 +162,7 @@ Plot::Plot(QPointer<QWidget> parent, int _type):
 		}
 	}
 	catch(QString& w) {
-		QMessageBox::about(this, tr("Nieobs³ugiwany typ wykresu"), w);
+		QMessageBox::about(this, tr("Nieznany typ wykresu"), w);
 	}
 
 	///Set axis ranges
@@ -267,13 +268,20 @@ int Plot::addCurve(QString fileName, int _type)
 		dPoints=_proxy->getData();
 
 		///count AUC
-		if (dPoints->size()<2){
-			throw 1003;
-		}
-		else{
-			for (int i=0; i<dPoints->size()-1; i++){
-				_auc+=1.0/2.0*( (*dPoints)[i].y()+(*dPoints)[i+1].y() ) * ( (*dPoints)[i+1].x()-(*dPoints)[i].x() );
+		try {
+			if (dPoints->size()<2){
+				throw 1003;
 			}
+			else{
+				for (int i=0; i<dPoints->size()-1; i++){
+					_auc+=1.0/2.0*( (*dPoints)[i].y()+(*dPoints)[i+1].y() ) * ( (*dPoints)[i+1].x()-(*dPoints)[i].x() );
+				}
+			}
+		}
+		catch(int e) {
+			QErrorMessage errorMessage;
+			if(e == 1003)
+				errorMessage.showMessage("Error. Unable to calculate AUC. Bad number of points.");
 		}
 
 		curve->setData(new FunctionData(dPoints));
