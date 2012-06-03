@@ -32,7 +32,6 @@ public:
     Plot(QPointer<QWidget> parent = NULL, int _type = 0);
 
 	int addCurve(QString, int, double);						//dodanie krzywej do wykresu
-//	int modifyCurveColor(int, QColor);						//zmiana koloru krzywej o danej nazwie
 
 	enum { ROC_CURVE = 0, PR_CURVE = 1 };
 
@@ -41,13 +40,11 @@ protected:
 	bool eventFilter(QObject*, QEvent*);
 
 public slots:	
-	//void refreshEvent();
-	//void cAdded();
 	void showItem(QwtPlotItem*, bool);
 	void changeName(int, QString);
 	void changeColor(int, QColor);
 	void getColAuc(int);
-	void deleteCurve(int);									//usuniêcie krzywej o danej nazwie
+	void deleteCurve(int);
 	void leaveOneUnhided(int);
 	void clearAll();
 	void modifyBackgroundColor(QColor);

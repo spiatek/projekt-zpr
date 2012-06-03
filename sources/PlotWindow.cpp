@@ -20,94 +20,109 @@
 #include <qprintdialog.h>
 #include <qwt_plot_renderer.h>
 
+/**
+* PlotWindow class constructor
+*/
 PlotWindow::PlotWindow()
- {
-	 w = new QWidget(this);
+{
+	w = new QWidget(this);
 
-	 roc_plot = new Plot(w, 0);
-	 pr_plot = new Plot(w, 1);
-	 roc_panel = new Panel(w, 0);
-	 pr_panel = new Panel(w, 0);
+	///create plot and panel objects for each type
+	roc_plot = new Plot(w, 0);
+	pr_plot = new Plot(w, 1);
+	roc_panel = new Panel(w, 0);
+	pr_panel = new Panel(w, 0);
 
-	 current_plot = pr_plot;
-	 current_panel = pr_panel;
-	 plot_type = 1;
+	///set pr_plot as current plot
+	current_plot = pr_plot;
+	current_panel = pr_panel;
+	plot_type = 1;
 
-	 hLayout = new QHBoxLayout(w);
-	 hLayout->addWidget(current_panel);
-	 hLayout->addWidget(current_plot,10);
+	///add widget layout
+	hLayout = new QHBoxLayout(w);
+	hLayout->addWidget(current_panel);
+	hLayout->addWidget(current_plot,10);
 	 
-	 setCentralWidget(w);
+	setCentralWidget(w);
 
-     createActions();
-     createMenus();
-     createToolBars();
-     createStatusBar();
+	///create actions, menus and bars
+	createActions();
+	createMenus();
+	createToolBars();
+	createStatusBar();
 
-	 switched = 0;
-	 switchPlot();
+	///call switch plot method, activate signals and slots
+	switched = 0;
+	switchPlot();
 
-     setUnifiedTitleAndToolBarOnMac(true);
- }
+	setUnifiedTitleAndToolBarOnMac(true);
+}
 
+/**
+* Plot class closeEvent method is called while QCloseEvent was captured
+* @param event 
+*/
  void PlotWindow::closeEvent(QCloseEvent *event)
  {
 	event->accept();
  }
  
-void PlotWindow::quit()
-{
-}
-
+/**
+* Plot class closeEvent slot
+*/
 void PlotWindow::switchPlot()
 {
+	///hide current panel and plot
 	current_panel->hide();
 	current_plot->hide();
+
+	///display the other one
 	plot_type = (plot_type + 1) % 2;
 	current_panel = (plot_type == 0) ? roc_panel : pr_panel;
 	current_panel->setVisible(true);
 	current_plot = (plot_type == 0) ? roc_plot : pr_plot;
 	current_plot->setVisible(true);
+
+	///restore layout
 	hLayout->addWidget(current_panel);
 	hLayout->addWidget(current_plot,10);
 	switchAction->setChecked(false);
 
+	///connect signals to slots while switching by the first time
 	if(switched < 2) {
-		connect(current_plot, SIGNAL(contentsChanged()), this, SLOT(plotWasModified()));
-		connect(current_plot, SIGNAL(curveAdded(QString, QColor, double)), current_panel, SLOT(addCurve(QString, QColor, double)));
-		connect(current_panel, SIGNAL(nameChange(int, QString)), current_plot, SLOT(changeName(int, QString)));
-		connect(current_panel, SIGNAL(colorChange(int, QColor)), current_plot, SLOT(changeColor(int, QColor)));
-		connect(current_panel, SIGNAL(getColorAuc(int)), current_plot, SLOT(getColAuc(int)));
-		connect(current_plot, SIGNAL(resendColorAuc(QColor, double)), current_panel, SLOT(readColorAuc(QColor, double)));
-		connect(current_panel, SIGNAL(curveDelete(int)), current_plot, SLOT(deleteCurve(int)));
-		connect(current_panel, SIGNAL(hideAllExceptOfThis(int)), current_plot, SLOT(leaveOneUnhided(int)));
-		connect(current_panel, SIGNAL(clearPlot()), current_plot, SLOT(clearAll()));
-		connect(clearAction, SIGNAL(triggered()), current_plot, SLOT(clearAll()));
-		connect(current_panel, SIGNAL(changeBackgroundColor(QColor)), current_plot, SLOT(modifyBackgroundColor(QColor)));
-		connect(current_panel, SIGNAL(plotNameChange(QString)), current_plot, SLOT(changePlotName(QString)));
-		connect(current_panel, SIGNAL(labelsChange(QString, QString)), current_plot, SLOT(changePlotLabels(QString, QString)));
-		connect(current_panel, SIGNAL(gridChange(int)), current_plot, SLOT(changeGridState(int)));
+		
+		///activate signals sent from Plot to Panel
+		connect(current_plot,	SIGNAL(curveAdded(QString, QColor, double)),	current_panel,	SLOT(addCurve(QString, QColor, double)));
+		connect(current_plot,	SIGNAL(resendColorAuc(QColor, double)),			current_panel,	SLOT(readColorAuc(QColor, double)));
+		
+		///activate signals sent from Panel to Plot
+		connect(current_panel,	SIGNAL(nameChange(int, QString)),				current_plot,	SLOT(changeName(int, QString)));
+		connect(current_panel,	SIGNAL(colorChange(int, QColor)),				current_plot,	SLOT(changeColor(int, QColor)));
+		connect(current_panel,	SIGNAL(getColorAuc(int)),						current_plot,	SLOT(getColAuc(int)));
+		connect(current_panel,	SIGNAL(curveDelete(int)),						current_plot,	SLOT(deleteCurve(int)));
+		connect(current_panel,	SIGNAL(hideAllExceptOfThis(int)),				current_plot,	SLOT(leaveOneUnhided(int)));
+		connect(current_panel,	SIGNAL(clearPlot()),							current_plot,	SLOT(clearAll()));
+		connect(current_panel,	SIGNAL(changeBackgroundColor(QColor)),			current_plot,	SLOT(modifyBackgroundColor(QColor)));
+		connect(current_panel,	SIGNAL(plotNameChange(QString)),				current_plot,	SLOT(changePlotName(QString)));
+		connect(current_panel,	SIGNAL(labelsChange(QString, QString)),			current_plot,	SLOT(changePlotLabels(QString, QString)));
+		connect(current_panel,	SIGNAL(gridChange(int)),						current_plot,	SLOT(changeGridState(int)));
+
+		///activate signal sent from PlotWindow to Plot
+		connect(clearAction,	SIGNAL(triggered()),							current_plot,	SLOT(clearAll()));
 	}
 
 	switched++;
 }
 
+/**
+* Plot class open slot is called when open button was clicked
+*/
 void PlotWindow::open()
 {
-
+	///display open file window
 	QString fileName = QFileDialog::getOpenFileName(this,
-	 												tr("Open File"),
-	 												QDir::currentPath(),
-  													tr("ROC files (*.roc);;PR files (*.pr);;all files (*.*)"));
-     /*    
-	if (!fileName.isEmpty()){
-		//pFile = new ProxyFile(fileName);
- 		//dPoints=pFile->getData();
- 	}
- 	else{
- 		return;
- 	}*/
-	
+	 	tr("Open File"), QDir::currentPath(), tr("ROC files (*.roc);;PR files (*.pr);;all files (*.*)"));
+
 	if (fileName.isEmpty()){
 		return;
  	}
@@ -115,47 +130,56 @@ void PlotWindow::open()
 	QStringList field = fileName.split(".", QString::SkipEmptyParts);
 	
 	QStringList::const_iterator constIterator;
-    constIterator = --field.constEnd();//!!   
+    constIterator = --field.constEnd();
     
-	if (constIterator->compare("roc",Qt::CaseInsensitive)==0){
-		qDebug()<<"ROC  !"<<*constIterator<<"!";
-		roc_plot->addCurve(fileName, 0, 1.0);
+	///check file format, if roc or pr - load data
+	try {
+		if (constIterator->compare("roc",Qt::CaseInsensitive)==0){
+			//qDebug()<<"ROC  !"<<*constIterator<<"!";
+			roc_plot->addCurve(fileName, 0, 1.0);
+		}
+		else if (constIterator->compare("pr",Qt::CaseInsensitive)==0){ 
+			//qDebug()<<"PR   !"<<*constIterator<<"!";
+			pr_plot->addCurve(fileName, 1, 0.7);
+		}
+		else {
+			QString w = QString("Nieznane rozszerzenie pliku");
+			throw w;
+		}
 	}
-	else if (constIterator->compare("pr",Qt::CaseInsensitive)==0){ 
-			qDebug()<<"PR   !"<<*constIterator<<"!";
-		pr_plot->addCurve(fileName, 1, 0.7);
+	catch(QString& w) {
+		QMessageBox::about(this, tr("B³¹d wczytywania danych"), w);
 	}
-	else{
-		//nieznane rozszerzenie
-		return;
-	}
+}
 
-	emit plotRefresh();
- }
-
- bool PlotWindow::save()
- {
-	 return true;
- }
-
+/**
+* Plot class about slot is called when about option was set
+*/
 void PlotWindow::about()
-{
+{	
 	QMessageBox::about(this, tr("O programie"), 
 		tr("Program pozwala na importowanie danych w formacie AUC, wyœwietlanie i porównywanie wykresów oraz zapisywanie ich do pliku."));
 }
 
+/**
+* Plot class createActions method is called by PlotWindow constructor.
+* It creates PlotWindow actions and connect them to specified slots
+*/
 void PlotWindow::createActions()
 {
+	///create openAction, load an icon, and connect it to slot open()
 	openAction = new QAction(QIcon("images/open.png"), tr("&Open..."), this);
 	openAction->setShortcuts(QKeySequence::Open);
 	openAction->setStatusTip(tr("Open an existing file"));
 	connect(openAction, SIGNAL(triggered()), this, SLOT(open()));
 
+	///create exitAction, load an icon, and connect it to slot close()
 	exitAction = new QAction(tr("E&xit"), this);
 	exitAction->setShortcuts(QKeySequence::Quit);
 	exitAction->setStatusTip(tr("Exit the application"));
 	connect(exitAction, SIGNAL(triggered()), this, SLOT(close()));
 
+	///create printAction, load an icon, and connect it to slot print()
 #ifndef QT_NO_PRINTER
 	printAction = new QAction(QIcon("images/print.png"), tr("Print"), this);
 	printAction->setShortcuts(QKeySequence::Print);
@@ -163,67 +187,80 @@ void PlotWindow::createActions()
 	connect(printAction, SIGNAL(triggered()), this, SLOT(print()));
 #endif
 
+	///create exportAction, load an icon, and connect it to slot exportDocument()
 	exportAction = new QAction(QIcon("images/save.png"), tr("&Export"), this);
 	exportAction->setStatusTip(tr("Export plot"));
 	connect(exportAction, SIGNAL(triggered()), this, SLOT(exportDocument()));
 
+	///create switchAction, load an icon, and connect it to slot switchPlot()
 	switchAction = new QAction(QIcon("images/switch.png"), tr("Switch"), this);
 	switchAction->setStatusTip(tr("Switch plot"));
 	connect(switchAction, SIGNAL(triggered()), this, SLOT(switchPlot()));
-
+	
+	///create clearAction and  load an icon
 	clearAction = new QAction(QIcon("images/clear.png"), tr("Clear"), this);
 	clearAction->setStatusTip(tr("Clear plot"));
 
+	///create aboutAction, load an icon, and connect it to slot about()
 	aboutAct = new QAction(tr("&About"), this);
 	aboutAct->setStatusTip(tr("Show the application's About box"));
 	connect(aboutAct, SIGNAL(triggered()), this, SLOT(about()));
-
-	aboutQtAct = new QAction(tr("About &Qt"), this);
-	aboutQtAct->setStatusTip(tr("Show the Qt library's About box"));
-	connect(aboutQtAct, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
 }
 
- void PlotWindow::createMenus()
- {
-     fileMenu = menuBar()->addMenu(tr("&File"));
-     fileMenu->addAction(openAction);
+/**
+* Plot class createMenus method is called by PlotWindow constructor. It creates menu bar for PlotWindow.
+*/
+void PlotWindow::createMenus()
+{
+	///create file menu on menu bar
+    fileMenu = menuBar()->addMenu(tr("&File"));
+    fileMenu->addAction(openAction);
 
 #ifndef QT_NO_PRINTER
-     fileMenu->addAction(printAction);
+    fileMenu->addAction(printAction);
 #endif
 
-	 fileMenu->addAction(exportAction);
-     fileMenu->addSeparator();
-     fileMenu->addAction(exitAction);
+	fileMenu->addAction(exportAction);
+    fileMenu->addSeparator();
+    fileMenu->addAction(exitAction);
 
-     menuBar()->addSeparator();
+    menuBar()->addSeparator();
 
-     plotMenu = menuBar()->addMenu(tr("&Plot"));
-	 plotMenu->addAction(switchAction);
-	 plotMenu->addAction(clearAction);
+ 	///create plot menu on menu bar
+    plotMenu = menuBar()->addMenu(tr("&Plot"));
+	plotMenu->addAction(switchAction);
+	plotMenu->addAction(clearAction);
 
-     helpMenu = menuBar()->addMenu(tr("&Help"));
-     helpMenu->addAction(aboutAct);
-     helpMenu->addAction(aboutQtAct);
- }
+	///create help menu on menu bar
+    helpMenu = menuBar()->addMenu(tr("&Help"));
+    helpMenu->addAction(aboutAct);
+}
 
+/**
+* Plot class createToolBars method is called by PlotWindow constructor. It creates toolbar for PlotWindow.
+*/
 void PlotWindow::createToolBars()
 {
-     fileToolBar = addToolBar(tr("File"));
-     fileToolBar->addAction(openAction);
+	///create file toolbar
+	fileToolBar = addToolBar(tr("File"));
 
-	 fileToolBar->addSeparator();
-	 fileToolBar->addAction(switchAction);
-	 fileToolBar->addAction(clearAction);
+	///add actions
+	fileToolBar->addAction(openAction);
+	fileToolBar->addSeparator();
+	fileToolBar->addAction(switchAction);
+	fileToolBar->addAction(clearAction);
+	fileToolBar->addSeparator();
 
-	 fileToolBar->addSeparator();
 #ifndef QT_NO_PRINTER
-	 fileToolBar->addAction(printAction);
+	fileToolBar->addAction(printAction);
 #endif
 
-	 fileToolBar->addAction(exportAction);
+	fileToolBar->addAction(exportAction);
 }
 
+/**
+* Plot class createStatusBar method
+*/
 void PlotWindow::createStatusBar()
 {
 	statusBar()->showMessage(tr("Ready"));
@@ -231,6 +268,9 @@ void PlotWindow::createStatusBar()
 
 #ifndef QT_NO_PRINTER
 
+/**
+* Plot class print slot is called while clicking a button on a bar. It is used to print current plot.
+*/
 void PlotWindow::print()
 {
     QPrinter printer(QPrinter::HighResolution);
@@ -262,6 +302,10 @@ void PlotWindow::print()
 
 #endif
 
+/**
+* Plot class exportDocument slot is called while clicking a button on a bar. 
+* It is used to export current plot to a file. Format is specified in export document window.
+*/
 void PlotWindow::exportDocument()
 {
 #ifndef QT_NO_PRINTER

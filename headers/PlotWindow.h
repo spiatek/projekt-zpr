@@ -32,19 +32,15 @@ protected:
 
 private slots:
 	void open();
-	bool save();
-	void quit();
 	void about();
 	void switchPlot();
+	void exportDocument();
 
 #ifndef QT_NO_PRINTER
     void print();
 #endif
 
-	void exportDocument();
-	
 signals:
-	void plotRefresh();
 	void plotSwitched(int);
 
 private:
@@ -68,7 +64,7 @@ private:
 	QAction *exportAction;
 	QAction *exitAction;
 	QAction *aboutAct;
-	QAction *aboutQtAct;
+	//QAction *aboutQtAct;
 
 	int plot_type;
 	int switched;
@@ -83,8 +79,4 @@ private:
 	Plot *roc_plot;
 	Plot *pr_plot;
 	Plot *current_plot;
-	
-	//wywalic
-	//ProxyFile <ProxyFile> *pFile
-	//QVector<QPointF>* dPoints;
 };

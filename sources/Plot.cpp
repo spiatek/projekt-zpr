@@ -122,13 +122,22 @@ Plot::Plot(QPointer<QWidget> parent, int _type):
     setAutoReplot(true);
 
     ///Set axis name 
-    if(type == ROC_CURVE) {
-		setAxisTitle(xBottom, "False Positive Rate" );
-		setAxisTitle(yLeft, "True Positive Rate");
+    try {
+		if(type == ROC_CURVE) {
+			setAxisTitle(xBottom, "False Positive Rate" );
+			setAxisTitle(yLeft, "True Positive Rate");
+		}
+		else if(type == PR_CURVE) {
+			setAxisTitle(xBottom, "Recall" );
+			setAxisTitle(yLeft, "Precision");
+		}
+		else {
+			QString w = QString("Nieznany rodzaj krzywej");
+			throw w;
+		}
 	}
-	else if(type == PR_CURVE) {
-		setAxisTitle(xBottom, "Recall" );
-		setAxisTitle(yLeft, "Precision");
+	catch(QString& w) {
+		QMessageBox::about(this, tr("Nieobs³ugiwany typ wykresu"), w);
 	}
 
 	///Set axis ranges
@@ -207,8 +216,7 @@ int Plot::addCurve(QString fileName, int _type, double _auc)
 			///check if requested curve is already attached to a plot
 			if (curve->isAttached()) {
 				//qDebug()<<"already attached";
-				QTextCodec::setCodecForCStrings(QTextCodec::codecForName("Windows-1250"));
-				QMessageBox::about(this, tr("Niepowodzenie wczytania krzywej"), tr("Nie mo¿na drugi raz wczytaæ tej semej krzywej"));
+				QMessageBox::about(this, tr("Niepowodzenie wczytania krzywej"), tr("Nie mo¿na drugi raz wczytaæ tej samej krzywej"));
 				return 0;
 			}
 			
@@ -339,13 +347,6 @@ void Plot::resizeEvent(QResizeEvent* event)
     QwtPlot::resizeEvent(event);
 }
 
-/*
-void Plot::refreshEvent()
-{
-	replot();
-}
-*/
-
 /**
 * Plot class eventFilter method is used to capture MouseMove events
 * It emits coordinatesAssembles signal with current mouse position specified
@@ -427,7 +428,7 @@ void Plot::getColAuc(int _id)
 * Plot class deleteCurve slot is called by PlotWindow to delete curve with specified id.
 * @param _id Curve identifier
 */
-void Plot::deleteCurve(int _id)								//usuniêcie krzywej o danym id
+void Plot::deleteCurve(int _id)
 {
 	//qDebug()<<"DETACH curve id:"<<_id;
 	
@@ -499,6 +500,8 @@ void Plot::clearAll()
 		if(legendItem) {
 			legendItem->setChecked(false);
 		}
+		items[i]->setVisible(false);
+		curves_[i]->setAttached(false);
 		items[i]->detach();
 	}
 	legend->repaint();
