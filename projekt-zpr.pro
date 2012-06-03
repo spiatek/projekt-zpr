@@ -16,6 +16,7 @@ HEADERS += headers/Curve.h \
            headers/fileProxy.h\
            headers/PlotWindow.h
 SOURCES += sources/Curve.cpp \
+		   sources/FunctionData.cpp \
            sources/main.cpp \
            sources/Panel.cpp \
            sources/Plot.cpp \
