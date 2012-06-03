@@ -25,12 +25,10 @@ class RealFile{//: public QwtPointArrayData{
 class ProxyFile{
 	private:
 		RealFile *p_real_file;
-		
+		QString real_file_path;
 		//QString real_file_last_mod;
 	
 	public:
-		QString real_file_path;
-	
 		ProxyFile();
 		ProxyFile(QString _path);
 		~ProxyFile();

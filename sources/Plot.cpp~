@@ -466,7 +466,7 @@ qDebug()<<"DETACH curve id:"<<_id;
 		if ((curves_[i])->position==_id){
 			curves_[i]->attached=false;
 		}
-		if (curves_[i]->position>_id){
+		if (i>_id){
 			curves_[i]->position--;
 		}
 	}

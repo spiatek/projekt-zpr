@@ -97,17 +97,13 @@ void PlotWindow::open()
 	 												tr("Open File"),
 	 												QDir::currentPath(),
   													tr("ROC files (*.roc);;PR files (*.pr);;all files (*.*)"));
-     /*    
+         
 	if (!fileName.isEmpty()){
 		//pFile = new ProxyFile(fileName);
  		//dPoints=pFile->getData();
  	}
  	else{
  		return;
- 	}*/
-	
-	if (fileName.isEmpty()){
-		return;
  	}
 	
 	QStringList field = fileName.split(".", QString::SkipEmptyParts);

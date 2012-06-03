@@ -32,7 +32,7 @@ public:
 	QColor getColor();
 	QwtText getTitle();
 	bool attached;
-	int position;
+	//int position;
 
 private:
 

@@ -44,5 +44,5 @@ QColor Curve::getColor()
 
 QwtText Curve::getTitle()
 {
-	return this->title();
+	return this->title;
 }
