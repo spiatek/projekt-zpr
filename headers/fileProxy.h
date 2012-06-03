@@ -17,23 +17,44 @@
  * http://www.gnu.org/copyleft/gpl.html
  *
  * @section DESCRIPTION
- * Initialize the program and window
+ *
+ * The ProxyFile class and RealFile class are implementation of Proxy Design
+ * Pattern with lazy reading.
  */
 
+#pragma once
 
-#include <qapplication.h>
-#include <qlibraryinfo.h>
-#include "../headers/PlotWindow.h"
+#include "../headers/FunctionData.h"
+#include <string>
+#include "qwt_math.h"
+#include <qwt_series_data.h>
+#include <QString>
+#include <QPointF>
 
-int main(int argc, char *argv[]){	
-	QApplication app(argc, argv);
+class RealFile{
+	private:
+		QVector<QPointF> data_points;
+		QString path;
+		
+	public:
+		RealFile(QString _path); //constructor
+		~RealFile(); //destructor
+		QVector<QPointF>* getData();
 
-	app.setApplicationName("Porównywanie krzywych");
+};
 
-	PlotWindow window;
-    window.resize(800,400);
-	window.show();
-
-    return app.exec(); 
-}
+class ProxyFile{
+	private:
+		RealFile *p_real_file;
+	
+	public:
+		QString real_file_path;
+	
+		ProxyFile();
+		ProxyFile(QString _path);
+		~ProxyFile();
+		
+		ProxyFile* init_path(QString _path);
+		QVector<QPointF>* getData();
+};
 

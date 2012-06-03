@@ -1,94 +1,38 @@
+/**
+ * @file
+ * @author  Szymon Piątek, Mateusz Matuszewski
+ * @version 1.0
+ *
+ * @section LICENSE
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation; either version 2 of
+ * the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * General Public License for more details at
+ * http://www.gnu.org/copyleft/gpl.html
+ *
+ * @section DESCRIPTION
+ *
+ */
+
 #pragma once
 #include <qwt_plot_curve.h>
 #include <cmath>
 
-class FunctionData:  public QwtSeriesData<QPointF> //
-{
+class FunctionData:  public QwtSeriesData<QPointF> {
+
 public:
-	QVector<QPointF> *dataPoints;
-	
-
-
-
-//TEST!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-	FunctionData(QVector<QPointF> *_dataPoints)
-    {
-    	dataPoints=_dataPoints;
-    }
-    
-   // const SignalData &values() const;
-    
-   // SignalData &values();
-    
-    virtual QPointF sample(size_t i) const{
-    	return (*dataPoints)[i];
-    }
-    
-    virtual size_t size() const
-    {
-    	return dataPoints->size();
-    }
-
-    virtual QRectF boundingRect() const{
-		return QRectF();
-    }
-    
-    
-
-
-
-
-
-////////////////////////
-/*
-
-
-    FunctionData(double(*y)(double)):
-        QwtSyntheticPointData(100),
-        d_y(y)
-    {
-    }
-
-
-
-//CALCULATE Y VALUE FOR A X VALUE
-    virtual double y(double x) const
-    {
-    	if (!dataPoints){
-    		qDebug()<<"!dp";
-    	    return 0.0;
-    	}
-    	else if (x<0.0){
-    		qDebug()<<"x<0";
-    		return 0.0;
-    	}
-    	else if (x>1.0){
-    		qDebug()<<"x>1";
-    		return 1.0;
-    	}
-    	else{
-    	//qDebug()<<"dpontssize:"<< dataPoints->size();
-    		QPointF pf;
-    		double closest=10.0,closesty;
-    		for (int i = 0; i < dataPoints->size(); ++i) {
-    			pf = (*dataPoints)[i];
-    			double pt = pf.x();	
-    			double d1 = closest;
-    			double d2 = fabs(pt-x);
-    			//qDebug()<<"  i:"<<i<<"  x:"<<x<<"  pt:"<<pt<<"  d1:"<<d1<<"  d2"<<d2<<"   clos"<<closest<<"   cly"<<closesty;
-     			if ( d2 < closest ){	
-     				closest=d2;
-     				closesty=pf.y();
-     			}
-     			//qDebug()<<"  i:"<<i<<"  x:"<<x<<"  pt:"<<pt<<"  d1:"<<d1<<"  d2"<<d2<<"   clos"<<closest<<"   cly"<<closesty;
-       		}
-       		//qDebug()<<"  x:"<<x<<"  closest:"<<closest<<"  y:"<<closesty;
-         	return closesty;
-    }
-}
+	FunctionData(QVector<QPointF> *_dataPoints);
+    QPointF sample(size_t i) const;
+    size_t size() const;
+	QRectF boundingRect() const;  
 
 private:
-    double(*d_y)(double);
-    */
+	QVector<QPointF> *dataPoints;
+
 };

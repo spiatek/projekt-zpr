@@ -33,7 +33,6 @@ using namespace std;
 int Curve::id_ = 0;
 
 /**
-<<<<<<< HEAD
 * Curve class constructor calls QwtPlotCurve constructor.
 * @param _title Plot title
 */
@@ -68,88 +67,39 @@ void Curve::setIndex(int _index)
 {
 	index_ = _index;
 }
-
-/**
-* Curve class getId method is used to receive an index of a curve in plot curve vector
-*/
-int Curve::getId()
-{
-	return id_;
-}
 	
 /**
-* Curve class getAUC method is used to receive a value of an area under the curve
-*/
-double Curve::getAUC()
-{
-=======
- * Constructor
- * @param _title name of curve
- */
-Curve::Curve(const QwtText &_title) : QwtPlotCurve(_title){}
-
-/**
- * Initialize the curve
- * @param _type curve type AUC or PR
- * @param _auc area unde the curveAdd
- * @param _color curve color
- */
-void Curve::init(int _type, double _auc, QColor _color){
-	type_ = _type;
-	auc_ = _auc;
-	color_ = _color;
-	isHidden_ = false;
-}
-
-/**
- * @return curve id
- */
-int Curve::getId(){
-	return id_;
-}
-
-/**
- * @return curve type
- */
-int Curve::getType(){
-	return type_;
-}
-
-/**
+ * Curve class getAUC method is used to receive a value of an area under the curve
  * @return curve AUC
  */
-double Curve::getAUC(){
->>>>>>> f6a94097b79b49d7a236856a5465e87029f68ffb
+double Curve::getAUC()
+{
 	return auc_;
 }
 
 /**
-<<<<<<< HEAD
-* Curve class getColor method is used to receive a color of the curve
-*/
-QColor Curve::getColor()
-{
-=======
+ * Curve class getColor method is used to receive a color of the curve
  * @return curve color
  */
-QColor Curve::getColor(){
->>>>>>> f6a94097b79b49d7a236856a5465e87029f68ffb
+QColor Curve::getColor()
+{
 	return color_;
 }
 
 /**
-<<<<<<< HEAD
-* Curve class getTitle method is used to receive a title of a curve
-*/
+ * Curve class getTitle method is used to receive a title of a curve
+ * @return curve title
+ */
 QwtText Curve::getTitle()
 {
 	return this->title();
 }
 
 /**
-* Curve class isAttached method is used to receive a boolean value
-* which terms if a curve is attached to a plot or not
-*/
+ * Curve class isAttached method is used to receive a boolean value
+ * which terms if a curve is attached to a plot or not
+ * @return boolean value which terms id a curve is attached to a plot or not
+ */
 bool Curve::isAttached()
 {
 	return attached_;
@@ -157,16 +107,9 @@ bool Curve::isAttached()
 
 /**
 * Curve class getIndex method is used to receive an index of a curve in plot curve vector
+ * @return curve index
 */
 int Curve::getIndex()
 {
 	return index_;
 }
-=======
- * @return curve title
- */
-QwtText Curve::getTitle(){
-	return this->title();
-}
-
->>>>>>> f6a94097b79b49d7a236856a5465e87029f68ffb

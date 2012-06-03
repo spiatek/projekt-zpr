@@ -1,14 +1,28 @@
 /**
-* @file Curve.h
-* @brief This header file contains Curve class definition.
-* Curve class inherits from QwtPlotCurve class.
-* It provides an access to some of QwtPlotCurve methods
-* and some other features which are not provided by QwtPlotCurve
-*
-* @author Szymon Pi¹tek
-*
-* @date 3/6/2012
-*/
+ * @file
+ * @author  Szymon PiÄ…tek, Mateusz Matuszewski
+ * @version 1.0
+ *
+ * @section LICENSE
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation; either version 2 of
+ * the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * General Public License for more details at
+ * http://www.gnu.org/copyleft/gpl.html
+ *
+ * @section DESCRIPTION
+ * This header file contains Curve class definition.
+ * Curve class derives from QwtPlotCurve class.
+ * It provides an access to some of QwtPlotCurve methods
+ * and some other features which are not provided by QwtPlotCurve
+ *
+ */
 
 #pragma once
 
@@ -21,7 +35,6 @@ class QColor;
 class Curve : QwtPlotCurve {
 
 public:
-
 	Curve() { ++id_; }
 	Curve(double _auc) : auc_(_auc) { ++id_; }
 	Curve(const QwtText&);
@@ -38,7 +51,6 @@ public:
 	void setAttached(bool);
 	void setIndex(int);
 
-	int getId();
 	double getAUC();
 	QColor getColor();
 	QwtText getTitle();
@@ -52,5 +64,5 @@ private:
 	QColor color_;
 	bool attached_;
 	int index_;
-
 };
+

@@ -43,7 +43,6 @@
 #include <qwt_plot_renderer.h>
 #include <QErrorMessage>
 
-<<<<<<< HEAD
 /**
 * PlotWindow class constructor
 */
@@ -66,22 +65,6 @@ PlotWindow::PlotWindow()
 	hLayout = new QHBoxLayout(w);
 	hLayout->addWidget(current_panel);
 	hLayout->addWidget(current_plot,10);
-=======
-PlotWindow::PlotWindow(){
-	 w = new QWidget(this);
-	 roc_plot = new Plot(w, 0);
-	 pr_plot = new Plot(w, 1);
-	 roc_panel = new Panel(w, 0);
-	 pr_panel = new Panel(w, 0);
-
-	 current_plot = pr_plot;
-	 current_panel = pr_panel;
-	 plot_type = 1;
-
-	 hLayout = new QHBoxLayout(w);
-	 hLayout->addWidget(current_panel);
-	 hLayout->addWidget(current_plot,10);
->>>>>>> f6a94097b79b49d7a236856a5465e87029f68ffb
 	 
 	setCentralWidget(w);
 
@@ -95,7 +78,6 @@ PlotWindow::PlotWindow(){
 	switched = 0;
 	switchPlot();
 
-<<<<<<< HEAD
 	setUnifiedTitleAndToolBarOnMac(true);
 }
 
@@ -103,29 +85,14 @@ PlotWindow::PlotWindow(){
 * Plot class closeEvent method is called while QCloseEvent was captured
 * @param event 
 */
- void PlotWindow::closeEvent(QCloseEvent *event)
- {
+void PlotWindow::closeEvent(QCloseEvent *event)
+{
 	event->accept();
- }
+}
  
-/**
-* Plot class closeEvent slot
-*/
 void PlotWindow::switchPlot()
 {
 	///hide current panel and plot
-=======
-     setUnifiedTitleAndToolBarOnMac(true);
-}
-
-void PlotWindow::closeEvent(QCloseEvent *event){
-	event->accept();
-}
- 
-void PlotWindow::quit(){}
-
-void PlotWindow::switchPlot(){
->>>>>>> f6a94097b79b49d7a236856a5465e87029f68ffb
 	current_panel->hide();
 	current_plot->hide();
 
@@ -166,7 +133,6 @@ void PlotWindow::switchPlot(){
 	switched++;
 }
 
-<<<<<<< HEAD
 /**
 * Plot class open slot is called when open button was clicked
 */
@@ -177,56 +143,24 @@ void PlotWindow::open()
 	 	tr("Open File"), QDir::currentPath(), tr("ROC files (*.roc);;PR files (*.pr);;all files (*.*)"));
 
 	if (fileName.isEmpty()){
-=======
-void PlotWindow::open(){
-	QString fileName = QFileDialog::getOpenFileName(this,
-	 												tr("Open File"),
-	 												QDir::currentPath(),
-  													tr("ROC files (*.roc);;PR files (*.pr);;all files (*.*)"));
-	if (fileName.isEmpty())
->>>>>>> f6a94097b79b49d7a236856a5465e87029f68ffb
 		return;
+	}
+
 	QStringList field = fileName.split(".", QString::SkipEmptyParts);
 	
 	QStringList::const_iterator constIterator;
-<<<<<<< HEAD
     constIterator = --field.constEnd();
     
 	///check file format, if roc or pr - load data
 	try {
 		if (constIterator->compare("roc",Qt::CaseInsensitive)==0){
-			//qDebug()<<"ROC  !"<<*constIterator<<"!";
-			roc_plot->addCurve(fileName, 0, 1.0);
+			roc_plot->addCurve(fileName, 0);
 		}
 		else if (constIterator->compare("pr",Qt::CaseInsensitive)==0){ 
-			//qDebug()<<"PR   !"<<*constIterator<<"!";
-			pr_plot->addCurve(fileName, 1, 0.7);
+			pr_plot->addCurve(fileName, 1);
 		}
 		else {
-			QString w = QString("Nieznane rozszerzenie pliku");
-			throw w;
-		}
-	}
-	catch(QString& w) {
-		QMessageBox::about(this, tr("B≥πd wczytywania danych"), w);
-	}
-}
-
-/**
-* Plot class about slot is called when about option was set
-*/
-void PlotWindow::about()
-{	
-=======
-    constIterator = --field.constEnd();//!!   
-    try{
-		if (constIterator->compare("roc",Qt::CaseInsensitive)==0)
-			roc_plot->addCurve(fileName, 0);
-		else if (constIterator->compare("pr",Qt::CaseInsensitive)==0)
-			pr_plot->addCurve(fileName, 1);
-		else{
 			throw 1000;
-			return;
 		}
 	}
 	catch(int e){
@@ -241,20 +175,17 @@ void PlotWindow::about()
 			errorMessage.showMessage("error parsing the file. to little data points");
 		errorMessage.exec();
 	}
-	emit plotRefresh();
 }
 
-bool PlotWindow::save(){
-	return true;
-}
-
-void PlotWindow::about(){
->>>>>>> f6a94097b79b49d7a236856a5465e87029f68ffb
+/**
+* Plot class about slot is called when about option was set
+*/
+void PlotWindow::about()
+{	
 	QMessageBox::about(this, tr("O programie"), 
 		tr("Program pozwala na importowanie danych w formacie AUC, wy¬úwietlanie i por√≥wnywanie wykres√≥w oraz zapisywanie ich do pliku."));
 }
 
-<<<<<<< HEAD
 /**
 * Plot class createActions method is called by PlotWindow constructor.
 * It creates PlotWindow actions and connect them to specified slots
@@ -262,9 +193,6 @@ void PlotWindow::about(){
 void PlotWindow::createActions()
 {
 	///create openAction, load an icon, and connect it to slot open()
-=======
-void PlotWindow::createActions(){
->>>>>>> f6a94097b79b49d7a236856a5465e87029f68ffb
 	openAction = new QAction(QIcon("images/open.png"), tr("&Open..."), this);
 	openAction->setShortcuts(QKeySequence::Open);
 	openAction->setStatusTip(tr("Open an existing file"));
@@ -304,7 +232,6 @@ void PlotWindow::createActions(){
 	connect(aboutAct, SIGNAL(triggered()), this, SLOT(about()));
 }
 
-<<<<<<< HEAD
 /**
 * Plot class createMenus method is called by PlotWindow constructor. It creates menu bar for PlotWindow.
 */
@@ -313,11 +240,6 @@ void PlotWindow::createMenus()
 	///create file menu on menu bar
     fileMenu = menuBar()->addMenu(tr("&File"));
     fileMenu->addAction(openAction);
-=======
-void PlotWindow::createMenus(){
-     fileMenu = menuBar()->addMenu(tr("&File"));
-     fileMenu->addAction(openAction);
->>>>>>> f6a94097b79b49d7a236856a5465e87029f68ffb
 
 #ifndef QT_NO_PRINTER
     fileMenu->addAction(printAction);
@@ -334,7 +256,6 @@ void PlotWindow::createMenus(){
 	plotMenu->addAction(switchAction);
 	plotMenu->addAction(clearAction);
 
-<<<<<<< HEAD
 	///create help menu on menu bar
     helpMenu = menuBar()->addMenu(tr("&Help"));
     helpMenu->addAction(aboutAct);
@@ -355,17 +276,6 @@ void PlotWindow::createToolBars()
 	fileToolBar->addAction(clearAction);
 	fileToolBar->addSeparator();
 
-=======
-     helpMenu = menuBar()->addMenu(tr("&Help"));
-     helpMenu->addAction(aboutAct);
-     helpMenu->addAction(aboutQtAct);
-}
-
-void PlotWindow::createToolBars(){
-     fileToolBar = addToolBar(tr("File"));
-     fileToolBar->addAction(openAction);
-     
->>>>>>> f6a94097b79b49d7a236856a5465e87029f68ffb
 #ifndef QT_NO_PRINTER
 	fileToolBar->addAction(printAction);
 #endif
@@ -373,29 +283,21 @@ void PlotWindow::createToolBars(){
 	fileToolBar->addAction(exportAction);
 }
 
-<<<<<<< HEAD
 /**
 * Plot class createStatusBar method
 */
 void PlotWindow::createStatusBar()
 {
-=======
-void PlotWindow::createStatusBar(){
->>>>>>> f6a94097b79b49d7a236856a5465e87029f68ffb
 	statusBar()->showMessage(tr("Ready"));
 }
 
 #ifndef QT_NO_PRINTER
 
-<<<<<<< HEAD
 /**
 * Plot class print slot is called while clicking a button on a bar. It is used to print current plot.
 */
 void PlotWindow::print()
 {
-=======
-void PlotWindow::print(){
->>>>>>> f6a94097b79b49d7a236856a5465e87029f68ffb
     QPrinter printer(QPrinter::HighResolution);
 
     QString docName = current_plot->title().text();

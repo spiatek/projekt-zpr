@@ -17,23 +17,42 @@
  * http://www.gnu.org/copyleft/gpl.html
  *
  * @section DESCRIPTION
- * Initialize the program and window
+ *
  */
 
 
-#include <qapplication.h>
-#include <qlibraryinfo.h>
-#include "../headers/PlotWindow.h"
+#include "../headers/FunctionData.h"
 
-int main(int argc, char *argv[]){	
-	QApplication app(argc, argv);
+/**
+ * Constructor of FunctionData class
+ * @param _dataPoints vector of points to be displayed in the plot
+ */
+FunctionData::FunctionData(QVector<QPointF> *_dataPoints){
+	dataPoints=_dataPoints;
+}
+     
+/**
+ * Return i-th smaple from QPointF vector
+ * @param _size_t which sample to return
+ * @return i-th smaple
+ */
+QPointF FunctionData::sample(size_t i) const{
+	return (*dataPoints)[i];
+}
+/**
+ * Return size of vector of QPointF points
+ * @return size of vector of QPointF points
+ */
+size_t FunctionData::size() const{
+	return dataPoints->size();
+}
 
-	app.setApplicationName("Porównywanie krzywych");
-
-	PlotWindow window;
-    window.resize(800,400);
-	window.show();
-
-    return app.exec(); 
+/**
+ *
+ * @return
+ */
+QRectF FunctionData::boundingRect() const
+{
+	return QRectF();
 }
 

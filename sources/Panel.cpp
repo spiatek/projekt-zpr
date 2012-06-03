@@ -33,7 +33,6 @@
 #include <qtextcodec.h>
 
 /**
-<<<<<<< HEAD
 * Panel class constructor
 * @param parent QPointer to the parent QWidget
 * @param _type Plot type 
@@ -41,14 +40,6 @@
 Panel::Panel(QPointer<QWidget> parent, int _type):
     QTabWidget(parent)
 {
-=======
- * Constructor of FunctionData class
- * @param parent pointer to parent
- * @param _type cureve type (either ROC or PR)
- * @return
- */
-Panel::Panel(QWidget *parent, int _type): QTabWidget(parent){
->>>>>>> f6a94097b79b49d7a236856a5465e87029f68ffb
 	QTextCodec::setCodecForCStrings(QTextCodec::codecForName("Windows-1250"));	
     setTabPosition(QTabWidget::North);
 
@@ -61,21 +52,12 @@ Panel::Panel(QWidget *parent, int _type): QTabWidget(parent){
 }
 
 /**
-<<<<<<< HEAD
-* Panel class createCurveTab method is used to create tab for curve properties
-* It creates widgets, sets tab layout and connect Panel classes signals to the slots
-* @param parent QPointer to the parent QWidget
-*/
+ * Create Tab to group settings which can be changed for plots
+ * @param parent pointer to parent
+ */
 QPointer<QWidget> Panel::createCurveTab(QPointer<QWidget> parent)
 {
 	///create curve tab
-=======
- * Create Tab to group settings which can be changed for plots
- * @param parent pointer to parent
- * @return
- */
-QWidget *Panel::createCurveTab(QWidget *parent){
->>>>>>> f6a94097b79b49d7a236856a5465e87029f68ffb
 	curvesTab = new QWidget(parent);
 
 	///create curve tab layout
@@ -135,21 +117,13 @@ QWidget *Panel::createCurveTab(QWidget *parent){
 }
 
 /**
-<<<<<<< HEAD
-* Panel class createPlotTab method is used to create tab for plot properties
-* It creates widgets, sets tab layout and connect Panel classes signals to the slots
-* @param parent QPointer to the parent QWidget
+ * Create first of the tabs with options of current curve
+ * It creates widgets, sets tab layout and connect Panel classes signals to the slots
+ * @param parent pointer to parent
 */
 QPointer<QWidget> Panel::createPlotTab(QPointer<QWidget> parent)
 {
 	///create tab and layout for plot properties
-=======
- * Create first of the tabs with options of current curve
- * @param parent pointer to parent
- * @return
- */
-QWidget *Panel::createPlotTab(QWidget *parent){
->>>>>>> f6a94097b79b49d7a236856a5465e87029f68ffb
 	plotTab = new QWidget(parent);
 	plotLayout = new QGridLayout(plotTab);
 
@@ -201,24 +175,15 @@ QWidget *Panel::createPlotTab(QWidget *parent){
 }
 
 /**
-<<<<<<< HEAD
-* Panel class addCurve slot is called while adding curve to a plot.
-* The curve is also added to a curve panel.
-* @param _name Specify a title of the curve which was added
-* @param _color Specify a color of the curve which was added
-* @param _auc Specify an area under the curve which was added
-*/
-void Panel::addCurve(QString _name, QColor _color, double _auc)
-{
-	///add item to the combo box
-=======
- * Constructor of FunctionData class
+ * Panel class addCurve slot is called while adding curve to a plot.
+ * The curve is also added to a curve panel.
  * @param _name curve name to be displayed in the legend
  * @param _color curve color
  * @param _auc area under the curve
  */
-void Panel::addCurve(QString _name, QColor _color, double _auc){
->>>>>>> f6a94097b79b49d7a236856a5465e87029f68ffb
+void Panel::addCurve(QString _name, QColor _color, double _auc)
+{
+	///add item to the combo box
 	curvesCombo->addItem(_name);
 	curvesCombo->setCurrentIndex(curvesCombo->count() - 1);
 	lineEdit->setText(_name);
@@ -236,40 +201,26 @@ void Panel::addCurve(QString _name, QColor _color, double _auc){
 }
 
 /**
-<<<<<<< HEAD
-* Panel class edited slot is called while switching value of combo box.
-* It emits getColorAuc signal due to get an information about color and AUC from Plot
-* @param which An index of the chosen option in combo box
-*/
+ * Panel class edited slot is called while switching value of combo box.
+ * It emits getColorAuc signal due to get an information about color and AUC from Plot
+ * @param which An index of the chosen option in combo box
+ */
 void Panel::edited(const QString& which)
 {
-=======
- * 
- * @param
- */
-void Panel::edited(const QString& which){
->>>>>>> f6a94097b79b49d7a236856a5465e87029f68ffb
 	lineEdit->setText(which);
 	int index = curvesCombo->currentIndex();
 	emit getColorAuc(index);
 }
 
 /**
-<<<<<<< HEAD
-* Panel class readColorAuc slot is called while information about color and AUC
-* of the specified curve are available
-* @param _color A color of the curve
-* @param _auc An area under the curve
-*/
+ * Panel class readColorAuc slot is called while information about color and AUC
+ * of the specified curve are available
+ * @param _color A color of the curve
+ * @param _auc An area under the curve
+ */
 void Panel::readColorAuc(QColor _color, double _auc)
 {
 	///fill color label with a color of the curve
-=======
- * 
- * @param
- */
-void Panel::readColorAuc(QColor _color, double _auc){
->>>>>>> f6a94097b79b49d7a236856a5465e87029f68ffb
 	colorLabel->setPalette(QPalette(_color));
 	colorLabel->setAutoFillBackground(true);
 
@@ -282,18 +233,12 @@ void Panel::readColorAuc(QColor _color, double _auc){
 }
 
 /**
-<<<<<<< HEAD
-* Panel class changeName slot is called while nameButton was checked.
-* It emits nameChange signal which is used to upgrade legend info
-*/
+ * Panel class changeName slot is called while nameButton was checked.
+ * It emits nameChange signal which is used to upgrade legend info
+ */
 void Panel::changeName()
 {
 	///check if curve is specified
-=======
- * Change name of a curve
- */
-void Panel::changeName(){
->>>>>>> f6a94097b79b49d7a236856a5465e87029f68ffb
 	if(curvesCombo->count() == 0) {
 		return;
 	}
@@ -307,60 +252,40 @@ void Panel::changeName(){
 }
 
 /**
-<<<<<<< HEAD
-* Panel class changePlotName slot is called while plotNameButton was checked.
-* It emits plotNameChange signal which is used to upgrade plot title
-*/
+ * Panel class changePlotName slot is called while plotNameButton was checked.
+ * It emits plotNameChange signal which is used to upgrade plot title
+ */
 void Panel::changePlotName()
 {
-=======
- * change name of a plot
- */
-void Panel::changePlotName(){
->>>>>>> f6a94097b79b49d7a236856a5465e87029f68ffb
 	QString name = plotName->text();
 	plotNameButton->setChecked(false);
 	emit plotNameChange(name);
 }
 
 /**
-<<<<<<< HEAD
-* Panel class changeLabels slot is called while labelButton was checked.
-* It emits labelsChange signal which is used to upgrade axis labels
-*/
+ * Panel class changeLabels slot is called while labelButton was checked.
+ * It emits labelsChange signal which is used to upgrade axis labels
+ */
 void Panel::changeLabels()
 {
-=======
- * change labels
- */
-void Panel::changeLabels(){
->>>>>>> f6a94097b79b49d7a236856a5465e87029f68ffb
 	QString nameX = labelX->text();
 	QString nameY = labelY->text();
 	labelButton->setChecked(false);
 	emit labelsChange(nameX, nameY);
-
 }
 
 /**
-<<<<<<< HEAD
 * Panel class changeGrid slot is called while grid check box was checked.
 * It emits gridChange signal which is used to change visibility of grid lines on a plot
 * @param _state Boolean value which represents visibility state of grid lines on a plot
 */
 void Panel::changeGrid(int _state)
 {
-=======
- * change grid settings
- */
-void Panel::changeGrid(int _state){
->>>>>>> f6a94097b79b49d7a236856a5465e87029f68ffb
 	gridCheckBox->setChecked(false);
 	emit gridChange(_state);
 }
 
 /**
-<<<<<<< HEAD
 * Panel class setColor slot is called while color button was checked. It opens a color dialog.
 * While clicking a button in this dialog, colorChange signal is emited.
 * It is used to change the color of a curve on a plot.
@@ -368,11 +293,6 @@ void Panel::changeGrid(int _state){
 void Panel::setColor()
 {
 	///check if curve is specified
-=======
- * set color
- */
-void Panel::setColor(){
->>>>>>> f6a94097b79b49d7a236856a5465e87029f68ffb
 	if(curvesCombo->count() == 0) {
 		return;
 	}
@@ -393,7 +313,6 @@ void Panel::setColor(){
  }
 
 /**
-<<<<<<< HEAD
 * Panel class setBcgColor slot is called while plot color button was checked. It opens a color dialog.
 * While clicking a button in this dialog, changeBackgroundColor signal is emited.
 * It is used to change the color of a plot background.
@@ -401,11 +320,6 @@ void Panel::setColor(){
 void Panel::setBcgColor()
 {
 	///choose color from color dialog
-=======
- * set background color
- */
-void Panel::setBcgColor(){
->>>>>>> f6a94097b79b49d7a236856a5465e87029f68ffb
     QColor color;
 	color = QColorDialog::getColor(Qt::green, this, "Select Color", QColorDialog::DontUseNativeDialog);
 
@@ -420,7 +334,6 @@ void Panel::setBcgColor(){
  }
 
 /**
-<<<<<<< HEAD
 * Panel class deleteCurve slot is called while delete curve button was checked.
 * It emits curveDelete signal, which is used to delete curve from plot and legend.
 * It emits getColotAuc signal, which is used to get color and AUC of a curve,
@@ -429,11 +342,6 @@ void Panel::setBcgColor(){
 void Panel::deleteCurve()
 {
 	///check if curve is specified
-=======
- * delete curve selected in the legend
- */
-void Panel::deleteCurve(){
->>>>>>> f6a94097b79b49d7a236856a5465e87029f68ffb
 	if(curvesCombo->count() == 0) {
 		return;
 	}
@@ -460,35 +368,23 @@ void Panel::deleteCurve(){
 }
 
 /**
-<<<<<<< HEAD
 * Panel class hideAll slot is called while hideAll curve button was checked.
 * It emits hideAllExceptOfThis signal, which is used to hide all curves
 * from the plot, except of the one, which is checked.
 */
 void Panel::hideAll()
 {
-=======
- * hid all curves
- */
-void Panel::hideAll(){
->>>>>>> f6a94097b79b49d7a236856a5465e87029f68ffb
 	int index = curvesCombo->currentIndex();
 	hideAllButton->setChecked(false);
 	emit hideAllExceptOfThis(index);
 }
 
 /**
-<<<<<<< HEAD
 * Panel class clearAll slot is called while clearAll curve button was checked.
 * It emits clearPlot signal, which is used to detach all curves from the plot and legend.
 */
 void Panel::clearAll()
 {
-=======
- * delete all curves
- */
-void Panel::clearAll(){
->>>>>>> f6a94097b79b49d7a236856a5465e87029f68ffb
 	clearButton->setChecked(false);
 	curvesCombo->clear();
 	lineEdit->clear();
@@ -496,4 +392,3 @@ void Panel::clearAll(){
 	aucLabel->clear();
 	emit clearPlot();
 }
-
