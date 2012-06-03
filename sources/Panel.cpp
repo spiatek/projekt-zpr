@@ -142,7 +142,8 @@ void Panel::addCurve(QString _name, QColor _color, double _auc)
 void Panel::edited(const QString& which)
 {
 	lineEdit->setText(which);
-	emit getColorAuc(which);
+	int index = curvesCombo->currentIndex();
+	emit getColorAuc(index);
 }
 
 void Panel::readColorAuc(QColor _color, double _auc)
@@ -202,9 +203,9 @@ void Panel::setColor()
         colorLabel->setPalette(QPalette(color));
         colorLabel->setAutoFillBackground(true);
     }
-	QString name = curvesCombo->currentText();
+	int index = curvesCombo->currentIndex();
 	colorButton->setChecked(false);
-	emit colorChange(name, color);
+	emit colorChange(index, color);
  }
 
 void Panel::setBcgColor()
@@ -241,7 +242,7 @@ void Panel::deleteCurve()
 
 	QString which = curvesCombo->currentText();
 	lineEdit->setText(which);
-	emit getColorAuc(which);
+	emit getColorAuc(index);
 }
 
 void Panel::hideAll()

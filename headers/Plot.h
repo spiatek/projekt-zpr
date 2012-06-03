@@ -1,5 +1,18 @@
+/**
+* @file Plot.h
+* @brief This header file contains Plot class definition.
+* Plot class inherits from QwtPlot class.
+*
+* @author Szymon Pi¹tek
+*
+* @date 3/6/2012
+*/
+
 #pragma once
-#include <list>
+
+#include <vector>
+#include <qpointer.h>
+#include <QSharedPointer>
 #include <qwt_plot.h>
 #include <qwt_plot_curve.h>
 #include "../headers/Curve.h"
@@ -9,27 +22,31 @@
 
 class QwtPlotGrid;
 
+using namespace std;
+
 class Plot : public QwtPlot
 {
 	Q_OBJECT
 
 public:
-    Plot(QWidget *parent = NULL, int _type = 0);
+    Plot(QPointer<QWidget> parent = NULL, int _type = 0);
 
-	int addCurve(QString, int, double);	//dodanie krzywej do wykresu
-	int modifyCurveColor(int, QColor);						//zmiana koloru krzywej o danej nazwie
+	int addCurve(QString, int, double);						//dodanie krzywej do wykresu
+//	int modifyCurveColor(int, QColor);						//zmiana koloru krzywej o danej nazwie
+
+	enum { ROC_CURVE = 0, PR_CURVE = 1 };
 
 protected:
     virtual void resizeEvent(QResizeEvent*);
-	bool eventFilter(QObject *obj, QEvent *event);
+	bool eventFilter(QObject*, QEvent*);
 
 public slots:	
-	void refreshEvent();
-	void cAdded();
+	//void refreshEvent();
+	//void cAdded();
 	void showItem(QwtPlotItem*, bool);
 	void changeName(int, QString);
-	void changeColor(QString, QColor);
-	void getColAuc(QString);
+	void changeColor(int, QColor);
+	void getColAuc(int);
 	void deleteCurve(int);									//usuniêcie krzywej o danej nazwie
 	void leaveOneUnhided(int);
 	void clearAll();
@@ -47,15 +64,14 @@ signals:
 private:
 	QColor generateColor();
 	QString generateName();
-    void insertMarkers();
-    void updateGradient();
 
 	int type;						//typ krzywej (ROC, PR)
 	int curve_counter;
-	std::vector<Curve*> curves_;
-	std::vector<ProxyFile*> proxies_;
-	QwtLegend *legend;
-	QwtPlotGrid *grid;
+	vector<QSharedPointer<Curve>> curves_;
+	vector<QSharedPointer<ProxyFile>> proxies_;
+
+	QPointer<QwtLegend> legend;
+	QwtPlotGrid* grid;
 
 	const int* QtColors;
 	int itColor;

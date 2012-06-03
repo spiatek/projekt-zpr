@@ -1,3 +1,13 @@
+/**
+* @file Panel.h
+* @brief This header file contains Panel class definition.
+* Panel class inherits from QTabWidget class.
+*
+* @author Szymon Pi¹tek
+*
+* @date 3/6/2012
+*/
+
 #pragma once
 
 #include <qtabwidget.h>
@@ -22,8 +32,8 @@ public:
 signals:
     void settingsChanged(QString);
 	void nameChange(int, QString);
-	void colorChange(QString, QColor);
-	void getColorAuc(QString);
+	void colorChange(int, QColor);
+	void getColorAuc(int);
 	void curveDelete(int);
 	void hideAllExceptOfThis(int);
 	void clearPlot();
@@ -45,7 +55,6 @@ private slots:
 	void changePlotName();
 	void changeLabels();
 	void changeGrid(int);
-	//void switchPlot(int);
 
 private:
 	QWidget *createCurveTab(QWidget *);

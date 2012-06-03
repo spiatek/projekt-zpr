@@ -1,3 +1,12 @@
+/**
+* @file fileProxy.h
+* @brief This header file contains RealFile and ProxyFile class definition.
+*
+* @author Mateusz Matuszewski
+*
+* @date 3/6/2012
+*/
+
 #pragma once
 
 #include "../headers/FunctionData.h"

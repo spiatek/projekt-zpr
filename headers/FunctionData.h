@@ -31,7 +31,7 @@ public:
     }
 
     virtual QRectF boundingRect() const{
-    
+		return QRectF();
     }
     
     

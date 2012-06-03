@@ -16,163 +16,199 @@
 #include <qwt_plot_item.h>
 #include <qwt_legend_item.h>
 #include <qevent.h>
+#include <qmessagebox.h>
 
 using namespace std;
 
+/**
+* Grid class inherits from QwtPlotGrid and specify grid properties for a plot.
+*/
 class Grid: public QwtPlotGrid
 {
 public:
+	///Grid class constructor
     Grid()
     {
         enableXMin(true);
 		enableYMin(true);
-        setMajPen( QPen( Qt::white, 0, Qt::DotLine ) );
-        setMinPen( QPen( Qt::gray, 0 , Qt::DotLine ) );
+        setMajPen(QPen(Qt::white, 0, Qt::DotLine));
+        setMinPen(QPen(Qt::gray, 0 , Qt::DotLine));
     }
 
-    virtual void updateScaleDiv( const QwtScaleDiv &xMap,
-        const QwtScaleDiv &yMap )
+	///method which specify grid scale for both X and Y axis
+    virtual void updateScaleDiv(const QwtScaleDiv &xMap, const QwtScaleDiv &yMap)
     {
         QList<double> ticksX[QwtScaleDiv::NTickTypes];
-
-        ticksX[QwtScaleDiv::MajorTick] = 
-            xMap.ticks( QwtScaleDiv::MediumTick );
-        ticksX[QwtScaleDiv::MinorTick] = 
-            xMap.ticks( QwtScaleDiv::MinorTick );
+        ticksX[QwtScaleDiv::MajorTick] = xMap.ticks(QwtScaleDiv::MediumTick);
+        ticksX[QwtScaleDiv::MinorTick] = xMap.ticks(QwtScaleDiv::MinorTick);
 
 		QList<double> ticksY[QwtScaleDiv::NTickTypes];
-
-        ticksY[QwtScaleDiv::MajorTick] = 
-            yMap.ticks( QwtScaleDiv::MediumTick );
-        ticksY[QwtScaleDiv::MinorTick] = 
-            yMap.ticks( QwtScaleDiv::MinorTick );
+        ticksY[QwtScaleDiv::MajorTick] = yMap.ticks(QwtScaleDiv::MediumTick);
+        ticksY[QwtScaleDiv::MinorTick] = yMap.ticks(QwtScaleDiv::MinorTick);
 
 		QwtPlotGrid::updateScaleDiv(
-            QwtScaleDiv( xMap.lowerBound(), xMap.upperBound(), ticksX ),
-            QwtScaleDiv( yMap.lowerBound(), yMap.upperBound(), ticksY ) );
+            QwtScaleDiv(xMap.lowerBound(), xMap.upperBound(), ticksX),
+            QwtScaleDiv(yMap.lowerBound(), yMap.upperBound(), ticksY) );
     }
 };
 
-class MyZoomer: public QwtPlotZoomer
+/**
+* Zoomer class inherits from QwtPlotZoomer and specify zoomer properties for a plot.
+*/
+class Zoomer: public QwtPlotZoomer
 {
 public:
-    MyZoomer(QwtPlotCanvas *canvas):
+	///Zoomer class constructor
+    Zoomer(QPointer<QwtPlotCanvas> canvas):
         QwtPlotZoomer(canvas)
     {
         setTrackerMode(AlwaysOn);
     }
 
+	///text tracker for Zoomer class
     virtual QwtText trackerTextF(const QPointF &pos) const
     {
         QColor bg(Qt::white);
         bg.setAlpha(200);
 
         QwtText text = QwtPlotZoomer::trackerTextF(pos);
-        text.setBackgroundBrush( QBrush( bg ));
+        text.setBackgroundBrush(QBrush(bg));
         return text;
     }
 };
 
-Plot::Plot(QWidget *parent, int _type):
+/**
+* Plot class constructor
+* @param parent QPointer to the parent QWidget
+* @param _type Plot type 
+*/
+Plot::Plot(QPointer<QWidget> parent, int _type):
     QwtPlot( parent ), type(_type)
 {
-	QTextCodec::setCodecForCStrings(QTextCodec::codecForName("Windows-1250"));		//tu trzeba poprawiæ dla innych systemów
+	QTextCodec::setCodecForCStrings(QTextCodec::codecForName("Windows-1250"));
 	setObjectName("Porównanie krzywych");
-	if(type == 0)
-		setTitle("Porównanie krzywych ROC");
-	else
-		setTitle("Porównanie krzywych PR");
 
-	const int qtc[] = { 3,2,7,13,8,14,9, 15, 10, 16, 11, 17, 12, 18, 5, 4, 6, 19, 0, 1 };
+	///Getting information about plot type (ROC, PR)
+	try {
+		if(type == ROC_CURVE)
+			setTitle("Porównanie krzywych ROC");
+		else if(type == PR_CURVE)
+			setTitle("Porównanie krzywych PR");
+		else {
+			QString w = QString("Nieznany rodzaj krzywej");
+			throw w;
+		}
+	}
+	catch(QString& w) {
+		QMessageBox::about(this, tr("Nieobs³ugiwany typ wykresu"), w);
+	}
+
+	///Initialize table containing color values
+	const int qtc[] = { 3, 2, 7, 13, 8, 14, 9, 15, 10, 16, 11, 17, 12, 18, 5, 4, 6, 19, 0, 1 };
 	itColor = 0;
 	QtColors = qtc;
 
-    setAutoFillBackground( true );
+	///Set background properties
+    setAutoFillBackground(true);
     setPalette(QPalette(QColor(185, 213, 248)));
-    //updateGradient();
 
-	legend = new QwtLegend;
+	///Insert legend
+	legend = QPointer<QwtLegend> (new QwtLegend);
     legend->setItemMode(QwtLegend::CheckableItem);
     insertLegend(legend, QwtPlot::RightLegend);
 
-	connect(this, SIGNAL(curveAdd()), SLOT(cAdded()));
-    connect(this, SIGNAL(legendChecked(QwtPlotItem *, bool)), SLOT(showItem(QwtPlotItem *, bool)));
-
-    //replot(); // creating the legend items	
+	///Auto replot after legend modification
+    connect(this, SIGNAL(legendChecked(QPointer<QwtPlotItem>, bool)), SLOT(showItem(QPointer<QwtPlotItem>, bool)));
     setAutoReplot(true);
 
-    // axes 
-    if(type == 0) {
+    ///Set axis name 
+    if(type == ROC_CURVE) {
 		setAxisTitle(xBottom, "False Positive Rate" );
 		setAxisTitle(yLeft, "True Positive Rate");
 	}
-	else {
+	else if(type == PR_CURVE) {
 		setAxisTitle(xBottom, "Recall" );
 		setAxisTitle(yLeft, "Precision");
 	}
 
+	///Set axis ranges
 	setAxisScale(xBottom, 0.0, 1.0);
     setAxisScale(yLeft, 0.0, 1.0);
 
+	///Set grid
 	grid = new Grid;
     grid->attach(this);
 
-	// LeftButton for the zooming
-    // MidButton for the panning
-    // RightButton: zoom out by 1
-    // Ctrl+RighButton: zoom out to full size
+	///Set zoomer properties
+	///LeftButton for the zooming
+    ///MidButton for the panning
+    ///RightButton: zoom out by 1
+    ///Ctrl+RighButton: zoom out to full size
+    QPointer<QwtPlotZoomer> zoomer = new Zoomer(canvas());
+	zoomer->setRubberBandPen(QColor(Qt::black));
+    zoomer->setTrackerPen(QColor(Qt::black));
+    zoomer->setMousePattern(QwtEventPattern::MouseSelect2, Qt::RightButton, Qt::ControlModifier);
+    zoomer->setMousePattern(QwtEventPattern::MouseSelect3, Qt::RightButton );
 
-    QwtPlotZoomer* zoomer = new MyZoomer( canvas() );
-	zoomer->setRubberBandPen( QColor( Qt::black ) );
-    zoomer->setTrackerPen( QColor( Qt::black ) );
-    zoomer->setMousePattern( QwtEventPattern::MouseSelect2,
-        Qt::RightButton, Qt::ControlModifier );
-    zoomer->setMousePattern( QwtEventPattern::MouseSelect3,
-        Qt::RightButton );
+	///Set panner
+	QPointer<QwtPlotPanner> panner = new QwtPlotPanner(canvas());
+    panner->setMouseButton(Qt::MidButton);
 
-	QwtPlotPanner *panner = new QwtPlotPanner( canvas() );
-    panner->setMouseButton( Qt::MidButton );
+	///Set plot canvas
+    canvas()->setLineWidth(1);
+    canvas()->setFrameStyle(QFrame::Box | QFrame::Plain);
+    canvas()->setBorderRadius(15);
 
-	// canvas
-    canvas()->setLineWidth( 1 );
-    canvas()->setFrameStyle( QFrame::Box | QFrame::Plain );
-    canvas()->setBorderRadius( 15 );
+	///Set canvas color
+    QPalette canvasPalette(Qt::white);
+    canvasPalette.setColor(QPalette::Foreground, QColor(133, 190, 232));
+    canvas()->setPalette(canvasPalette);
 
-    QPalette canvasPalette( Qt::white );
-    canvasPalette.setColor( QPalette::Foreground, QColor( 133, 190, 232 ) );
-    canvas()->setPalette( canvasPalette );
-
+	///Install event filter
 	QWidget::setMouseTracking(true);
 	installEventFilter(this);
 	
-	curve_counter=0;
+	///Initialize curve counter
+	curve_counter = 0;
 }
 
+/**
+* Plot class addCurve method is called while adding a curve to the plot
+* It emits curveAdded signal with color, AUC and color as parameters, while curve is added
+* @param fileName n of a file containing curve points
+* @param _type type of a curve (ROC, PR)
+* @param _auc area under the curve
+*/
 int Plot::addCurve(QString fileName, int _type, double _auc)
 {	
-int atchn=0;
-for (int i=0; i<curves_.size(); i++){
-	if ((curves_[i])->attached){
-		atchn++;
-	}
-}
-qDebug()<<"attached1:"<<atchn;
-
-
-	ProxyFile *_proxy;
+	QSharedPointer<ProxyFile> _proxy;
 	QColor color;
 	QString name;
-	Curve *curve;
+	QSharedPointer<Curve> curve;
 
+	///check number of attached curves
+	int atchn = 0;
+	for(int i=0; i<curves_.size(); i++) 
+	{
+		if ((curves_[i])->isAttached()) {
+			atchn++;
+		}
+	}
+	//qDebug()<<"attached1:"<<atchn;
+
+	///check if requested curve already exists
 	bool exists=false;
-	for (int i=0; i<proxies_.size(); i++){
-		if ((proxies_[i])->real_file_path==fileName){
-		qDebug()<<"already exists";
+	for (int i=0; i<proxies_.size(); i++)
+	{
+		if ((proxies_[i])->real_file_path==fileName) {
+			//qDebug()<<"already exists";
 			curve=(curves_[i]);
 			
-			
-			if (curve->attached){
-			qDebug()<<"already attached";
+			///check if requested curve is already attached to a plot
+			if (curve->isAttached()) {
+				//qDebug()<<"already attached";
+				QTextCodec::setCodecForCStrings(QTextCodec::codecForName("Windows-1250"));
+				QMessageBox::about(this, tr("Niepowodzenie wczytania krzywej"), tr("Nie mo¿na drugi raz wczytaæ tej semej krzywej"));
 				return 0;
 			}
 			
@@ -182,126 +218,97 @@ qDebug()<<"attached1:"<<atchn;
 			(curves_[i])->attach(this);
 			color = (curves_[i])->getColor();
 			name = ((curves_[i])->getTitle()).text();
-			curve->attached=true;
+			curve->setAttached(true);
 		}
 	}
 
+	///load new curve
+	if(exists==false) {
 
+		//qDebug()<<"loading";
 
+		///generate curve properties
+		name = generateName();
+		curve = QSharedPointer<Curve> (new Curve(name));
+		curve->setAttached(true);
+		curve->setRenderHint(QwtPlotItem::RenderAntialiased);
 
-/*
-	if (curve_counter>=CURVE_LIMIT){
-		for (int i=0; i<curves_.size(); i++){
-			if ((curves_[i])->deleted){
-				delete curves_[i];
-				curves_.erase(curves_.begin()+i);
-				delete proxies_[i];
-				proxies_.erase(proxies_.begin()+i);
-				break;
-			}
-		}
+		///generate color
+		color = generateColor();
+		curve->setPen(QPen(color));
+		curve->attach(this);
+	
+		//qDebug()<<"DOESNT EXIST";
+
+		///register new proxy
+		_proxy = QSharedPointer<ProxyFile> (new ProxyFile(fileName));
+
+		///load data
+		QVector<QPointF>* dPoints;
+		dPoints=_proxy->getData();
+
+		curve->setData(new FunctionData(dPoints));
+
+		///initialize curve
+		curve->init(_auc, color);
+
+		curves_.push_back(curve);
+		proxies_.push_back(_proxy);
 	}
-	if (curve_counter>=CURVE_LIMIT){
-	//too many curves, error message
-		return;
-	}
-*/
 
-
-
-
-
-if (exists==false){
-qDebug()<<"loading";
-
-	name = generateName();
-	curve = new Curve(name);
-	curve->attached=true;
-	//curve->setLegendAttribute(QwtPlotCurve::LegendShowLine, true);
-	curve->setRenderHint(QwtPlotItem::RenderAntialiased);
-
-	color = generateColor();
-	curve->setPen(QPen(color));
-    curve->attach(this);
-    
-/*
-	if(itColor%2 == 0) {
-		curve->setData(new FunctionData(::sin));
-	}
-	else {
-		curve->setData(new FunctionData(::cos));
-	}
+	curve->setIndex((itemList(QwtPlotItem::Rtti_PlotCurve)).size() - 1);
+	//qDebug()<<"curve position:"<<curve->getIndex();
 	
-	ProxyFile *_proxy
-*/
+	curve_counter++;
+	//qDebug()<<"QwtPlotItemList items = itemList(QwtPlotItem::Rtti_PlotCurve)";
 	
-		qDebug()<<"DOESNT EXIST";
-		_proxy = new ProxyFile(fileName);
-	
-	QVector<QPointF>* dPoints;
-	dPoints=_proxy->getData();
-
-	curve->setData(new FunctionData(dPoints));	
-
-	
-
-	curve->init(_type, _auc, color);
-	curves_.push_back(curve);
-	proxies_.push_back(_proxy);
-	
-}
-
-curve->position=(itemList(QwtPlotItem::Rtti_PlotCurve)).size()-1;
-	qDebug()<<"curve position:"<<curve->position;
-	
-curve_counter++;
-qDebug()<<"QwtPlotItemList items = itemList(QwtPlotItem::Rtti_PlotCurve)";
+	///add curve to plot legend
 	QwtPlotItemList items = itemList(QwtPlotItem::Rtti_PlotCurve);
-	for ( int i = 0; i < items.size(); i++ )
+	for(int i = 0; i < items.size(); i++)
     {
-		if ( i == items.size() - 1 )
-        {
+		if(i == items.size() - 1) {
 			QwtLegendItem *legendItem = (QwtLegendItem *)legend->find(items[i]);
-            if ( legendItem )
-                legendItem->setChecked(true);
+            if(legendItem) {
+				legendItem->setChecked(true);
+			}
             items[i]->setVisible(true);
         }
     }
-qDebug()<<"emit";
+
+	//qDebug()<<"emit";
 	emit curveAdded(name, color, _auc);
-	//emit curveAdd();
 	
-	qDebug()<<"emited cc:"<<curve_counter;
+	//qDebug()<<"emited cc:"<<curve_counter;
 	
-	
-
-		
-	
-	
-atchn=0;
-for (int i=0; i<curves_.size(); i++){
-	if ((curves_[i])->attached){
-		atchn++;
+	///check number of attached curves
+	atchn=0;
+	for (int i=0; i<curves_.size(); i++){
+		if ((curves_[i])->isAttached()){
+			atchn++;
+		}
 	}
-}
-qDebug()<<"attached2:"<<atchn;
-
+	//qDebug()<<"attached2:"<<atchn;
 	
 	return 0;
 }
 
+/*
 int Plot::modifyCurveColor(int _id, QColor color)
 {
-	vector<Curve*>::iterator it;
+	vector<QSharedPointer<Curve>>::iterator it;
 	for(it = curves_.begin(); it != curves_.end(); ++it) 
 	{
-		if((*it)->getId() == _id) {
+		if((*it)->getIndex() == _id) {
 			(*it)->setPen(color);
 		}
 	}
 	return 0;
-}
+}*/
 
+/**
+* Plot class generateColor method is used to generate color of a curve while adding to a plot.
+* It uses QtColors table values, which are mapped to QColors by setRgb function
+*/
 QColor Plot::generateColor()
 {
 	QColor color;
@@ -313,6 +320,9 @@ QColor Plot::generateColor()
 	return color;
 }
 
+/**
+* Plot class generateName method is used to generate name of a curve.
+*/
 QString Plot::generateName()
 {
 	int curveNr = curves_.size() + 1;
@@ -320,97 +330,53 @@ QString Plot::generateName()
 	return name;
 }
 
-void Plot::insertMarkers()
+/**
+* Plot class resizeEvent method is used to capture QResizeEvent
+* @param event Event which is activated while resizing a plot window
+*/
+void Plot::resizeEvent(QResizeEvent* event)
 {
-	//  ...a horizontal line at y = 0...
-    QwtPlotMarker *mY = new QwtPlotMarker();
-    mY->setLabel(QString::fromLatin1("y = 0"));
-    mY->setLabelAlignment(Qt::AlignRight|Qt::AlignTop);
-    mY->setLineStyle(QwtPlotMarker::HLine);
-    mY->setYValue(0.0);
-    mY->attach(this);
-
-    //  ...a vertical line at x = 2 * pi
-    QwtPlotMarker *mX = new QwtPlotMarker();
-    mX->setLabel(QString::fromLatin1("x = 2 pi"));
-    mX->setLabelAlignment(Qt::AlignLeft | Qt::AlignBottom);
-    mX->setLabelOrientation(Qt::Vertical);
-    mX->setLineStyle(QwtPlotMarker::VLine);
-    mX->setLinePen(QPen(Qt::black, 0, Qt::DashDotLine));
-    mX->setXValue(2.0 * M_PI);
-    mX->attach(this);
+    QwtPlot::resizeEvent(event);
 }
 
-void Plot::updateGradient()
-{
-	//zabawy z gradientowym wy½wietlaniem kolorów
-
-    QPalette pal = palette();
-
-    const QColor buttonColor = pal.color( QPalette::Button );
-
-#ifdef Q_WS_X11
-    // Qt 4.7.1: QGradient::StretchToDeviceMode is buggy on X11
-
-    QLinearGradient gradient( rect().topLeft(), rect().bottomLeft() );
-    gradient.setColorAt( 0.0, Qt::white );
-    gradient.setColorAt( 0.7, buttonColor );
-    gradient.setColorAt( 1.0, buttonColor );
-#else
-    QLinearGradient gradient( 0, 0, 0, 1 );
-    gradient.setCoordinateMode( QGradient::StretchToDeviceMode );
-    gradient.setColorAt( 0.0, Qt::white );
-    gradient.setColorAt( 0.7, buttonColor );
-    gradient.setColorAt( 1.0, buttonColor );
-#endif
-
-    pal.setBrush( QPalette::Window, gradient );
-    setPalette( pal );
-}
-
-void Plot::resizeEvent( QResizeEvent *event )
-{
-    QwtPlot::resizeEvent( event );
-#ifdef Q_WS_X11
-    //updateGradient();
-#endif
-}
-
+/*
 void Plot::refreshEvent()
 {
 	replot();
 }
+*/
 
+/**
+* Plot class eventFilter method is used to capture MouseMove events
+* It emits coordinatesAssembles signal with current mouse position specified
+* @param obj
+* @param event Event which is activated while moving a mouse
+*/
 bool Plot::eventFilter(QObject *obj, QEvent *event)
 {
 	if(event->type() == QEvent::MouseMove)
-  {
-    QMouseEvent *mouseEvent = static_cast<QMouseEvent*>(event);
-	emit coordinatesAssembled(mouseEvent->pos());
-  }
-  return false;
+	{
+		QMouseEvent *mouseEvent = static_cast<QMouseEvent*>(event);
+		emit coordinatesAssembled(mouseEvent->pos());
+	}
+	return false;
 }
 
-void Plot::showItem(QwtPlotItem *item, bool on)
+/**
+* Plot class showItem slot is to change visibility of a curve after pushing a legend button
+* @param item Pointer to a current curve
+* @param _state Boolean value defining desirable visibility state
+*/
+void Plot::showItem(QwtPlotItem* item, bool _state)
 {
-	item->setVisible(on);
+	item->setVisible(_state);
 }
 
-void Plot::cAdded(void)
-{
-	/*QwtPlotItemList items = itemList(QwtPlotItem::Rtti_PlotCurve);
-	for ( int i = 0; i < items.size(); i++ )
-    {
-		if ( i == items.size() - 1 )
-        {
-			QwtLegendItem *legendItem = (QwtLegendItem *)legend->find(items[i]);
-            if ( legendItem )
-                legendItem->setChecked(true);
-            items[i]->setVisible(true);
-        }
-    }*/
-}
-
+/**
+* Plot class changeName slot is called by PlotWindow if curve name was modified in panel
+* @param _pos Curve identifier
+* @param _newName New curve name
+*/
 void Plot::changeName(int _pos, QString _newName)
 {
 	QwtPlotItemList items = itemList(QwtPlotItem::Rtti_PlotCurve);
@@ -418,28 +384,38 @@ void Plot::changeName(int _pos, QString _newName)
 	legend->repaint();
 }
 
-void Plot::changeColor(QString _name, QColor _newColor)
+/**
+* Plot class changeColor slot is called by PlotWindow if curve color was modified in panel
+* @param _id Curve identifier
+* @param _newColor New curve color
+*/
+void Plot::changeColor(int _id, QColor _newColor)
 {
 	QwtPlotItemList items = itemList(QwtPlotItem::Rtti_PlotCurve);
-	vector<Curve*>::const_iterator it;
+	vector<QSharedPointer<Curve>>::const_iterator it;
 	for(it = curves_.begin(); it != curves_.end(); ++it) 
 	{	
-		if((*it)->title() == _name) {
+		if((*it)->getIndex() == _id) {
 			(*it)->setPen(_newColor);
 		}
 	}
 	legend->repaint();
 }
 
-void Plot::getColAuc(QString _name)
+/**
+* Plot class getColAuc slot is called by PlotWindow to display color and AUC info in panel.
+* It emits resendColorAuc signal with color and AUC as parameters
+* @param _id Curve identifier
+*/
+void Plot::getColAuc(int _id)
 {
 	QColor color;
 	double auc;
 	QwtPlotItemList items = itemList(QwtPlotItem::Rtti_PlotCurve);
-	vector<Curve*>::const_iterator it;
+	vector<QSharedPointer<Curve>>::const_iterator it;
 	for(it = curves_.begin(); it != curves_.end(); ++it) 
 	{	
-		if((*it)->title() == _name) {
+		if((*it)->getIndex() == _id) {
 			color = (*it)->getColor();
 			auc = (*it)->getAUC();
 		}
@@ -447,40 +423,49 @@ void Plot::getColAuc(QString _name)
 	emit resendColorAuc(color, auc);
 }
 
+/**
+* Plot class deleteCurve slot is called by PlotWindow to delete curve with specified id.
+* @param _id Curve identifier
+*/
 void Plot::deleteCurve(int _id)								//usuniêcie krzywej o danym id
 {
-qDebug()<<"DETACH curve id:"<<_id;
+	//qDebug()<<"DETACH curve id:"<<_id;
 	
+	///detaching curve from plot
 	QwtPlotItemList items = itemList(QwtPlotItem::Rtti_PlotCurve);
-	qDebug()<<items.size()<<" count pre:"<<curve_counter<<" "<<curves_.size()<<"  "<<proxies_.size();
+	//qDebug()<<items.size()<<" count pre:"<<curve_counter<<" "<<curves_.size()<<"  "<<proxies_.size();
 	items[_id]->detach();
 	
 	//curves_[_id]->attached=false;
 	legend->repaint();
 	curve_counter--;
 	replot();	
-	qDebug()<<"curve counter:"<<curve_counter;
+	//qDebug()<<"curve counter:"<<curve_counter;
 	
-	int atchn=0;
+	int atchn=0, index;
 	for (int i=0; i<curves_.size(); i++){
-		if ((curves_[i])->position==_id){
-			curves_[i]->attached=false;
+		index = (curves_[i])->getIndex();
+		if (index == _id){
+			curves_[i]->setAttached(false);
 		}
-		if (curves_[i]->position>_id){
-			curves_[i]->position--;
+		if (index > _id){
+			curves_[i]->setIndex(index - 1);
 		}
 	}
 	for (int i=0; i<curves_.size(); i++){
-		if ((curves_[i])->attached){
+		if ((curves_[i])->isAttached()){
 			atchn++;
 		}
 	}
-qDebug()<<"DELETE number of attached:"<<atchn;
 	
-	
-	
+	//qDebug()<<"DELETE number of attached:"<<atchn;
 }
 
+/**
+* Plot class leaveOneUnhided slot is called by PlotWindow when button in panel was activated
+* It sets unvisible all curves except of the one with given id
+* @param _pos Curve identifier
+*/
 void Plot::leaveOneUnhided(int _pos)
 {
 	QwtPlotItemList items = itemList(QwtPlotItem::Rtti_PlotCurve);
@@ -501,6 +486,10 @@ void Plot::leaveOneUnhided(int _pos)
     }
 }
 
+/**
+* Plot class clearAll slot is called by PlotWindow when button in panel was activated
+* It detaches all curves from a plot
+*/
 void Plot::clearAll()
 {
 	QwtPlotItemList items = itemList(QwtPlotItem::Rtti_PlotCurve);
@@ -516,18 +505,31 @@ void Plot::clearAll()
 	replot();
 }
 
+/**
+* Plot class modifyBackgroundColor slot is called by PlotWindow when background color was set in panel
+* @param _color New bacground color
+*/
 void Plot::modifyBackgroundColor(QColor _color)
 {
 	setPalette(QPalette(_color));
 	replot();
 }
 
+/**
+* Plot class changePlotName slot is called by PlotWindow when plot name was modified in panel
+* @param _name New plot name
+*/
 void Plot::changePlotName(QString _name)
 {
 	setTitle(_name);
 	replot();
 }
 
+/**
+* Plot class getColAuc slot is called by PlotWindow when plot labels were mofified in panel
+* @param _labelX New X label
+* @param _labelY New Y label
+*/
 void Plot::changePlotLabels(QString _labelX, QString _labelY)
 {
 	setAxisTitle(xBottom, _labelX);
@@ -535,6 +537,10 @@ void Plot::changePlotLabels(QString _labelX, QString _labelY)
 	replot();
 }
 
+/**
+* Plot class changeGridState slot is called by PlotWindow when grid checkbox value in panel changed
+* @param _state Current state of grid checkbox in panel
+*/
 void Plot::changeGridState(int _state)
 {
 	if(_state == 0)

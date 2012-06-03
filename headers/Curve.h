@@ -1,8 +1,19 @@
+/**
+* @file Curve.h
+* @brief This header file contains Curve class definition.
+* Curve class inherits from QwtPlotCurve class.
+* It provides an access to some of QwtPlotCurve methods
+* and some other features which are not provided by QwtPlotCurve
+*
+* @author Szymon Pi¹tek
+*
+* @date 3/6/2012
+*/
+
 #pragma once
 
 #include <qwt_plot_curve.h>
 #include <QColor>
-#include <iostream>
 
 class QwtPlotCurve;
 class QColor;
@@ -12,34 +23,34 @@ class Curve : QwtPlotCurve {
 public:
 
 	Curve() { ++id_; }
-	Curve(int _type, double _auc) : type_(_type), auc_(_auc), isHidden_(false) { ++id_; }
+	Curve(double _auc) : auc_(_auc) { ++id_; }
 	Curve(const QwtText&);
 
-	using QwtPlotCurve::setLegendAttribute;
 	using QwtPlotCurve::setRenderHint;
 	using QwtPlotCurve::setPen;
     using QwtPlotCurve::attach;
 	using QwtPlotCurve::setData;
-	using QwtPlotCurve::hide;
 	using QwtPlotCurve::setVisible;
 	using QwtPlotCurve::title;
 	using QwtPlotCurve::setTitle;
 
-	void init(int, double, QColor);
+	void init(double, QColor);
+	void setAttached(bool);
+	void setIndex(int);
+
 	int getId();
-	int getType();
 	double getAUC();
 	QColor getColor();
 	QwtText getTitle();
-	bool attached;
-	int position;
+	bool isAttached();
+	int getIndex();
 
 private:
 
 	static int id_;
-	int type_;					//typ krzywej
 	double auc_;				//pole pod krzyw¹
-	bool isHidden_;				//czy ukryta
 	QColor color_;
+	bool attached_;
+	int index_;
 
 };

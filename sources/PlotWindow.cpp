@@ -23,6 +23,7 @@
 PlotWindow::PlotWindow()
  {
 	 w = new QWidget(this);
+
 	 roc_plot = new Plot(w, 0);
 	 pr_plot = new Plot(w, 1);
 	 roc_panel = new Panel(w, 0);
@@ -75,12 +76,13 @@ void PlotWindow::switchPlot()
 		connect(current_plot, SIGNAL(contentsChanged()), this, SLOT(plotWasModified()));
 		connect(current_plot, SIGNAL(curveAdded(QString, QColor, double)), current_panel, SLOT(addCurve(QString, QColor, double)));
 		connect(current_panel, SIGNAL(nameChange(int, QString)), current_plot, SLOT(changeName(int, QString)));
-		connect(current_panel, SIGNAL(colorChange(QString, QColor)), current_plot, SLOT(changeColor(QString, QColor)));
-		connect(current_panel, SIGNAL(getColorAuc(QString)), current_plot, SLOT(getColAuc(QString)));
+		connect(current_panel, SIGNAL(colorChange(int, QColor)), current_plot, SLOT(changeColor(int, QColor)));
+		connect(current_panel, SIGNAL(getColorAuc(int)), current_plot, SLOT(getColAuc(int)));
 		connect(current_plot, SIGNAL(resendColorAuc(QColor, double)), current_panel, SLOT(readColorAuc(QColor, double)));
 		connect(current_panel, SIGNAL(curveDelete(int)), current_plot, SLOT(deleteCurve(int)));
 		connect(current_panel, SIGNAL(hideAllExceptOfThis(int)), current_plot, SLOT(leaveOneUnhided(int)));
 		connect(current_panel, SIGNAL(clearPlot()), current_plot, SLOT(clearAll()));
+		connect(clearAction, SIGNAL(triggered()), current_plot, SLOT(clearAll()));
 		connect(current_panel, SIGNAL(changeBackgroundColor(QColor)), current_plot, SLOT(modifyBackgroundColor(QColor)));
 		connect(current_panel, SIGNAL(plotNameChange(QString)), current_plot, SLOT(changePlotName(QString)));
 		connect(current_panel, SIGNAL(labelsChange(QString, QString)), current_plot, SLOT(changePlotLabels(QString, QString)));
@@ -162,12 +164,15 @@ void PlotWindow::createActions()
 #endif
 
 	exportAction = new QAction(QIcon("images/save.png"), tr("&Export"), this);
-	exportAction->setStatusTip(tr("Export document"));
+	exportAction->setStatusTip(tr("Export plot"));
 	connect(exportAction, SIGNAL(triggered()), this, SLOT(exportDocument()));
 
 	switchAction = new QAction(QIcon("images/switch.png"), tr("Switch"), this);
 	switchAction->setStatusTip(tr("Switch plot"));
 	connect(switchAction, SIGNAL(triggered()), this, SLOT(switchPlot()));
+
+	clearAction = new QAction(QIcon("images/clear.png"), tr("Clear"), this);
+	clearAction->setStatusTip(tr("Clear plot"));
 
 	aboutAct = new QAction(tr("&About"), this);
 	aboutAct->setStatusTip(tr("Show the application's About box"));
@@ -193,8 +198,9 @@ void PlotWindow::createActions()
 
      menuBar()->addSeparator();
 
-     switchMenu = menuBar()->addMenu(tr("&Plot"));
-	 switchMenu->addAction(switchAction);
+     plotMenu = menuBar()->addMenu(tr("&Plot"));
+	 plotMenu->addAction(switchAction);
+	 plotMenu->addAction(clearAction);
 
      helpMenu = menuBar()->addMenu(tr("&Help"));
      helpMenu->addAction(aboutAct);
@@ -205,13 +211,17 @@ void PlotWindow::createToolBars()
 {
      fileToolBar = addToolBar(tr("File"));
      fileToolBar->addAction(openAction);
-     
+
+	 fileToolBar->addSeparator();
+	 fileToolBar->addAction(switchAction);
+	 fileToolBar->addAction(clearAction);
+
+	 fileToolBar->addSeparator();
 #ifndef QT_NO_PRINTER
 	 fileToolBar->addAction(printAction);
 #endif
 
 	 fileToolBar->addAction(exportAction);
-	 fileToolBar->addAction(switchAction);
 }
 
 void PlotWindow::createStatusBar()

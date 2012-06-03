@@ -1,3 +1,13 @@
+/**
+* @file Plot.h
+* @brief This header file contains PlotWindow class definition.
+* PlotWindow class inherits from QwtMainWindow class.
+*
+* @author Szymon Pi¹tek
+*
+* @date 3/6/2012
+*/
+
 #pragma once
 #include "../headers/Plot.h"
 #include <qmainwindow.h>
@@ -46,7 +56,7 @@ private:
 	bool saveFile(const QString &fileName);
 
 	QMenu *fileMenu;
-	QMenu *switchMenu;
+	QMenu *plotMenu;
 	QMenu *helpMenu;
 
 	QToolBar *fileToolBar;
@@ -54,6 +64,7 @@ private:
 	QAction *openAction;
 	QAction *printAction;
 	QAction *switchAction;
+	QAction *clearAction;
 	QAction *exportAction;
 	QAction *exitAction;
 	QAction *aboutAct;
