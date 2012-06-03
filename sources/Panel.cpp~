@@ -36,7 +36,6 @@
  * Constructor of FunctionData class
  * @param parent pointer to parent
  * @param _type cureve type (either ROC or PR)
- * @return
  */
 Panel::Panel(QWidget *parent, int _type): QTabWidget(parent){
 	QTextCodec::setCodecForCStrings(QTextCodec::codecForName("Windows-1250"));	
@@ -51,7 +50,6 @@ Panel::Panel(QWidget *parent, int _type): QTabWidget(parent){
 /**
  * Create Tab to group settings which can be changed for plots
  * @param parent pointer to parent
- * @return
  */
 QWidget *Panel::createCurveTab(QWidget *parent){
 	curvesTab = new QWidget(parent);
@@ -110,7 +108,6 @@ QWidget *Panel::createCurveTab(QWidget *parent){
 /**
  * Create first of the tabs with options of current curve
  * @param parent pointer to parent
- * @return
  */
 QWidget *Panel::createPlotTab(QWidget *parent){
 	plotTab = new QWidget(parent);

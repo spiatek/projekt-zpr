@@ -1,3 +1,25 @@
+/**
+ * @file
+ * @author  Szymon PiÄ…tek, Mateusz Matuszewski
+ * @version 1.0
+ *
+ * @section LICENSE
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation; either version 2 of
+ * the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * General Public License for more details at
+ * http://www.gnu.org/copyleft/gpl.html
+ *
+ * @section DESCRIPTION
+ *
+ */
+
 #include "../headers/Plot.h"
 #include "../headers/FunctionData.h"
 #include "../headers/Curve.h"
@@ -19,20 +41,19 @@
 
 using namespace std;
 
-class Grid: public QwtPlotGrid
-{
+/**
+ * Grid class
+ */
+class Grid: public QwtPlotGrid{
 public:
-    Grid()
-    {
+    Grid(){
         enableXMin(true);
 		enableYMin(true);
         setMajPen( QPen( Qt::white, 0, Qt::DotLine ) );
         setMinPen( QPen( Qt::gray, 0 , Qt::DotLine ) );
     }
 
-    virtual void updateScaleDiv( const QwtScaleDiv &xMap,
-        const QwtScaleDiv &yMap )
-    {
+    virtual void updateScaleDiv(const QwtScaleDiv &xMap,const QwtScaleDiv &yMap){
         QList<double> ticksX[QwtScaleDiv::NTickTypes];
 
         ticksX[QwtScaleDiv::MajorTick] = 
@@ -53,17 +74,16 @@ public:
     }
 };
 
-class MyZoomer: public QwtPlotZoomer
-{
+/**
+ * Zoomer class
+ */
+class MyZoomer: public QwtPlotZoomer{
 public:
-    MyZoomer(QwtPlotCanvas *canvas):
-        QwtPlotZoomer(canvas)
-    {
+    MyZoomer(QwtPlotCanvas *canvas): QwtPlotZoomer(canvas){
         setTrackerMode(AlwaysOn);
     }
 
-    virtual QwtText trackerTextF(const QPointF &pos) const
-    {
+    virtual QwtText trackerTextF(const QPointF &pos) const {
         QColor bg(Qt::white);
         bg.setAlpha(200);
 
@@ -73,15 +93,13 @@ public:
     }
 };
 
-Plot::Plot(QWidget *parent, int _type):
-    QwtPlot( parent ), type(_type)
-{
-	QTextCodec::setCodecForCStrings(QTextCodec::codecForName("Windows-1250"));		//tu trzeba poprawiæ dla innych systemów
-	setObjectName("Porównanie krzywych");
+Plot::Plot(QWidget *parent, int _type): QwtPlot( parent ), type(_type){
+	QTextCodec::setCodecForCStrings(QTextCodec::codecForName("Windows-1250"));		//tu trzeba poprawiÃ¦ dla innych systemÃ³w
+	setObjectName("PorÃ³wnanie krzywych");
 	if(type == 0)
-		setTitle("Porównanie krzywych ROC");
+		setTitle("PorÃ³wnanie krzywych ROC");
 	else
-		setTitle("Porównanie krzywych PR");
+		setTitle("PorÃ³wnanie krzywych PR");
 
 	const int qtc[] = { 3,2,7,13,8,14,9, 15, 10, 16, 11, 17, 12, 18, 5, 4, 6, 19, 0, 1 };
 	itColor = 0;
@@ -148,16 +166,8 @@ Plot::Plot(QWidget *parent, int _type):
 	curve_counter=0;
 }
 
-int Plot::addCurve(QString fileName, int _type, double _auc)
-{	
-int atchn=0;
-for (int i=0; i<curves_.size(); i++){
-	if ((curves_[i])->attached){
-		atchn++;
-	}
-}
-qDebug()<<"attached1:"<<atchn;
-
+int Plot::addCurve(QString fileName, int _type){	
+	double _auc=0.0;
 
 	ProxyFile *_proxy;
 	QColor color;
@@ -167,143 +177,73 @@ qDebug()<<"attached1:"<<atchn;
 	bool exists=false;
 	for (int i=0; i<proxies_.size(); i++){
 		if ((proxies_[i])->real_file_path==fileName){
-		qDebug()<<"already exists";
 			curve=(curves_[i]);
-			
-			
-			if (curve->attached){
-			qDebug()<<"already attached";
+			if (curve->attached)
 				return 0;
-			}
-			
 			exists=true;
-			
 			_proxy=proxies_[i];
 			(curves_[i])->attach(this);
 			color = (curves_[i])->getColor();
+			_auc = (curves_[i])->getAUC();
 			name = ((curves_[i])->getTitle()).text();
 			curve->attached=true;
 		}
 	}
+	if (exists==false){
+		name = generateName();
+		curve = new Curve(name);
+		curve->attached=true;
+		curve->setRenderHint(QwtPlotItem::RenderAntialiased);
 
-
-
-
-/*
-	if (curve_counter>=CURVE_LIMIT){
-		for (int i=0; i<curves_.size(); i++){
-			if ((curves_[i])->deleted){
-				delete curves_[i];
-				curves_.erase(curves_.begin()+i);
-				delete proxies_[i];
-				proxies_.erase(proxies_.begin()+i);
-				break;
-			}
-		}
-	}
-	if (curve_counter>=CURVE_LIMIT){
-	//too many curves, error message
-		return;
-	}
-*/
-
-
-
-
-
-if (exists==false){
-qDebug()<<"loading";
-
-	name = generateName();
-	curve = new Curve(name);
-	curve->attached=true;
-	//curve->setLegendAttribute(QwtPlotCurve::LegendShowLine, true);
-	curve->setRenderHint(QwtPlotItem::RenderAntialiased);
-
-	color = generateColor();
-	curve->setPen(QPen(color));
-    curve->attach(this);
-    
-/*
-	if(itColor%2 == 0) {
-		curve->setData(new FunctionData(::sin));
-	}
-	else {
-		curve->setData(new FunctionData(::cos));
-	}
-	
-	ProxyFile *_proxy
-*/
-	
-		qDebug()<<"DOESNT EXIST";
+		color = generateColor();
+		curve->setPen(QPen(color));
+		curve->attach(this);
+		
 		_proxy = new ProxyFile(fileName);
 	
-	QVector<QPointF>* dPoints;
-	dPoints=_proxy->getData();
+		QVector<QPointF>* dPoints;
+		dPoints=_proxy->getData();
 
-	curve->setData(new FunctionData(dPoints));	
 
+		if (dPoints->size()<2){
+			throw 1003;
+		}
+		else{
+			for (int i=0; i<dPoints->size()-1; i++){
+				_auc+=1.0/2.0*( (*dPoints)[i].y()+(*dPoints)[i+1].y() ) * ( (*dPoints)[i+1].x()-(*dPoints)[i].x() );
+			}
+		}
+		curve->setData(new FunctionData(dPoints));	
+		curve->init(_type, _auc, color);
+		curves_.push_back(curve);
+		proxies_.push_back(_proxy);
 	
-
-	curve->init(_type, _auc, color);
-	curves_.push_back(curve);
-	proxies_.push_back(_proxy);
-	
-}
-
-curve->position=(itemList(QwtPlotItem::Rtti_PlotCurve)).size()-1;
-	qDebug()<<"curve position:"<<curve->position;
-	
-curve_counter++;
-qDebug()<<"QwtPlotItemList items = itemList(QwtPlotItem::Rtti_PlotCurve)";
+	}
+	curve->position=(itemList(QwtPlotItem::Rtti_PlotCurve)).size()-1;
+	curve_counter++;
 	QwtPlotItemList items = itemList(QwtPlotItem::Rtti_PlotCurve);
-	for ( int i = 0; i < items.size(); i++ )
-    {
-		if ( i == items.size() - 1 )
-        {
+	for ( int i = 0; i < items.size(); i++ ){
+		if ( i == items.size() - 1 ){
 			QwtLegendItem *legendItem = (QwtLegendItem *)legend->find(items[i]);
             if ( legendItem )
                 legendItem->setChecked(true);
             items[i]->setVisible(true);
         }
     }
-qDebug()<<"emit";
 	emit curveAdded(name, color, _auc);
-	//emit curveAdd();
-	
-	qDebug()<<"emited cc:"<<curve_counter;
-	
-	
-
-		
-	
-	
-atchn=0;
-for (int i=0; i<curves_.size(); i++){
-	if ((curves_[i])->attached){
-		atchn++;
-	}
-}
-qDebug()<<"attached2:"<<atchn;
-
-	
 	return 0;
 }
 
-int Plot::modifyCurveColor(int _id, QColor color)
-{
+int Plot::modifyCurveColor(int _id, QColor color){
 	vector<Curve*>::iterator it;
-	for(it = curves_.begin(); it != curves_.end(); ++it) 
-	{
-		if((*it)->getId() == _id) {
+	for(it = curves_.begin(); it != curves_.end(); ++it) {
+		if((*it)->getId() == _id)
 			(*it)->setPen(color);
-		}
 	}
 	return 0;
 }
 
-QColor Plot::generateColor()
-{
+QColor Plot::generateColor(){
 	QColor color;
 	color.setRgb(QtColors[itColor]);
 	itColor++;
@@ -313,15 +253,13 @@ QColor Plot::generateColor()
 	return color;
 }
 
-QString Plot::generateName()
-{
+QString Plot::generateName(){
 	int curveNr = curves_.size() + 1;
 	QString name = QString("krzywa_%1").arg(curveNr);
 	return name;
 }
 
-void Plot::insertMarkers()
-{
+void Plot::insertMarkers(){
 	//  ...a horizontal line at y = 0...
     QwtPlotMarker *mY = new QwtPlotMarker();
     mY->setLabel(QString::fromLatin1("y = 0"));
@@ -341,10 +279,7 @@ void Plot::insertMarkers()
     mX->attach(this);
 }
 
-void Plot::updateGradient()
-{
-	//zabawy z gradientowym wy½wietlaniem kolorów
-
+void Plot::updateGradient(){
     QPalette pal = palette();
 
     const QColor buttonColor = pal.color( QPalette::Button );
@@ -363,82 +298,57 @@ void Plot::updateGradient()
     gradient.setColorAt( 0.7, buttonColor );
     gradient.setColorAt( 1.0, buttonColor );
 #endif
-
     pal.setBrush( QPalette::Window, gradient );
     setPalette( pal );
 }
 
-void Plot::resizeEvent( QResizeEvent *event )
-{
+void Plot::resizeEvent( QResizeEvent *event ){
     QwtPlot::resizeEvent( event );
 #ifdef Q_WS_X11
     //updateGradient();
 #endif
 }
 
-void Plot::refreshEvent()
-{
+void Plot::refreshEvent(){
 	replot();
 }
 
-bool Plot::eventFilter(QObject *obj, QEvent *event)
-{
-	if(event->type() == QEvent::MouseMove)
-  {
-    QMouseEvent *mouseEvent = static_cast<QMouseEvent*>(event);
-	emit coordinatesAssembled(mouseEvent->pos());
-  }
-  return false;
+bool Plot::eventFilter(QObject *obj, QEvent *event){
+	if(event->type() == QEvent::MouseMove){
+	    QMouseEvent *mouseEvent = static_cast<QMouseEvent*>(event);
+		emit coordinatesAssembled(mouseEvent->pos());
+	}
+	return false;
 }
 
-void Plot::showItem(QwtPlotItem *item, bool on)
-{
+void Plot::showItem(QwtPlotItem *item, bool on){
 	item->setVisible(on);
 }
 
-void Plot::cAdded(void)
-{
-	/*QwtPlotItemList items = itemList(QwtPlotItem::Rtti_PlotCurve);
-	for ( int i = 0; i < items.size(); i++ )
-    {
-		if ( i == items.size() - 1 )
-        {
-			QwtLegendItem *legendItem = (QwtLegendItem *)legend->find(items[i]);
-            if ( legendItem )
-                legendItem->setChecked(true);
-            items[i]->setVisible(true);
-        }
-    }*/
-}
+void Plot::cAdded(void){}
 
-void Plot::changeName(int _pos, QString _newName)
-{
+void Plot::changeName(int _pos, QString _newName){
 	QwtPlotItemList items = itemList(QwtPlotItem::Rtti_PlotCurve);
 	items[_pos]->setTitle(_newName);
 	legend->repaint();
 }
 
-void Plot::changeColor(QString _name, QColor _newColor)
-{
+void Plot::changeColor(QString _name, QColor _newColor){
 	QwtPlotItemList items = itemList(QwtPlotItem::Rtti_PlotCurve);
 	vector<Curve*>::const_iterator it;
-	for(it = curves_.begin(); it != curves_.end(); ++it) 
-	{	
-		if((*it)->title() == _name) {
+	for(it = curves_.begin(); it != curves_.end(); ++it) {	
+		if((*it)->title() == _name)
 			(*it)->setPen(_newColor);
-		}
 	}
 	legend->repaint();
 }
 
-void Plot::getColAuc(QString _name)
-{
+void Plot::getColAuc(QString _name){
 	QColor color;
-	double auc;
+	double auc=-1.0;
 	QwtPlotItemList items = itemList(QwtPlotItem::Rtti_PlotCurve);
 	vector<Curve*>::const_iterator it;
-	for(it = curves_.begin(); it != curves_.end(); ++it) 
-	{	
+	for(it = curves_.begin(); it != curves_.end(); ++it) {	
 		if((*it)->title() == _name) {
 			color = (*it)->getColor();
 			auc = (*it)->getAUC();
@@ -447,48 +357,27 @@ void Plot::getColAuc(QString _name)
 	emit resendColorAuc(color, auc);
 }
 
-void Plot::deleteCurve(int _id)								//usuniêcie krzywej o danym id
-{
-qDebug()<<"DETACH curve id:"<<_id;
-	
+//usuniÃªcie krzywej o danym id
+void Plot::deleteCurve(int _id){	
 	QwtPlotItemList items = itemList(QwtPlotItem::Rtti_PlotCurve);
-	qDebug()<<items.size()<<" count pre:"<<curve_counter<<" "<<curves_.size()<<"  "<<proxies_.size();
 	items[_id]->detach();
-	
-	//curves_[_id]->attached=false;
 	legend->repaint();
 	curve_counter--;
 	replot();	
-	qDebug()<<"curve counter:"<<curve_counter;
 	
-	int atchn=0;
 	for (int i=0; i<curves_.size(); i++){
-		if ((curves_[i])->position==_id){
+		if ((curves_[i])->position==_id)
 			curves_[i]->attached=false;
-		}
-		if (curves_[i]->position>_id){
+		if (curves_[i]->position>_id)
 			curves_[i]->position--;
-		}
 	}
-	for (int i=0; i<curves_.size(); i++){
-		if ((curves_[i])->attached){
-			atchn++;
-		}
-	}
-qDebug()<<"DELETE number of attached:"<<atchn;
-	
-	
-	
 }
 
-void Plot::leaveOneUnhided(int _pos)
-{
+void Plot::leaveOneUnhided(int _pos){
 	QwtPlotItemList items = itemList(QwtPlotItem::Rtti_PlotCurve);
-	for(int i = 0; i < items.size(); i++)
-    {
+	for(int i = 0; i < items.size(); i++){
 		QwtLegendItem *legendItem = (QwtLegendItem *)legend->find(items[i]);
-		if(i == _pos)
-        {
+		if(i == _pos){
             if(legendItem)
                 legendItem->setChecked(true);
             items[i]->setVisible(true);
@@ -501,45 +390,39 @@ void Plot::leaveOneUnhided(int _pos)
     }
 }
 
-void Plot::clearAll()
-{
+void Plot::clearAll(){
 	QwtPlotItemList items = itemList(QwtPlotItem::Rtti_PlotCurve);
-	for(int i = 0; i < items.size(); i++)
-    {
+	for(int i = 0; i < items.size(); i++){
 		QwtLegendItem *legendItem = (QwtLegendItem *)legend->find(items[i]);
-		if(legendItem) {
+		if(legendItem)
 			legendItem->setChecked(false);
-		}
 		items[i]->detach();
 	}
 	legend->repaint();
 	replot();
 }
 
-void Plot::modifyBackgroundColor(QColor _color)
-{
+void Plot::modifyBackgroundColor(QColor _color){
 	setPalette(QPalette(_color));
 	replot();
 }
 
-void Plot::changePlotName(QString _name)
-{
+void Plot::changePlotName(QString _name){
 	setTitle(_name);
 	replot();
 }
 
-void Plot::changePlotLabels(QString _labelX, QString _labelY)
-{
+void Plot::changePlotLabels(QString _labelX, QString _labelY){
 	setAxisTitle(xBottom, _labelX);
 	setAxisTitle(yLeft, _labelY);
 	replot();
 }
 
-void Plot::changeGridState(int _state)
-{
+void Plot::changeGridState(int _state){
 	if(_state == 0)
 		grid->detach();
 	else
 		grid->attach(this);
 	replot();
 }
+

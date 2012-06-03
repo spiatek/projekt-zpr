@@ -1,3 +1,25 @@
+/**
+ * @file
+ * @author  Szymon PiÄ…tek, Mateusz Matuszewski
+ * @version 1.0
+ *
+ * @section LICENSE
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation; either version 2 of
+ * the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * General Public License for more details at
+ * http://www.gnu.org/copyleft/gpl.html
+ *
+ * @section DESCRIPTION
+ *
+ */
+
 #include "../headers/PlotWindow.h"
 #include "../headers/FunctionData.h"
 #include "../headers/Panel.h"
@@ -19,9 +41,9 @@
 #include <qfiledialog.h>
 #include <qprintdialog.h>
 #include <qwt_plot_renderer.h>
+#include <QErrorMessage>
 
-PlotWindow::PlotWindow()
- {
+PlotWindow::PlotWindow(){
 	 w = new QWidget(this);
 	 roc_plot = new Plot(w, 0);
 	 pr_plot = new Plot(w, 1);
@@ -47,19 +69,15 @@ PlotWindow::PlotWindow()
 	 switchPlot();
 
      setUnifiedTitleAndToolBarOnMac(true);
- }
-
- void PlotWindow::closeEvent(QCloseEvent *event)
- {
-	event->accept();
- }
- 
-void PlotWindow::quit()
-{
 }
 
-void PlotWindow::switchPlot()
-{
+void PlotWindow::closeEvent(QCloseEvent *event){
+	event->accept();
+}
+ 
+void PlotWindow::quit(){}
+
+void PlotWindow::switchPlot(){
 	current_panel->hide();
 	current_plot->hide();
 	plot_type = (plot_type + 1) % 2;
@@ -86,64 +104,55 @@ void PlotWindow::switchPlot()
 		connect(current_panel, SIGNAL(labelsChange(QString, QString)), current_plot, SLOT(changePlotLabels(QString, QString)));
 		connect(current_panel, SIGNAL(gridChange(int)), current_plot, SLOT(changeGridState(int)));
 	}
-
 	switched++;
 }
 
-void PlotWindow::open()
-{
-
+void PlotWindow::open(){
 	QString fileName = QFileDialog::getOpenFileName(this,
 	 												tr("Open File"),
 	 												QDir::currentPath(),
   													tr("ROC files (*.roc);;PR files (*.pr);;all files (*.*)"));
-     /*    
-	if (!fileName.isEmpty()){
-		//pFile = new ProxyFile(fileName);
- 		//dPoints=pFile->getData();
- 	}
- 	else{
- 		return;
- 	}*/
-	
-	if (fileName.isEmpty()){
+	if (fileName.isEmpty())
 		return;
- 	}
-	
 	QStringList field = fileName.split(".", QString::SkipEmptyParts);
 	
 	QStringList::const_iterator constIterator;
     constIterator = --field.constEnd();//!!   
-    
-	if (constIterator->compare("roc",Qt::CaseInsensitive)==0){
-		qDebug()<<"ROC  !"<<*constIterator<<"!";
-		roc_plot->addCurve(fileName, 0, 1.0);
+    try{
+		if (constIterator->compare("roc",Qt::CaseInsensitive)==0)
+			roc_plot->addCurve(fileName, 0);
+		else if (constIterator->compare("pr",Qt::CaseInsensitive)==0)
+			pr_plot->addCurve(fileName, 1);
+		else{
+			throw 1000;
+			return;
+		}
 	}
-	else if (constIterator->compare("pr",Qt::CaseInsensitive)==0){ 
-			qDebug()<<"PR   !"<<*constIterator<<"!";
-		pr_plot->addCurve(fileName, 1, 0.7);
+	catch(int e){
+		QErrorMessage errorMessage;
+		if (e==1000)
+			errorMessage.showMessage("error. unknown file extension");
+		else if (e==1001)
+			errorMessage.showMessage("error parsing the file. unsupported structure of file");
+		else if (e==1002)
+			errorMessage.showMessage("error parsing the file. data conversion failed");
+		else if (e==1003)
+			errorMessage.showMessage("error parsing the file. to little data points");
+		errorMessage.exec();
 	}
-	else{
-		//nieznane rozszerzenie
-		return;
-	}
-
 	emit plotRefresh();
- }
-
- bool PlotWindow::save()
- {
-	 return true;
- }
-
-void PlotWindow::about()
-{
-	QMessageBox::about(this, tr("O programie"), 
-		tr("Program pozwala na importowanie danych w formacie AUC, wyœwietlanie i porównywanie wykresów oraz zapisywanie ich do pliku."));
 }
 
-void PlotWindow::createActions()
-{
+bool PlotWindow::save(){
+	return true;
+}
+
+void PlotWindow::about(){
+	QMessageBox::about(this, tr("O programie"), 
+		tr("Program pozwala na importowanie danych w formacie AUC, wyÂœwietlanie i porÃ³wnywanie wykresÃ³w oraz zapisywanie ich do pliku."));
+}
+
+void PlotWindow::createActions(){
 	openAction = new QAction(QIcon("images/open.png"), tr("&Open..."), this);
 	openAction->setShortcuts(QKeySequence::Open);
 	openAction->setStatusTip(tr("Open an existing file"));
@@ -178,8 +187,7 @@ void PlotWindow::createActions()
 	connect(aboutQtAct, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
 }
 
- void PlotWindow::createMenus()
- {
+void PlotWindow::createMenus(){
      fileMenu = menuBar()->addMenu(tr("&File"));
      fileMenu->addAction(openAction);
 
@@ -199,10 +207,9 @@ void PlotWindow::createActions()
      helpMenu = menuBar()->addMenu(tr("&Help"));
      helpMenu->addAction(aboutAct);
      helpMenu->addAction(aboutQtAct);
- }
+}
 
-void PlotWindow::createToolBars()
-{
+void PlotWindow::createToolBars(){
      fileToolBar = addToolBar(tr("File"));
      fileToolBar->addAction(openAction);
      
@@ -214,20 +221,17 @@ void PlotWindow::createToolBars()
 	 fileToolBar->addAction(switchAction);
 }
 
-void PlotWindow::createStatusBar()
-{
+void PlotWindow::createStatusBar(){
 	statusBar()->showMessage(tr("Ready"));
 }
 
 #ifndef QT_NO_PRINTER
 
-void PlotWindow::print()
-{
+void PlotWindow::print(){
     QPrinter printer(QPrinter::HighResolution);
 
     QString docName = current_plot->title().text();
-    if ( !docName.isEmpty() )
-    {
+    if ( !docName.isEmpty() ){
         docName.replace (QRegExp (QString::fromLatin1 ("\n")), tr (" -- "));
         printer.setDocName (docName);
     }
@@ -236,16 +240,13 @@ void PlotWindow::print()
     printer.setOrientation(QPrinter::Landscape);
 
     QPrintDialog dialog(&printer);
-    if ( dialog.exec() )
-    {
+    if ( dialog.exec() ){
         QwtPlotRenderer renderer;
 
-        if ( printer.colorMode() == QPrinter::GrayScale )
-        {
+        if ( printer.colorMode() == QPrinter::GrayScale ){
             renderer.setDiscardFlag(QwtPlotRenderer::DiscardCanvasBackground);
             renderer.setLayoutFlag(QwtPlotRenderer::FrameWithScales);
         }
-
         renderer.renderTo(current_plot, printer);
     }
 }
@@ -270,28 +271,21 @@ void PlotWindow::exportDocument()
 #endif
     filter += "Postscript Documents (*.ps)";
 
-    if ( imageFormats.size() > 0 )
-    {
+    if ( imageFormats.size() > 0 ){
         QString imageFilter("Images (");
-        for ( int i = 0; i < imageFormats.size(); i++ )
-        {
+        for ( int i = 0; i < imageFormats.size(); i++ ){
             if ( i > 0 )
                 imageFilter += " ";
             imageFilter += "*.";
             imageFilter += imageFormats[i];
         }
         imageFilter += ")";
-
         filter += imageFilter;
     }
-
-    fileName = QFileDialog::getSaveFileName(
-        this, "Export File Name", fileName,
-        filter.join(";;"), NULL, QFileDialog::DontConfirmOverwrite);
+    fileName = QFileDialog::getSaveFileName(this, "Export File Name", fileName, filter.join(";;"), NULL, QFileDialog::DontConfirmOverwrite);
 #endif
 	
-    if ( !fileName.isEmpty() )
-    {
+    if ( !fileName.isEmpty() ){
         QwtPlotRenderer renderer;
 		
         // flags to make the document look like the widget

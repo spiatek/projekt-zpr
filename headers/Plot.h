@@ -1,3 +1,26 @@
+/**
+ * @file
+ * @author  Szymon PiÄ…tek, Mateusz Matuszewski
+ * @version 1.0
+ *
+ * @section LICENSE
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation; either version 2 of
+ * the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * General Public License for more details at
+ * http://www.gnu.org/copyleft/gpl.html
+ *
+ * @section DESCRIPTION
+ *
+ */
+
+
 #pragma once
 #include <list>
 #include <qwt_plot.h>
@@ -16,8 +39,8 @@ class Plot : public QwtPlot
 public:
     Plot(QWidget *parent = NULL, int _type = 0);
 
-	int addCurve(QString, int, double);	//dodanie krzywej do wykresu
-	int modifyCurveColor(int, QColor);						//zmiana koloru krzywej o danej nazwie
+	int addCurve(QString, int);							//add curve to the plot
+	int modifyCurveColor(int, QColor);					//change curve color
 
 protected:
     virtual void resizeEvent(QResizeEvent*);
@@ -30,7 +53,7 @@ public slots:
 	void changeName(int, QString);
 	void changeColor(QString, QColor);
 	void getColAuc(QString);
-	void deleteCurve(int);									//usuniêcie krzywej o danej nazwie
+	void deleteCurve(int);								//remove curve
 	void leaveOneUnhided(int);
 	void clearAll();
 	void modifyBackgroundColor(QColor);
@@ -50,7 +73,7 @@ private:
     void insertMarkers();
     void updateGradient();
 
-	int type;						//typ krzywej (ROC, PR)
+	int type;											//curve type (ROC, PR)
 	int curve_counter;
 	std::vector<Curve*> curves_;
 	std::vector<ProxyFile*> proxies_;
