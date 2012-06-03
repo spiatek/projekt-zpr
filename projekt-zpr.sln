@@ -3,6 +3,28 @@ Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "projekt-zpr", "projekt-zpr.vcxproj", "{8FA4BDBA-3935-4ABB-B599-69B2B9C0FD2E}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "realtime", "..\..\..\..\..\..\..\Qt\qwt-6.0.1\examples\realtime\realtime.vcxproj", "{9F1FBB89-F146-30EC-ABB3-087AE345FD5B}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "bode", "..\..\..\..\..\..\..\Qt\qwt-6.0.1\examples\bode\bode.vcxproj", "{0C5106DB-3CD4-3464-ABAE-125166B3AB60}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "curvdemo1", "..\..\..\..\..\..\..\Qt\qwt-6.0.1\examples\curvdemo1\curvdemo1.vcxproj", "{C4C90C17-BD3B-3207-9030-2D37C99FD2AF}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "curvdemo2", "..\..\..\..\..\..\..\Qt\qwt-6.0.1\examples\curvdemo2\curvdemo2.vcxproj", "{834923C7-2893-3EB6-B7E2-3F6C604A08C5}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "dials", "..\..\..\..\..\..\..\Qt\qwt-6.0.1\examples\dials\dials.vcxproj", "{AE9AA64A-CEAC-37F7-A806-BDBC7E14670C}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "event_filter", "..\..\..\..\..\..\..\Qt\qwt-6.0.1\examples\event_filter\event_filter.vcxproj", "{CAF28F84-9D6F-3510-B542-C6116F6D4029}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "friedberg", "..\..\..\..\..\..\..\Qt\qwt-6.0.1\examples\friedberg\friedberg.vcxproj", "{D56CB2BF-8594-3DD6-8BE6-F2FB49879381}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "navigation", "..\..\..\..\..\..\..\Qt\qwt-6.0.1\examples\navigation\navigation.vcxproj", "{AFE7600A-6A11-331C-BF43-D53B13E7FF54}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "oscilloscope", "..\..\..\..\..\..\..\Qt\qwt-6.0.1\examples\oscilloscope\oscilloscope.vcxproj", "{D7E32C44-2646-368F-8E02-7DA21067B013}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "refreshtest", "..\..\..\..\..\..\..\Qt\qwt-6.0.1\examples\refreshtest\refreshtest.vcxproj", "{DDE6ADCE-9BA1-3E95-AD7A-D3A93895C556}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "spectrogram", "..\..\..\..\..\..\..\Qt\qwt-6.0.1\examples\spectrogram\spectrogram.vcxproj", "{ED747EFC-2CDE-3540-8E8E-ACA551827307}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -13,6 +35,50 @@ Global
 		{8FA4BDBA-3935-4ABB-B599-69B2B9C0FD2E}.Debug|Win32.Build.0 = Debug|Win32
 		{8FA4BDBA-3935-4ABB-B599-69B2B9C0FD2E}.Release|Win32.ActiveCfg = Release|Win32
 		{8FA4BDBA-3935-4ABB-B599-69B2B9C0FD2E}.Release|Win32.Build.0 = Release|Win32
+		{9F1FBB89-F146-30EC-ABB3-087AE345FD5B}.Debug|Win32.ActiveCfg = Debug|Win32
+		{9F1FBB89-F146-30EC-ABB3-087AE345FD5B}.Debug|Win32.Build.0 = Debug|Win32
+		{9F1FBB89-F146-30EC-ABB3-087AE345FD5B}.Release|Win32.ActiveCfg = Release|Win32
+		{9F1FBB89-F146-30EC-ABB3-087AE345FD5B}.Release|Win32.Build.0 = Release|Win32
+		{0C5106DB-3CD4-3464-ABAE-125166B3AB60}.Debug|Win32.ActiveCfg = Debug|Win32
+		{0C5106DB-3CD4-3464-ABAE-125166B3AB60}.Debug|Win32.Build.0 = Debug|Win32
+		{0C5106DB-3CD4-3464-ABAE-125166B3AB60}.Release|Win32.ActiveCfg = Release|Win32
+		{0C5106DB-3CD4-3464-ABAE-125166B3AB60}.Release|Win32.Build.0 = Release|Win32
+		{C4C90C17-BD3B-3207-9030-2D37C99FD2AF}.Debug|Win32.ActiveCfg = Debug|Win32
+		{C4C90C17-BD3B-3207-9030-2D37C99FD2AF}.Debug|Win32.Build.0 = Debug|Win32
+		{C4C90C17-BD3B-3207-9030-2D37C99FD2AF}.Release|Win32.ActiveCfg = Release|Win32
+		{C4C90C17-BD3B-3207-9030-2D37C99FD2AF}.Release|Win32.Build.0 = Release|Win32
+		{834923C7-2893-3EB6-B7E2-3F6C604A08C5}.Debug|Win32.ActiveCfg = Debug|Win32
+		{834923C7-2893-3EB6-B7E2-3F6C604A08C5}.Debug|Win32.Build.0 = Debug|Win32
+		{834923C7-2893-3EB6-B7E2-3F6C604A08C5}.Release|Win32.ActiveCfg = Release|Win32
+		{834923C7-2893-3EB6-B7E2-3F6C604A08C5}.Release|Win32.Build.0 = Release|Win32
+		{AE9AA64A-CEAC-37F7-A806-BDBC7E14670C}.Debug|Win32.ActiveCfg = Debug|Win32
+		{AE9AA64A-CEAC-37F7-A806-BDBC7E14670C}.Debug|Win32.Build.0 = Debug|Win32
+		{AE9AA64A-CEAC-37F7-A806-BDBC7E14670C}.Release|Win32.ActiveCfg = Release|Win32
+		{AE9AA64A-CEAC-37F7-A806-BDBC7E14670C}.Release|Win32.Build.0 = Release|Win32
+		{CAF28F84-9D6F-3510-B542-C6116F6D4029}.Debug|Win32.ActiveCfg = Debug|Win32
+		{CAF28F84-9D6F-3510-B542-C6116F6D4029}.Debug|Win32.Build.0 = Debug|Win32
+		{CAF28F84-9D6F-3510-B542-C6116F6D4029}.Release|Win32.ActiveCfg = Release|Win32
+		{CAF28F84-9D6F-3510-B542-C6116F6D4029}.Release|Win32.Build.0 = Release|Win32
+		{D56CB2BF-8594-3DD6-8BE6-F2FB49879381}.Debug|Win32.ActiveCfg = Debug|Win32
+		{D56CB2BF-8594-3DD6-8BE6-F2FB49879381}.Debug|Win32.Build.0 = Debug|Win32
+		{D56CB2BF-8594-3DD6-8BE6-F2FB49879381}.Release|Win32.ActiveCfg = Release|Win32
+		{D56CB2BF-8594-3DD6-8BE6-F2FB49879381}.Release|Win32.Build.0 = Release|Win32
+		{AFE7600A-6A11-331C-BF43-D53B13E7FF54}.Debug|Win32.ActiveCfg = Debug|Win32
+		{AFE7600A-6A11-331C-BF43-D53B13E7FF54}.Debug|Win32.Build.0 = Debug|Win32
+		{AFE7600A-6A11-331C-BF43-D53B13E7FF54}.Release|Win32.ActiveCfg = Release|Win32
+		{AFE7600A-6A11-331C-BF43-D53B13E7FF54}.Release|Win32.Build.0 = Release|Win32
+		{D7E32C44-2646-368F-8E02-7DA21067B013}.Debug|Win32.ActiveCfg = Debug|Win32
+		{D7E32C44-2646-368F-8E02-7DA21067B013}.Debug|Win32.Build.0 = Debug|Win32
+		{D7E32C44-2646-368F-8E02-7DA21067B013}.Release|Win32.ActiveCfg = Release|Win32
+		{D7E32C44-2646-368F-8E02-7DA21067B013}.Release|Win32.Build.0 = Release|Win32
+		{DDE6ADCE-9BA1-3E95-AD7A-D3A93895C556}.Debug|Win32.ActiveCfg = Debug|Win32
+		{DDE6ADCE-9BA1-3E95-AD7A-D3A93895C556}.Debug|Win32.Build.0 = Debug|Win32
+		{DDE6ADCE-9BA1-3E95-AD7A-D3A93895C556}.Release|Win32.ActiveCfg = Release|Win32
+		{DDE6ADCE-9BA1-3E95-AD7A-D3A93895C556}.Release|Win32.Build.0 = Release|Win32
+		{ED747EFC-2CDE-3540-8E8E-ACA551827307}.Debug|Win32.ActiveCfg = Debug|Win32
+		{ED747EFC-2CDE-3540-8E8E-ACA551827307}.Debug|Win32.Build.0 = Debug|Win32
+		{ED747EFC-2CDE-3540-8E8E-ACA551827307}.Release|Win32.ActiveCfg = Release|Win32
+		{ED747EFC-2CDE-3540-8E8E-ACA551827307}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
